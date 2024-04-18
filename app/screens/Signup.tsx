@@ -23,6 +23,14 @@ const Signup= ({navigation}) => {
         password: '',
         cpassword: ''
     });
+
+    const validateEmail = (email) => {
+        // Regular expression to validate Gmail addresses
+        const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail.com$/;
+        return gmailRegex.test(email);
+    };
+
+    
     
 
     const signin = () => {
@@ -45,6 +53,10 @@ const Signup= ({navigation}) => {
 
         var passwordValid = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?!.*(.)\1{2})(?!.*(.)\2{2})(?!.*(.)\3{2}).{8,}$/;
        
+        if (!validateEmail(email)) {
+            setErrors(prevErrors => ({ ...prevErrors, email: 'Please enter a valid Gmail address' }));
+            return;
+        }
         if (password === cpassword) {
             // Check if the password matches the validation criteria
             if (passwordValid.test(password)) {
@@ -53,8 +65,16 @@ const Signup= ({navigation}) => {
                     lastname: lname,
                     email: email,
                     password: password
+                
+                    
                 }).then(() => {
-                    alert('Signup Complete!');
+                    setModalMessage('Signup Complete!');
+                setModalVisible(true); // Show the modal
+                setTimeout(() => {
+                    setModalVisible(false); // Close the modal after 1.5 seconds
+                    navigation.navigate('Login'); // Navigate to the Login screen
+                }, 1500);
+    
                 }).catch((error) => {
                     alert('Signup Failed: ' + error.message);
                 });

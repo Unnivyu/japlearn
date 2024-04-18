@@ -3,7 +3,8 @@ import { TouchableOpacity, View, TextInput, StyleSheet, Button, ActivityIndicato
 import { stylesMenu } from './stylesMenu';
 import EmptyClass from '../../assets/empty.svg'
 import CustomButton from '../../components/CustomButton';
-
+import { db } from '../../config';
+import {ref,set, push, child, get} from "firebase/database";
 
 
 const StartMenu = ({route}) => {
@@ -13,7 +14,31 @@ const StartMenu = ({route}) => {
     
 
     const joinClass = async () => {
-    }
+        console.log('Joining class...');
+        try {
+            const teacherRef = ref(db, `Teacher/Herrera/classList`);
+            const classSnapshot = await get(teacherRef);
+    
+            if (classSnapshot.exists()) {
+                // Class exists, perform the logic to join the class here
+                const userRef = ref(db, `users/${firstName}`);
+                const userSnapshot = await get(userRef);
+                
+                    // User exists, update the classCode
+                    const userData = userSnapshot.val();
+                    await set(userRef, { ...userData, classcode });
+                    console.log('Database updated successfully');
+                    alert(`Success, You have successfully joined class ${classcode}`);
+                
+            } else {
+                // Class does not exist
+                alert('Error, Invalid class code. Please enter a valid class code.');
+            }
+        } catch (error) {
+            console.error('Error joining class:', error.message);
+            alert('Error, An error occurred while joining the class. Please try again later.');
+        }
+    };
 
     return (
         <KeyboardAvoidingView behavior='padding'>
@@ -39,6 +64,7 @@ const StartMenu = ({route}) => {
                             value={classcode}
                             placeholder='Classcode'
                             autoCapitalize="none"
+                            onChangeText={(text) => setClasscode(text)}
                     />
                     <CustomButton title='Join' onPress={joinClass} style={stylesMenu.button} textStyle={stylesMenu.buttonText}/>
                     
