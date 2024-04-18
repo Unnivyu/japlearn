@@ -7,7 +7,7 @@ import { stylesDashboard } from './stylesDashboard';
 import CustomButton from '../../components/CustomButton';
 import {styles} from './stylesTeacherDashboard';
 import { db } from '../../config';
-import {ref,set, push} from "firebase/database";
+import {ref,set, push, child, get} from "firebase/database";
 
 const TeacherDashboard = ({ navigation }) => {
     const [classes, setClasses] = useState([{ name: 'Class 1', code: '333555' }]);
@@ -17,7 +17,8 @@ const TeacherDashboard = ({ navigation }) => {
     const [selectedClassCodes, setSelectedClassCodes] = useState([]);
     const [selectedClassCode, setSelectedClassCode] = useState(null);
     const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
-    const [newClassName, setNewClassName] = useState(''); 
+    const [newClassName, setNewClassName] = useState('');
+    const [TeacherName, setTeacherName] = useState('');
 
     const handleProfilePress = () => {
         navigation.navigate('Profile');
@@ -37,40 +38,32 @@ const TeacherDashboard = ({ navigation }) => {
     };
 
     const addClass = async () => {
+        const teacherName = 'Herrera'; // You can also set this dynamically if needed
+        
         if (!newClassName) {
             console.error('Class name is missing');
             return;
         }
-
-        const newClassCode = generateClassCode();
-    
-        const classData = {
-            classCode: newClassCode,
-            classTeacher: 'Herrera',
-        };
     
         try {
-            const classRef = ref(db, `Class/${newClassName}`); // Get a reference to 'Class/newClassName' in the database
-            await set(classRef, classData); // Push data into the database
-
-            setClasses(currentClasses => [...currentClasses, { name: newClassName, code: newClassCode }]);
+            const teacherRef = ref(db, `Teacher/${teacherName}`); // Get a reference to 'Teacher/Herrera' in the database
+            
+            // Update classList
+            const classListRef = child(teacherRef, 'classList'); 
+            const classListSnapshot = await get(classListRef);
+            const classList = classListSnapshot.exists() ? classListSnapshot.val() : [];
+    
+            const updatedClassList = [...classList, newClassName];
+            
+            await set(classListRef, updatedClassList);
+    
+            setClasses(currentClasses => [...currentClasses, { name: newClassName }]);
             setNewClassName(''); 
-            setNewClassCode('');
             setAddModalVisible(false);
         } catch (error) {
             console.error('Error adding class to Firebase:', error.message); // Log error message
         }
-    };
-
-    const generateClassCode = () => {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        for (let i = 0; i < 6; i++) {
-            result += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        return result;
-    };
-    
+    }; 
 
     const deleteClass = () => {
         setClasses(currentClasses => {
