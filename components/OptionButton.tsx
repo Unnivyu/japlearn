@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         
     },
+    
     buttonText: {
         fontFamily: 'jua',
         fontSize: 20,
@@ -68,5 +69,7 @@ const styles = StyleSheet.create({
         color: 'white',
     },
 });
+
+
 
 export default OptionButton;

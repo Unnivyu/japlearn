@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, View, TextInput, StyleSheet, Button, ActivityIndicator, KeyboardAvoidingView, Modal, Text, Image, Alert } from 'react-native';
+import { TouchableOpacity, View, KeyboardAvoidingView, Image } from 'react-native';
 import { stylesOption } from './stylesOption'; // Updated import
-import EmptyClass from '../../assets/empty.svg';
-import CustomButton from '../../components/CustomButton';
 import OptionButton from '../../components/OptionButton'; // Updated import
 
 const QuackmanOption = () => {
@@ -16,7 +14,7 @@ const QuackmanOption = () => {
             <View>
                 <View style={[stylesOption.header, { padding: 20 }]}>
                     {/* Upper Left Corner Button */}
-                    <TouchableOpacity style={stylesOption.upperLeftButton} onPress={() => console.log('Upper left button pressed')}>
+                    <TouchableOpacity style={stylesOption.BackButton} onPress={() => console.log('Upper left button pressed')}>
                         <Image source={require('../../assets/Backbutton.png')} style={stylesOption.upperLeftButtonImage} />
                     </TouchableOpacity>
                     

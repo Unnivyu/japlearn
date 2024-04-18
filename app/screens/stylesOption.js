@@ -78,7 +78,8 @@ export const stylesOption = StyleSheet.create({
         height: 50, 
         borderRadius: 50,
     },
-    upperLeftButton: {
+    
+    BackButton: {
         position: 'absolute',
         top: 30,
         left: 20,
@@ -97,5 +98,15 @@ export const stylesOption = StyleSheet.create({
         height: 180, // Adjust height as needed
         marginBottom: 20, // Adjust margin bottom as needed
         zIndex: 2, // Set z-index higher than buttons to display above them
+
+        BackButton: {
+            // Adjust button size and margin as needed
+            width: 50,
+        height: 50,
+        marginLeft: 10,
+        marginTop: 5,
+        },
+
+        
     },
 });
