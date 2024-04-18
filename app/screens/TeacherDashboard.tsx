@@ -1,27 +1,114 @@
 import React, { useState } from 'react';
-import { View, KeyboardAvoidingView, Text, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import {
+    Modal, View, KeyboardAvoidingView, Text, TouchableOpacity, SafeAreaView, ScrollView,
+    TextInput, Button, StyleSheet
+} from 'react-native';
 import { stylesDashboard } from './stylesDashboard';
-import EmptyClass from '../../assets/empty.svg'
 import CustomButton from '../../components/CustomButton';
-import Empty from '../../assets/empty.svg'
+import {styles} from './stylesTeacherDashboard';
+import { db } from '../../config';
+import {ref,set, push} from "firebase/database";
 
-const TeacherDashboard = ({navigation}) => {
-    const [classcode, setClasscode] = useState('');
+const TeacherDashboard = ({ navigation }) => {
     const [classes, setClasses] = useState([{ name: 'Class 1', code: '333555' }]);
+    const [addModalVisible, setAddModalVisible] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [newClassCode, setNewClassCode] = useState('');
+    const [selectedClassCodes, setSelectedClassCodes] = useState([]);
+    const [selectedClassCode, setSelectedClassCode] = useState(null);
+    const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
+    const [newClassName, setNewClassName] = useState(''); 
 
-    const joinClass = async () => {
-    }
     const handleProfilePress = () => {
         navigation.navigate('Profile');
-    }
+    };
+
     const handleAddPress = () => {
-    }
+        setAddModalVisible(true);
+    };
+
     const handleRemovePress = () => {
-    }
+        setDeleteModalVisible(true);
+        setSelectedClassCodes(classes.map(classItem => classItem.code));
+    };
+
     const handleClassNavigate = () => {
         navigation.navigate('ClassDashboard');
-    }
+    };
+
+    const addClass = async () => {
+        if (!newClassName) {
+            console.error('Class name is missing');
+            return;
+        }
+
+        const newClassCode = generateClassCode();
     
+        const classData = {
+            classCode: newClassCode,
+            classTeacher: 'Herrera',
+        };
+    
+        try {
+            const classRef = ref(db, `Class/${newClassName}`); // Get a reference to 'Class/newClassName' in the database
+            await set(classRef, classData); // Push data into the database
+
+            setClasses(currentClasses => [...currentClasses, { name: newClassName, code: newClassCode }]);
+            setNewClassName(''); 
+            setNewClassCode('');
+            setAddModalVisible(false);
+        } catch (error) {
+            console.error('Error adding class to Firebase:', error.message); // Log error message
+        }
+    };
+
+    const generateClassCode = () => {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < 6; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return result;
+    };
+    
+
+    const deleteClass = () => {
+        setClasses(currentClasses => {
+            const indexToRemove = currentClasses.findIndex(classItem => classItem.code === selectedClassCode);
+            const newClasses = [...currentClasses.slice(0, indexToRemove), ...currentClasses.slice(indexToRemove + 1)];
+            newClasses.forEach((classItem, index) => {
+                classItem.name = `Class ${index + 1}`;
+            });
+            return newClasses;
+        });
+        setDeleteModalVisible(false);
+        setConfirmDeleteModalVisible(false);
+        setSelectedClassCode(null);
+    };
+
+    const closeModal = () => {
+        setAddModalVisible(false);
+        setDeleteModalVisible(false);
+        setConfirmDeleteModalVisible(false);
+        setSelectedClassCodes([]);
+        setSelectedClassCode(null);
+    };
+
+    const handleClassCodePress = (code) => {
+        setSelectedClassCode(code);
+    };
+
+    const handleConfirmDeletePress = () => {
+        setConfirmDeleteModalVisible(true);
+        
+    };
+
+    const handleCancelDeletePress = () => {
+        setSelectedClassCode(null);
+        setConfirmDeleteModalVisible(false);
+        
+    };
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
@@ -32,10 +119,8 @@ const TeacherDashboard = ({navigation}) => {
                             <Text style={stylesDashboard.hText}>Teacher</Text>
                         </View>
                         <View style={stylesDashboard.rightContainer}>
-                            <TouchableOpacity onPress={handleProfilePress}> 
-                                <View style={stylesDashboard.pictureCircle} >
-                                    
-                                </View>
+                            <TouchableOpacity onPress={handleProfilePress}>
+                                <View style={stylesDashboard.pictureCircle}></View>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -48,31 +133,82 @@ const TeacherDashboard = ({navigation}) => {
                             <CustomButton title="Remove" onPress={handleRemovePress} style={stylesDashboard.button} textStyle={stylesDashboard.buttonText} />
                         </View>
                     </View>
-                    <ScrollView contentContainerStyle={{ flexGrow: 1}}>
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                         <View style={stylesDashboard.classContainer}>
-                            {classes.length === 0 ? ( 
-                                <View style={stylesDashboard.classContainer}>
-                                    <Text style={stylesDashboard.titleText}>No Classes</Text>
-                                    <Empty width={250} height={250} />
-                                </View>
-                            ) : (
-                                classes.map((classItem, index) => (
-                                    <View key={index}>
-                                        <TouchableOpacity onPress={handleClassNavigate}>
-                                            <View style={stylesDashboard.classContent}>
-                                                <Text style={stylesDashboard.classContentText}>Classname: {classItem.name}</Text>
-                                                <Text style={stylesDashboard.classContentText}>Code: {classItem.code}</Text>
-                                            </View>
-                                        </TouchableOpacity>
+                            {classes.map((classItem, index) => (
+                                <TouchableOpacity key={index} onPress={() => handleClassNavigate(classItem.code)}>
+                                    <View style={stylesDashboard.classContent}>
+                                        <Text style={stylesDashboard.classContentText}>Name: {classItem.name}</Text>
+                                        <Text style={stylesDashboard.classContentText}>Code: {classItem.code}</Text>
                                     </View>
-                                ))
-                            )}
+                                </TouchableOpacity>
+                            ))}
                         </View>
                     </ScrollView>
+                <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={addModalVisible}
+                        onRequestClose={closeModal}
+                    >
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+                                    <Text style={styles.closeButtonText}>X</Text>
+                                </TouchableOpacity>
+                                <TextInput
+                                    placeholder="Class Name"
+                                    value={newClassName}
+                                    onChangeText={setNewClassName}
+                                    style={styles.input}
+                                />
+                                <Button title="Add Class" onPress={addClass} />
+                            </View>
+                        </View>
+                    </Modal>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={deleteModalVisible}
+                        onRequestClose={closeModal}
+                    >
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+                                    <Text style={styles.closeButtonText}>X</Text>
+                                </TouchableOpacity>
+                                <Text style={styles.text}>Are you sure you want to delete the following classes?</Text>
+                                <View style={styles.stack}>
+                                    {selectedClassCodes.map((code, index) => (
+                                        <TouchableOpacity key={index} onPress={() => handleClassCodePress(code)} style={[styles.stackText, selectedClassCode === code && { backgroundColor: 'gray' }]}>
+                                            <Text style={styles.stackText}>{code}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                                <Button title="Delete Classes" onPress={handleConfirmDeletePress} />
+                            </View>
+                        </View>
+                    </Modal>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={confirmDeleteModalVisible}
+                        onRequestClose={closeModal}
+                    >
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <TouchableOpacity onPress={handleCancelDeletePress} style={styles.closeButton}>
+                                    <Text style={styles.closeButtonText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <Text style={styles.text}>Are you sure you want to delete class {selectedClassCode}?</Text>
+                                <Button title="Delete Class" onPress={deleteClass} />
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
-}
+};
 
 export default TeacherDashboard;
