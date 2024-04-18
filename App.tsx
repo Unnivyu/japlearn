@@ -12,6 +12,10 @@ import Score from './app/screens/Score';
 import TeacherDashboard from './app/screens/TeacherDashboard';
 import ClassDashboard from './app/screens/ClassDashboard';
 import StartMenu from './app/screens/StartMenu';
+import QuackmanOption from './app/screens/QuackmanOption';
+import QuackslateOption from './app/screens/QuackslateOption';
+import QuackamoleOption from './app/screens/QuackamoleOption';
+import QuackamoleOption2 from './app/screens/QuackamoleOption2';
 
 const getFonts = () => Font.loadAsync({
   'jua': require('./assets/fonts/Jua-Regular.ttf')
@@ -36,6 +40,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
+      
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
@@ -45,6 +50,11 @@ export default function App() {
         <Stack.Screen name="TeacherDashboard" component={TeacherDashboard} options={{ headerShown: false }} />
         <Stack.Screen name="ClassDashboard" component={ClassDashboard} options={{ headerShown: false }} />
         <Stack.Screen name="StartMenu" component={StartMenu} options={{ headerShown: false }} />
+        <Stack.Screen name="QuackmanOption" component={QuackmanOption} options={{ headerShown: false }} />
+        <Stack.Screen name="QuackslateOption" component={QuackslateOption} options={{ headerShown: false }} />
+        <Stack.Screen name="QuackamoleOption" component={QuackamoleOption} options={{ headerShown: false }} />
+        <Stack.Screen name="QuackamoleOption2" component={QuackamoleOption2} options={{ headerShown: false }} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
