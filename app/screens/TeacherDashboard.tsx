@@ -18,7 +18,7 @@ const TeacherDashboard = ({ navigation }) => {
     const [selectedClassCode, setSelectedClassCode] = useState(null);
     const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
     const [newClassName, setNewClassName] = useState('');
-    const [TeacherName, setTeacherName] = useState('');
+    const [teacherName, setTeacherName] = useState('');
 
     const handleProfilePress = () => {
         navigation.navigate('Profile');
@@ -38,27 +38,29 @@ const TeacherDashboard = ({ navigation }) => {
     };
 
     const addClass = async () => {
-        const teacherName = 'Herrera'; // You can also set this dynamically if needed
+        const teacherName = 'Herrera'; //temporary variable, for testing purposes 
+        const newClassName = `Class ${classes.length + 1}`;
         
-        if (!newClassName) {
-            console.error('Class name is missing');
+        if (!newClassCode) {
+            console.error('Class code is missing');
             return;
         }
     
         try {
-            const teacherRef = ref(db, `Teacher/${teacherName}`); // Get a reference to 'Teacher/Herrera' in the database
+            const teacherRef = ref(db, `Teacher/${teacherName}`); // Get a reference to 'Teacher/teacherName' in the database
             
             // Update classList
             const classListRef = child(teacherRef, 'classList'); 
             const classListSnapshot = await get(classListRef);
             const classList = classListSnapshot.exists() ? classListSnapshot.val() : [];
     
-            const updatedClassList = [...classList, newClassName];
+            const updatedClassList = [...classList, newClassCode];
             
             await set(classListRef, updatedClassList);
     
-            setClasses(currentClasses => [...currentClasses, { name: newClassName }]);
-            setNewClassName(''); 
+            setClasses(currentClasses => [...currentClasses, { name: newClassName, code: newClassCode }]);
+            setNewClassCode('');
+            setNewClassName('');
             setAddModalVisible(false);
         } catch (error) {
             console.error('Error adding class to Firebase:', error.message); // Log error message
@@ -150,9 +152,9 @@ const TeacherDashboard = ({ navigation }) => {
                                     <Text style={styles.closeButtonText}>X</Text>
                                 </TouchableOpacity>
                                 <TextInput
-                                    placeholder="Class Name"
-                                    value={newClassName}
-                                    onChangeText={setNewClassName}
+                                    placeholder="Class Code"
+                                    value={newClassCode}
+                                    onChangeText={setNewClassCode}
                                     style={styles.input}
                                 />
                                 <Button title="Add Class" onPress={addClass} />
