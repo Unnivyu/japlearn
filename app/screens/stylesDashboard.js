@@ -87,13 +87,20 @@ export const stylesDashboard = StyleSheet.create ({
         padding: 10,
         height: 80,
         borderRadius: 10,
+<<<<<<< HEAD
         marginVertical: 5,
+=======
+>>>>>>> f566f8f8ae10b855fbff91ed084d288ca5e0c430
         width: '100%'
     },
     classContentText: {
         color: 'white',
         fontFamily:'jua',
+<<<<<<< HEAD
         fontSize: 15,
         paddingHorizontal: 10
+=======
+        fontSize: 15
+>>>>>>> f566f8f8ae10b855fbff91ed084d288ca5e0c430
     }
 });

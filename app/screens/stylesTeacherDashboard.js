@@ -68,5 +68,8 @@ export const styles =StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 3,
     },
+<<<<<<< HEAD
     
+=======
+>>>>>>> f566f8f8ae10b855fbff91ed084d288ca5e0c430
 });

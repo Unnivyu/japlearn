@@ -42,7 +42,15 @@ export default function App() {
   return (
     <NavigationContainer>
       
+<<<<<<< HEAD
       <Stack.Navigator initialRouteName="TeacherDashboard">
+=======
+<<<<<<< HEAD
+      <Stack.Navigator initialRouteName="Quackslate">
+=======
+      <Stack.Navigator initialRouteName="Signup">
+>>>>>>> 502888a131baa58dfe9f3b4bc5ec14574c9b0012
+>>>>>>> f566f8f8ae10b855fbff91ed084d288ca5e0c430
         <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
