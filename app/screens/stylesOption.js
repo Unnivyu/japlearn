@@ -98,15 +98,15 @@ export const stylesOption = StyleSheet.create({
         height: 180, // Adjust height as needed
         marginBottom: 20, // Adjust margin bottom as needed
         zIndex: 2, // Set z-index higher than buttons to display above them
-
-        BackButton: {
-            // Adjust button size and margin as needed
-            width: 50,
-        height: 50,
-        marginLeft: 10,
-        marginTop: 5,
-        },
-
-        
     },
+    textInput: {
+        width: '80%',
+        height: 40,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 20, // Increased border radius for smoother edges
+        paddingHorizontal: 100, // Adjusted padding for better appearance
+        marginTop: 200,
+    }
+
 });
