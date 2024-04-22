@@ -152,7 +152,7 @@ const TeacherDashboard = ({ navigation }) => {
                             {classes.map((classItem, index) => (
                                 <TouchableOpacity key={index} onPress={() => handleClassNavigate(classItem.code)}>
                                     <View style={stylesDashboard.classContent}>
-                                        <Text style={stylesDashboard.classContentText}>Name: {classItem.name}</Text>
+                                        <Text style={stylesDashboard.classContentText}>{classItem.name}</Text>
                                         <Text style={stylesDashboard.classContentText}>Code: {classItem.code}</Text>
                                     </View>
                                 </TouchableOpacity>

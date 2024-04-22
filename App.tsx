@@ -41,9 +41,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      
-
-      <Stack.Navigator initialRouteName="Quackslate">
+      <Stack.Navigator initialRouteName="TeacherDashboard">
         <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />

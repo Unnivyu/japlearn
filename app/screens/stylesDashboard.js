@@ -87,11 +87,13 @@ export const stylesDashboard = StyleSheet.create ({
         padding: 10,
         height: 80,
         borderRadius: 10,
+        marginVertical: 5,
         width: '100%'
     },
     classContentText: {
         color: 'white',
         fontFamily:'jua',
-        fontSize: 15
+        fontSize: 15,
+        paddingHorizontal: 10
     }
 });
