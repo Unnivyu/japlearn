@@ -28,28 +28,28 @@ const Quackslate = () => {
                 
                 </View>
 
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: -100 }}>
-                    <View style={[stylesOption.menuContainer, { marginTop: -50 }]}>
+                <View style={[stylesOption.MenuAll]}>
+                    <View style={[stylesOption.menuContainer]}>
                         {/* Change margin-top here */}
-                        <Text style={[stylesOption.textStyle, { fontWeight: 'bold', fontSize: 30, marginTop: -350 }]}>Translate it to English.</Text>
+                        <Text style={[stylesOption.textStyle,]}>Translate it to English.</Text>
                     </View>
-                    <Image source={require('../../assets/QuackslateDisplay.png')} style={[stylesOption.imageStyle, { marginTop: -100, width: 250, height: 100 }]} />
+                    <Image source={require('../../assets/QuackslateDisplay.png')} style={[stylesOption.imageStyle]} />
                     {/* Second Button (GameBack) */}
-                    <TouchableOpacity style={[stylesOption.BackButton, { position: 'absolute', top: -230, left: 20 }]} onPress={() => console.log('GameBack Button pressed')}>
-                        <Image source={require('../../assets/GameBack.png')} style={[stylesOption.upperLeftButtonImage, { width: 70, height: 40 }]} />
+                    <TouchableOpacity style={[stylesOption.BackButton]} onPress={() => console.log('GameBack Button pressed')}>
+                        <Image source={require('../../assets/GameBack.png')} style={[stylesOption.upperLeftButtonImage]} />
                     </TouchableOpacity>
 
                     {/* GameRect with Text */}
-                    <View style={{ position: 'absolute', top: -230, left: 250, width: 90, height: 40, justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={[stylesOption.Progress,]}>
                         <Image source={require('../../assets/GameRect.png')} style={{ width: '100%', height: '100%' }} />
                         <Text style={{ position: 'absolute', color: 'black', fontSize: 20 }}>9/10</Text>
                     </View>
 
                     {/* Next Button */}
-                    <TouchableOpacity style={[stylesOption.BackButton, { position: 'absolute', top: 400, left: 250}]} onPress={() => console.log('Next Button pressed')}>
-                        <Image source={require('../../assets/NextButton.png')} style={[stylesOption.upperLeftButtonImage, { width: 85, height: 40 }]} />
+                    <TouchableOpacity style={[stylesOption.NextButton]} onPress={() => console.log('Next Button pressed')}>
+                        <Image source={require('../../assets/NextButton.png')} style={[stylesOption.NextButtonS]} />
                     </TouchableOpacity>
-
+        
                     <TextInput
                         style={stylesOption.textInput}
                         placeholder="Answer Here"

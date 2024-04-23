@@ -6,6 +6,16 @@ export const stylesOption = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    textStyle: {
+        fontWeight: 'bold', 
+        fontSize: 30, 
+        marginTop: -350
+    },
+    imageStyle:{
+        marginTop: -100, 
+        width: 250, 
+        height: 100
+    },
     menuButton: {
         width: 200,
         height: 200,
@@ -48,10 +58,14 @@ export const stylesOption = StyleSheet.create({
         justifyContent: 'center',
         position: 'relative', // Ensure the container is relative for absolute positioning of the upper image
         zIndex: 0, // Set z-index to default for buttons to be behind the upper image
+        marginTop: -50
     },
     menuText: {
         fontFamily: 'jua',
         fontSize: 30,
+    },
+    MenuAll:{
+        flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: -100
     },
     button: {
         backgroundColor:'#8ED94D',
@@ -72,6 +86,15 @@ export const stylesOption = StyleSheet.create({
         marginTop: 80, // Adjust as needed for text positioning
         color: 'white', // Adjust text color as needed
     },
+    Progress:{
+        position: 'absolute', 
+        top: -230, 
+        left: 250, 
+        width: 90, 
+        height: 40, 
+        justifyContent: 'center', 
+        alignItems: 'center' 
+    },
     pictureCircle: {
         backgroundColor: 'white',
         width: 50, 
@@ -80,14 +103,22 @@ export const stylesOption = StyleSheet.create({
     },
     
     BackButton: {
-        position: 'absolute',
-        top: 30,
-        left: 20,
-        zIndex: 10, // Ensure the button is above other content
+        position: 'absolute', 
+        top: -230, 
+        left: 20
     },
+    NextButton: {
+        position: 'absolute', 
+        top: 400, 
+        left: 250
+    },
+    NextButtonS:{
+        width: 85, 
+        height: 40
+    },
+
     upperLeftButtonImage: {
-        width: 40,
-        height: 40,
+        width: 70, height: 40
     },
     upperImage: {
         position: 'absolute',
