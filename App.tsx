@@ -17,16 +17,13 @@ import QuackslateOption from './app/screens/QuackslateOption';
 import QuackamoleOption from './app/screens/QuackamoleOption';
 import QuackamoleOption2 from './app/screens/QuackamoleOption2';
 import Quackslate from './app/screens/Quackslate';
-<<<<<<< HEAD
 import QuackamoleLevels from './app/screens/QuackamoleLevels';
 import QuackmanLevels from './app/screens/QuackmanLevels';
 import QuackslateLevels from './app/screens/QuackslateLevels';
 import QuackmanEdit from './app/screens/QuackmanEdit';
 import QuackslateEdit from './app/screens/QuackslateEdit';
 import QuackamoleEdit from './app/screens/QuackamoleEdit';
-=======
 import Quackamole from './app/screens/Quackamole';
->>>>>>> 6ec573b4f2e3ccce6eaffed6acce70f352b2d934
 
 const getFonts = () => Font.loadAsync({
   'jua': require('./assets/fonts/Jua-Regular.ttf')
@@ -51,12 +48,8 @@ export default function App() {
 
   return (
     <NavigationContainer>
-<<<<<<< HEAD
       
       <Stack.Navigator initialRouteName="QuackamoleLevels">
-=======
-      <Stack.Navigator initialRouteName="Quackamole">
->>>>>>> 6ec573b4f2e3ccce6eaffed6acce70f352b2d934
         <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
