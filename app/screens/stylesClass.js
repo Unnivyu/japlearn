@@ -163,4 +163,5 @@ export const stylesClass = StyleSheet.create({
         transform: [{ translateX: -60 }, { translateY: -60 }], // Adjust icon size and position
         zIndex: -1,
     },
+    
 });

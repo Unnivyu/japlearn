@@ -122,23 +122,23 @@ const ClassDashboard = ({ navigation, route }) => {
                     {activeCategory === 'GAMES' && (
                         <View style={stylesClass.membersContentContainer}>
                             <View style={stylesClass.gameContent}>
-                                <CustomButton title="Edit" onPress={handleOnPress} style={stylesClass.gameButton} textStyle={stylesClass.buttonText}/>    
+                                <CustomButton title="Edit" onPress={() => navigation.navigate('QuackamoleLevels')} style={stylesClass.gameButton} textStyle={stylesClass.buttonText}/>    
                                 <View style={stylesClass.gameTextContainer}>
-                                    <Text style={stylesClass.gameContentText}>Quackman</Text>
+                                    <Text style={stylesClass.gameContentText}>Quackamole</Text>
                                 </View>
                                 <Icon1 style={stylesClass.floatingIcon} width={150} height={150} fill={'#fff'} />
                             </View> 
                             <View style={stylesClass.gameContent}>
-                                <CustomButton title="Edit" onPress={handleOnPress} style={stylesClass.gameButton} textStyle={stylesClass.buttonText}/>
+                                <CustomButton title="Edit" onPress={() => navigation.navigate('QuackslateLevels')} style={stylesClass.gameButton} textStyle={stylesClass.buttonText}/>
                                 <View style={stylesClass.gameTextContainer}>
-                                    <Text style={stylesClass.gameContentText}>Quackamole</Text>
+                                    <Text style={stylesClass.gameContentText}>Quackslate</Text>
                                 </View>
                                 <Icon2 style={stylesClass.floatingIcon} width={130} height={130} fill={'#fff'} />
                             </View>
                             <View style={stylesClass.gameContent}>
-                                <CustomButton title="Edit" onPress={handleOnPress} style={stylesClass.gameButton} textStyle={stylesClass.buttonText}/>
+                                <CustomButton title="Edit" onPress={() => navigation.navigate('QuackmanLevels')} style={stylesClass.gameButton} textStyle={stylesClass.buttonText}/>
                                 <View style={stylesClass.gameTextContainer}>
-                                    <Text style={stylesClass.gameContentText}>Quackslate</Text>
+                                    <Text style={stylesClass.gameContentText}>Quackman</Text>
                                 </View>
                                 <Icon3 style={stylesClass.floatingIcon} width={175} height={175} fill={'#fff'} />
                             </View>
