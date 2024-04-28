@@ -67,18 +67,37 @@ const TeacherDashboard = ({ navigation }) => {
         }
     }; 
 
-    const deleteClass = () => {
-        setClasses(currentClasses => {
-            const indexToRemove = currentClasses.findIndex(classItem => classItem.code === selectedClassCode);
-            const newClasses = [...currentClasses.slice(0, indexToRemove), ...currentClasses.slice(indexToRemove + 1)];
-            newClasses.forEach((classItem, index) => {
-                classItem.name = `Class ${index + 1}`;
+    const deleteClass = async () => {
+        try {
+            const teacherName = 'Herrera'; //temporary variable, for testing purposes'
+            const teacherRef = ref(db, `Teacher/${teacherName}`); // Get a reference to 'Teacher/teacherName' in the database
+
+            // Fetch current classlist
+            const classListRef = child(teacherRef, 'classList');
+            const classListSnapshot = await get(classListRef);
+            const classList = classListSnapshot.exists() ? classListSnapshot.val() : [];
+
+            // Find and remove the selected class from classList
+            const updatedClassList = classList.filter(classItem => classItem !== selectedClassCode);
+
+            // Update classList in Firebase
+            await set(classListRef, updatedClassList);
+
+            // update local state
+            setClasses(currentClasses => {
+                const indexToRemove = currentClasses.findIndex(classItem => classItem.code === selectedClassCode);
+                const newClasses = [...currentClasses.slice(0, indexToRemove), ...currentClasses.slice(indexToRemove + 1)];
+                newClasses.forEach((classItem, index) => {
+                    classItem.name = `Class ${index + 1}`;
+                });
+                return newClasses;
             });
-            return newClasses;
-        });
-        setDeleteModalVisible(false);
-        setConfirmDeleteModalVisible(false);
-        setSelectedClassCode(null);
+            setDeleteModalVisible(false);
+            setConfirmDeleteModalVisible(false);
+            setSelectedClassCode(null);
+        } catch(error) {
+            console.error('Error deleting class from database:', error.message); // Log error message
+        }
     };
 
     const closeModal = () => {
@@ -133,7 +152,7 @@ const TeacherDashboard = ({ navigation }) => {
                             {classes.map((classItem, index) => (
                                 <TouchableOpacity key={index} onPress={() => handleClassNavigate(classItem.code)}>
                                     <View style={stylesDashboard.classContent}>
-                                        <Text style={stylesDashboard.classContentText}>Name: {classItem.name}</Text>
+                                        <Text style={stylesDashboard.classContentText}>{classItem.name}</Text>
                                         <Text style={stylesDashboard.classContentText}>Code: {classItem.code}</Text>
                                     </View>
                                 </TouchableOpacity>

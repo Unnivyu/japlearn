@@ -4,26 +4,26 @@ import { stylesOption } from './stylesOption'; // Updated import
 import EmptyClass from '../../assets/empty.svg';
 import CustomButton from '../../components/CustomButton';
 import OptionButton3 from '../../components/OptionButton3'; // Updated import
+import BackIcon from '../../assets/back-icon.svg';
+import { stylesClass } from './stylesClass';
 
 const QuackamoleOption2 = () => {
     
+    const handleBackPress = () => {
+        console.log('Back button pressed');
+        // Add logic to handle back button press
+    };
 
     return (
         <KeyboardAvoidingView behavior='padding'>
-            <View>
-                <View style={[stylesOption.header, { padding: 20 }]}>
-                    {/* Upper Left Corner Button */}
-                    <TouchableOpacity style={stylesOption.BackButton} onPress={() => console.log('Upper left button pressed')}>
-                        <Image source={require('../../assets/Backbutton.png')} style={stylesOption.upperLeftButtonImage} />
-                    </TouchableOpacity>
-                    
-                    {/* Upper Right Corner Profile Picture */}
-                    <View style={stylesOption.rightContainer}>
-                        <View style={stylesOption.pictureCircle} />
+             <View style={stylesClass.container}>
+            <View style={stylesClass.header}>
+                <TouchableOpacity onPress={handleBackPress}>
+                    <View style={stylesClass.backButtonContainer}>
+                        <BackIcon width={20} height={20} fill={'white'} />
                     </View>
-                </View>
-
-                {/* Image above buttons */}
+                </TouchableOpacity>
+            </View>
                
 
                 <View style={stylesOption.menuContainer}>
