@@ -16,27 +16,35 @@ const StartMenu = ({route}) => {
     const joinClass = async () => {
         console.log('Joining class...');
         try {
+            // Reference to the teacher's class list
             const teacherRef = ref(db, `Teacher/Herrera/classList`);
             const classSnapshot = await get(teacherRef);
-    
+            
             if (classSnapshot.exists()) {
-                // Class exists, perform the logic to join the class here
-                const userRef = ref(db, `users/${firstName}`);
-                const userSnapshot = await get(userRef);
-                
-                    // User exists, update the classCode
-                    const userData = userSnapshot.val();
-                    await set(userRef, { ...userData, classcode });
-                    console.log('Database updated successfully');
-                    alert(`Success, You have successfully joined class ${classcode}`);
-                
+                // Check if the class exists in the class list
+                if (classSnapshot.val().includes(classcode)) {
+                    // Reference to the user data
+                    const userRef = ref(db, `users/${firstName}`);
+                    const userSnapshot = await get(userRef);
+                    
+                    if (userSnapshot.exists()) {
+                        // Update user data with the new class code
+                        const userData = userSnapshot.val();
+                        await set(userRef, { ...userData, classcode });
+                        console.log('Database updated successfully');
+                        alert(`Success! You have successfully joined class ${classcode}`);
+                    } else {
+                        alert(`Error: User ${firstName} not found.`);
+                    }
+                } else {
+                    alert('Error: Invalid class code. Please enter a valid class code.');
+                }
             } else {
-                // Class does not exist
-                alert('Error, Invalid class code. Please enter a valid class code.');
+                alert('Error: Could not retrieve class list. Please try again later.');
             }
         } catch (error) {
             console.error('Error joining class:', error.message);
-            alert('Error, An error occurred while joining the class. Please try again later.');
+            alert('Error: An error occurred while joining the class. Please try again later.');
         }
     };
 
