@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-export const stylesOption = StyleSheet.create({
+export const stylesSlate = StyleSheet.create({
 
     buttonContainer: {
         alignItems: 'center',
@@ -12,9 +12,16 @@ export const stylesOption = StyleSheet.create({
         marginTop: -350
     },
     imageStyle:{
-        marginTop: -100, 
-        width: 250, 
-        height: 100
+        marginTop: -200, 
+        width: 200, 
+        height: 200,
+        marginLeft: 80
+        
+    },
+    SlateBody: {
+        marginTop:100, 
+        width: 360, 
+        height: 300,
     },
     menuButton: {
         width: 200,
@@ -65,7 +72,7 @@ export const stylesOption = StyleSheet.create({
         fontSize: 30,
     },
     MenuAll:{
-        flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: -100
+        flex: 1, justifyContent: 'center', alignItems: 'center'
     },
     button: {
         backgroundColor:'#8ED94D',
@@ -88,12 +95,13 @@ export const stylesOption = StyleSheet.create({
     },
     Progress:{
         position: 'absolute', 
-        top: -230, 
-        left: 250, 
-        width: 90, 
-        height: 40, 
+        top: 120, 
+        left: 240, 
+        width: 105, 
+        height: 45, 
         justifyContent: 'center', 
         alignItems: 'center' 
+        
     },
     pictureCircle: {
         backgroundColor: 'white',
@@ -138,6 +146,12 @@ export const stylesOption = StyleSheet.create({
         borderRadius: 20, // Increased border radius for smoother edges
         paddingHorizontal: 100, // Adjusted padding for better appearance
         marginTop: 200,
-    }
-
+    },
+    Mole: {
+        position: 'absolute', // Position the Mole absolutely within the SlateBody
+        top: 100, // Adjust as needed
+        left: 35, // Adjust as needed
+        width: 70, // Adjust as needed
+        height: 80, // Adjust as needed
+    },
 });

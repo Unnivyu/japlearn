@@ -4,26 +4,27 @@ import { stylesOption } from './stylesOption'; // Updated import
 import EmptyClass from '../../assets/empty.svg';
 import CustomButton from '../../components/CustomButton';
 import OptionButton from '../../components/OptionButton'; // Updated import
+import BackIcon from '../../assets/back-icon.svg';
+import { stylesClass } from './stylesClass';
 
 const QuackslateOption = () => {
     const [classcode, setClasscode] = useState('');
 
-    const joinClass = async () => {
+    const handleBackPress = () => {
+        console.log('Back button pressed');
+        // Add logic to handle back button press
     };
 
     return (
         <KeyboardAvoidingView behavior='padding'>
-            <View>
-                <View style={[stylesOption.header, { padding: 20 }]}>
-                    {/* Upper Left Corner Button */}
-                    <TouchableOpacity style={stylesOption.BackButton} onPress={() => console.log('Upper left button pressed')}>
-                        <Image source={require('../../assets/Backbutton.png')} style={stylesOption.upperLeftButtonImage} />
-                    </TouchableOpacity>
-                    
-                    {/* Upper Right Corner Profile Picture */}
-                    <View style={stylesOption.rightContainer}>
-                        <View style={stylesOption.pictureCircle} />
+             <View style={stylesClass.container}>
+            <View style={stylesClass.header}>
+                <TouchableOpacity onPress={handleBackPress}>
+                    <View style={stylesClass.backButtonContainer}>
+                        <BackIcon width={20} height={20} fill={'white'} />
                     </View>
+                </TouchableOpacity>
+            </View>
                 </View>
 
                 {/* Image above buttons */}
@@ -46,7 +47,7 @@ const QuackslateOption = () => {
                         onPress={() => console.log('Button pressed')}
                     />
                 </View>
-            </View>
+            
         </KeyboardAvoidingView>
     );
 };
