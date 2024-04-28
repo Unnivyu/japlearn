@@ -33,8 +33,8 @@ const TeacherDashboard = ({ navigation }) => {
         setSelectedClassCodes(classes.map(classItem => classItem.code));
     };
 
-    const handleClassNavigate = () => {
-        navigation.navigate('ClassDashboard');
+    const handleClassNavigate = (classCode) => {
+        navigation.navigate('ClassDashboard' ,{code: classCode});
     };
 
     const addClass = async () => {
