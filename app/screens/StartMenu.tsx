@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { TouchableOpacity, View, TextInput, StyleSheet, Button, ActivityIndicator, KeyboardAvoidingView, Modal, Text, Image, Alert } from 'react-native';
 import { stylesMenu } from './stylesMenu';
 import EmptyClass from '../../assets/empty.svg'
 import CustomButton from '../../components/CustomButton';
 import { db } from '../../config';
 import {ref,set, push, child, get} from "firebase/database";
+import { AuthContext } from '../../context/AuthContext';
 
 
 const StartMenu = ({route}) => {
     const [classcode, setClasscode] = useState('');
     const { firstName } = route.params;
+    const { user } = useContext(AuthContext);
+    console.log('User:', user);
+
 
     
 
@@ -17,7 +21,7 @@ const StartMenu = ({route}) => {
         console.log('Joining class...');
         try {
             // Reference to the teacher's class list
-            const teacherRef = ref(db, `Teacher/Herrera/classList`);
+            const teacherRef = ref(db, `Teacher/defaultTeacher/classList`);
             const classSnapshot = await get(teacherRef);
             
             if (classSnapshot.exists()) {

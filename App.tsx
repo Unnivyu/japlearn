@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AuthContext, AuthProvider } from './context/AuthContext';
 
 import Signup from './app/screens/Signup';
 import Login from './app/screens/Login';
@@ -26,12 +27,15 @@ import QuackamoleEdit from './app/screens/QuackamoleEdit';
 import Quackamole from './app/screens/Quackamole';
 
 const getFonts = () => Font.loadAsync({
-  'jua': require('./assets/fonts/Jua-Regular.ttf')
+  'jua': require('./assets/fonts/Jua-Regular.ttf'),
 });
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const { user, role } = useContext(AuthContext) || {};
+
+  // Add a state to track if fonts are loaded
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
@@ -42,44 +46,26 @@ export default function App() {
     loadFonts();
   }, []);
 
+  // Render loading screen until fonts are loaded (implement LoadingScreen component)
   if (!fontsLoaded) {
-    return <View style={styles.container}><Text>Loading...</Text></View>;
+    return <LoadingScreen />; // Replace with your LoadingScreen component
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Signup">
-        <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
-        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
-        <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-        <Stack.Screen name="Score" component={Score} options={{ headerShown: false }} />
-        <Stack.Screen name="TeacherDashboard" component={TeacherDashboard} options={{ headerShown: false }} />
-        <Stack.Screen name="ClassDashboard" component={ClassDashboard} options={{ headerShown: false }} />
-        <Stack.Screen name="StartMenu" component={StartMenu} options={{ headerShown: false }} />
-        <Stack.Screen name="QuackamoleLevels" component={QuackamoleLevels} options={{headerShown: false}}/>
-        <Stack.Screen name="QuackmanLevels" component={QuackmanLevels} options={{headerShown: false}}/>
-        <Stack.Screen name="QuackslateLevels" component={QuackslateLevels} options={{headerShown: false}}/>
-        <Stack.Screen name="QuackmanEdit" component={QuackmanEdit} options={{ headerShown: false }} />
-        <Stack.Screen name="QuackslateEdit" component={QuackslateEdit} options={{ headerShown: false }} />
-        <Stack.Screen name="QuackamoleEdit" component={QuackamoleEdit} options={{ headerShown: false }} />
-        <Stack.Screen name="QuackmanOption" component={QuackmanOption} options={{ headerShown: false }} />
-        <Stack.Screen name="QuackslateOption" component={QuackslateOption} options={{ headerShown: false }} />
-        <Stack.Screen name="QuackamoleOption" component={QuackamoleOption} options={{ headerShown: false }} />
-        <Stack.Screen name="QuackamoleOption2" component={QuackamoleOption2} options={{ headerShown: false }} />
-        <Stack.Screen name="Quackslate" component={Quackslate} options={{ headerShown: false }} />
-        <Stack.Screen name="Quackamole" component={Quackamole} options={{ headerShown: false }} />
-
-
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+    <AuthProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName={user ? "Menu" : "Login"}>
+          {!user && (
+            <>
+              <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
+              <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+            </>
+          )}
+          {role === 'user' && (
+            <>
+              <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
+              <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+              <Stack.Screen name="Score" component={Score} options={{ headerShown: false }} />
+              <Stack.Screen name="StartMenu" component={StartMenu} options={{ headerShown: false }} />
+              <Stack.Screen name="QuackmanOption" component={QuackmanOption} options={{ headerShown: false }} />
+              <Stack.Screen name="QuackslateOption" component={
