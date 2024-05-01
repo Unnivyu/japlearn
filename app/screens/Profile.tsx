@@ -1,16 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, TouchableOpacity, ImageBackground, Image} from 'react-native';
-import {stylesProfile} from './stylesProfile';
+import { stylesProfile } from './stylesProfile';
 import { SvgXml } from 'react-native-svg'; 
 import BackIcon from '../../assets/back-icon.svg';
+import { AuthContext } from '../../context/AuthContext';
 
-const Profile = ({navigation}) => {
+const Profile = ({ navigation }) => {
+    const { logout } = useContext(AuthContext);
 
     const handleBackPress = () => {
         navigation.navigate('Menu');
     }
+
     const handleScoresPress = () => {
         navigation.navigate('Score');
+    }
+
+    const handleLogout = () => {
+        logout();
+        navigation.navigate('Login');
     }
     
     return (
@@ -33,7 +41,7 @@ const Profile = ({navigation}) => {
                 <View style={stylesProfile.profileContainer}>
                 </View>
                 <View style={stylesProfile.whiteSpace}>
-                    <TouchableOpacity onPress={() => console.log("Button pressed")} style={stylesProfile.buttonContainer}>
+                    <TouchableOpacity onPress={handleLogout} style={stylesProfile.buttonContainer}>
                         <Text style={stylesProfile.buttonText}>Logout</Text>
                     </TouchableOpacity>
                 </View>
@@ -51,9 +59,8 @@ const Profile = ({navigation}) => {
                     <Text style={stylesProfile.scoreButtonText}>Score</Text>
                 </TouchableOpacity>
             </View>
-            
-            
         </View>
     );
 }
+
 export default Profile;

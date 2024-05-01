@@ -20,7 +20,7 @@
         const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
         const [newClassName, setNewClassName] = useState('');
         const [teacherName, setTeacherName] = useState('');
-        const { currentUser } = useContext(AuthContext); // Accessing currentUser from AuthContext
+        const { user } = useContext(AuthContext);
 
         useEffect(() => {
             const fetchTeacherData = async () => {
@@ -48,10 +48,8 @@
         }, []);
 
         useEffect(() => {
-            if (!currentUser) {
-                navigation.navigate('Login');
-            }
-        }, [currentUser, navigation]);
+            console.log("Current user:", user); 
+        }, [user]); 
 
         const handleProfilePress = () => {
             navigation.navigate('Profile');

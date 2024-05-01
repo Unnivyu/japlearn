@@ -46,8 +46,11 @@ const Login = ({ navigation }) => {
                 if (user.password === password) {
                     // Authentication successful for user, navigate to StartMenu
                     const userData = { email: user.email, role: 'user', user };
-                    login(userData);
+                    await login(userData);
+                    console.log('User data:', userData.user);
                     navigation.navigate('StartMenu', { firstName: user.firstname });
+
+                    // Store user data in local storage
                 } else {
                     throw new Error('Incorrect password');
                 }
@@ -56,8 +59,11 @@ const Login = ({ navigation }) => {
                 if (defaultTeacher.email === email && defaultTeacher.password === password) {
                     // Authentication successful for default teacher, navigate to TeacherDashboard
                     const userData = { email: defaultTeacher.email, role: 'teacher', user: defaultTeacher };
-                    login(userData);
+                    await login(userData);
+                    console.log('User data:', userData.user);
                     navigation.navigate('TeacherDashboard');
+
+                    // Store user data in local storage
                 } else {
                     throw new Error('User not found');
                 }

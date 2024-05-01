@@ -1,33 +1,39 @@
-    import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
-    export const AuthContext = createContext();
+export const AuthContext = createContext();
 
-    export const AuthProvider = ({ children }) => {
-        const [user, setUser] = useState(null);
-        const [role, setRole] = useState(null); 
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
 
-        const login = (userData) => {
-            console.log('Logging in with user data:', userData);
+    useEffect(() => {
+        const userData = localStorage.getItem('userData');
+        if (userData) {
+            setUser(JSON.parse(userData));
+        }
+    }, []);
+
+    const login = (userData) => {
+        setUser(userData);
+
+        // Determine the user role
+        const role = userData.user && userData.user.classList ? 'teacher' : 'user';
         
-            setUser(userData);
-        
-            if (userData.user && userData.user.classList) {
-                console.log('User is a teacher.');
-                setRole('teacher');
-            } else {
-                console.log('User is not a teacher.');
-                setRole('user');
-            }
-        };
-        
-        const logout = () => {
-            setUser(null);
-            setRole(null);
-        };
-
-        return (
-            <AuthContext.Provider value={{ user, role, login, logout }}> 
-                {children}
-            </AuthContext.Provider>
-        );
+        // Store user data and role in local storage
+        localStorage.setItem('userData', JSON.stringify(userData));
+        localStorage.setItem('userRole', role);
     };
+    
+    const logout = () => {
+        setUser(null);
+
+        // Remove user data and role from local storage
+        localStorage.removeItem('userData');
+        localStorage.removeItem('userRole');
+    };
+
+    return (
+        <AuthContext.Provider value={{ user, login, logout }}> 
+            {children}
+        </AuthContext.Provider>
+    );
+};
