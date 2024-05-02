@@ -18,6 +18,7 @@ const Profile = ({ navigation }) => {
 
     const handleLogout = () => {
         logout();
+        navigation.navigate('Login');
     }
     
     return (

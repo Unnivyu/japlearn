@@ -44,7 +44,7 @@ const TeacherDashboard = ({ navigation }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            fetchTeacherData(); // Fetch data every time the component becomes focused
+            fetchTeacherData(); 
         }, [])
     );
 
