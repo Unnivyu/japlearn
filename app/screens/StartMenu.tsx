@@ -39,6 +39,7 @@ const StartMenu = ({route}) => {
                         await set(userRef, { ...userData, classcode });
                         console.log('Database updated successfully');
                         alert(`Success! You have successfully joined class ${classcode}`);
+                        navigation.navigate('Menu')
                     } else {
                         alert(`Error: User ${firstName} not found.`);
                     }
