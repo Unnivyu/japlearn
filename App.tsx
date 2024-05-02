@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthProvider } from './context/AuthContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Signup from './app/screens/Signup';
 import Login from './app/screens/Login';
 import Menu from './app/screens/Menu';
 import Profile from './app/screens/Profile';
 import Score from './app/screens/Score';
-import TeacherDashboard from './app/screens/TeacherDashboard'; 
+import TeacherDashboard from './app/screens/TeacherDashboard';
 import ClassDashboard from './app/screens/ClassDashboard';
 import StartMenu from './app/screens/StartMenu';
 import QuackmanOption from './app/screens/QuackmanOption';
@@ -34,83 +33,46 @@ const getFonts = () => Font.loadAsync({
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  // Add states to track user and role
-  const [user, setUser] = useState(null);
-  const [role, setRole] = useState(null);
-
-  // Add a state to track if fonts are loaded
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
-    async function initializeApp() {
-      // Load fonts
+    async function loadFonts() {
       await getFonts();
       setFontsLoaded(true);
-
-      // Load user data and role from AsyncStorage
-      const userData = await AsyncStorage.getItem('userData');
-      const userRole = await AsyncStorage.getItem('userRole');
-      
-      if (userData && userRole) {
-        setUser(JSON.parse(userData));
-        setRole(userRole);
-      }
-
-      // Finish loading
-      setLoading(false);
     }
-    
-    initializeApp();
+    loadFonts();
   }, []);
-  
 
-  // Render loading indicator until fonts are loaded
   if (!fontsLoaded) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    return <View style={styles.container}><Text>Loading...</Text></View>;
   }
 
   return (
     <AuthProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={user ? "Menu" : "Login"}>
-          {!user && (
-            <>
-              <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
-              <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-            </>
-          )}
-          {role === 'user' && (
-            <>
-              <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
-              <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-              <Stack.Screen name="Score" component={Score} options={{ headerShown: false }} />
-              <Stack.Screen name="StartMenu" component={StartMenu} options={{ headerShown: false }} />
-              <Stack.Screen name="QuackmanOption" component={QuackmanOption} options={{ headerShown: false }} />
-              <Stack.Screen name="QuackslateOption" component={QuackslateOption} options={{ headerShown: false }} />
-              <Stack.Screen name="QuackamoleOption" component={QuackamoleOption} options={{ headerShown: false }} />
-              <Stack.Screen name="QuackamoleOption2" component={QuackamoleOption2} options={{ headerShown: false }} />
-              <Stack.Screen name="Quackslate" component={Quackslate} options={{ headerShown: false }} />
-              <Stack.Screen name="Quackamole" component={Quackamole} options={{ headerShown: false }} />
-            </>
-          )}
-          {role === 'teacher' && (
-            <>
-              <Stack.Screen name="TeacherDashboard" component={TeacherDashboard} options={{ headerShown: false }} />
-              <Stack.Screen name="ClassDashboard" component={ClassDashboard} options={{ headerShown: false }} />
-              <Stack.Screen name="QuackamoleLevels" component={QuackamoleLevels} options={{ headerShown: false }} />
-              <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-              <Stack.Screen name="QuackmanLevels" component={QuackmanLevels} options={{ headerShown: false }} />
-              <Stack.Screen name="QuackslateLevels" component={QuackslateLevels} options={{ headerShown: false }} />
-              <Stack.Screen name="QuackmanEdit" component={QuackmanEdit} options={{ headerShown: false }} />
-              <Stack.Screen name="QuackslateEdit" component={QuackslateEdit} options={{ headerShown: false }} />
-              <Stack.Screen name="QuackamoleEdit" component={QuackamoleEdit} options={{ headerShown: false }} />
-            </>
-          )}
-          
+        <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
+          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+          <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
+          <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+          <Stack.Screen name="Score" component={Score} options={{ headerShown: false }} />
+          <Stack.Screen name="TeacherDashboard" component={TeacherDashboard} options={{ headerShown: false }} />
+          <Stack.Screen name="ClassDashboard" component={ClassDashboard} options={{ headerShown: false }} />
+          <Stack.Screen name="StartMenu" component={StartMenu} options={{ headerShown: false }} />
+          <Stack.Screen name="QuackamoleLevels" component={QuackamoleLevels} options={{headerShown: false}}/>
+          <Stack.Screen name="QuackmanLevels" component={QuackmanLevels} options={{headerShown: false}}/>
+          <Stack.Screen name="QuackslateLevels" component={QuackslateLevels} options={{headerShown: false}}/>
+          <Stack.Screen name="QuackmanEdit" component={QuackmanEdit} options={{ headerShown: false }} />
+          <Stack.Screen name="QuackslateEdit" component={QuackslateEdit} options={{ headerShown: false }} />
+          <Stack.Screen name="QuackamoleEdit" component={QuackamoleEdit} options={{ headerShown: false }} />
+          <Stack.Screen name="QuackmanOption" component={QuackmanOption} options={{ headerShown: false }} />
+          <Stack.Screen name="QuackslateOption" component={QuackslateOption} options={{ headerShown: false }} />
+          <Stack.Screen name="QuackamoleOption" component={QuackamoleOption} options={{ headerShown: false }} />
+          <Stack.Screen name="QuackamoleOption2" component={QuackamoleOption2} options={{ headerShown: false }} />
+          <Stack.Screen name="Quackslate" component={Quackslate} options={{ headerShown: false }} />
+          <Stack.Screen name="Quackamole" component={Quackamole} options={{ headerShown: false }} />
+
+
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

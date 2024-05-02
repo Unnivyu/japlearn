@@ -1,39 +1,60 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-
-    useEffect(() => {
-        const userData = localStorage.getItem('userData');
-        if (userData) {
-            setUser(JSON.parse(userData));
-        }
-    }, []);
-
-    const login = (userData) => {
-        setUser(userData);
-
-        // Determine the user role
-        const role = userData.user && userData.user.classList ? 'teacher' : 'user';
-        
-        // Store user data and role in local storage
-        localStorage.setItem('userData', JSON.stringify(userData));
-        localStorage.setItem('userRole', role);
-    };
-    
-    const logout = () => {
-        setUser(null);
-
-        // Remove user data and role from local storage
-        localStorage.removeItem('userData');
-        localStorage.removeItem('userRole');
-    };
-
-    return (
-        <AuthContext.Provider value={{ user, login, logout }}> 
-            {children}
-        </AuthContext.Provider>
-    );
+export const useAuth = () => {
+  return useContext(AuthContext);
 };
+
+export const AuthProvider = ({ children }, {navigation}) => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('userData');
+        if (userData) {
+          setUser(JSON.parse(userData));
+        } else {
+          // Navigate to the login screen if there is no user data
+          navigation.navigate('Login');
+        }
+      } catch (error) {
+        console.error('Error getting user data:', error);
+      }
+    };
+    getUserData();
+  }, []);
+
+  const login = async (userData) => {
+    if (userData) {
+      setUser(userData);
+      try {
+        await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      } catch (error) {
+        console.error('Error saving user data:', error);
+      }
+    } else {
+      console.error('Error: userData is null or undefined');
+    }
+  };
+
+  const logout = async () => {
+    setUser(null);
+    try {
+      await AsyncStorage.removeItem('userData');
+    } catch (error) {
+      console.error('Error removing user data:', error);
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export { AuthContext };

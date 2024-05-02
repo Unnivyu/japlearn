@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { TouchableOpacity, View, TextInput, StyleSheet, Button, ActivityIndicator, KeyboardAvoidingView, Modal, Text, Image } from 'react-native';
-import { styles } from './styles';
-import Logo from '../../assets/jpLogo.svg';
-import CustomButton from '../../components/CustomButton';
-import Signup from './Signup';
-import { db } from '../../config';
-import { ref, get } from "firebase/database";
+import React, { useState, useContext, useEffect } from 'react';
+import { View, TextInput, Button, Text, TouchableOpacity, KeyboardAvoidingView, Modal, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ref, get } from "firebase/database";
+import { db } from '../../config';
+import Logo from '../../assets/jpLogo.svg';
+import { styles } from './styles';
+import CustomButton from '../../components/CustomButton';
 
 const Login = ({ navigation }) => {
-    const { login } = useContext(AuthContext); 
+    const { user, login } = useContext(AuthContext); 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -17,12 +17,20 @@ const Login = ({ navigation }) => {
     const [modalMessage, setModalMessage] = useState('');
 
     useEffect(() => {
-        async function fetchData() {
-            console.log("AuthContext:", AuthContext);
-            console.log("Login function:", login);
+        console.log("Current user:", user);
+        if (user) {
+            if (user.role === 'user') {
+                if (user.user.classcode) { 
+                    navigation.navigate('Menu');
+                } else {
+                    navigation.navigate('StartMenu', { firstName: user.user.firstname }); 
+                }
+            } else if (user.role === 'teacher') {
+                navigation.navigate('TeacherDashboard');
+            }
         }
-        fetchData();
-    }, []);
+    }, [user]);
+    
 
     const handleLogin = async () => {
         setLoading(true);
@@ -42,28 +50,28 @@ const Login = ({ navigation }) => {
             const user = Object.values(users).find(user => user.email === email);
     
             if (user) {
+    
                 // Compare passwords
                 if (user.password === password) {
-                    // Authentication successful for user, navigate to StartMenu
+                    // Authentication successful for user
                     const userData = { email: user.email, role: 'user', user };
                     await login(userData);
-                    console.log('User data:', userData.user);
-                    navigation.navigate('StartMenu', { firstName: user.firstname });
-
-                    // Store user data in local storage
+                    console.log(user.classcode);
+                    if (userData.user.classcode) {
+                        navigation.navigate('Menu');
+                    } else {
+                        navigation.navigate('StartMenu', { firstName: user.firstname });
+                    }
                 } else {
                     throw new Error('Incorrect password');
                 }
             } else {
                 // Check if default teacher email and password match
                 if (defaultTeacher.email === email && defaultTeacher.password === password) {
-                    // Authentication successful for default teacher, navigate to TeacherDashboard
+                    // Authentication successful for default teacher
                     const userData = { email: defaultTeacher.email, role: 'teacher', user: defaultTeacher };
                     await login(userData);
-                    console.log('User data:', userData.user);
                     navigation.navigate('TeacherDashboard');
-
-                    // Store user data in local storage
                 } else {
                     throw new Error('User not found');
                 }
