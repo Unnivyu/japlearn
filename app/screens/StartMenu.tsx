@@ -6,6 +6,7 @@ import CustomButton from '../../components/CustomButton';
 import { db } from '../../config';
 import {ref,set, push, child, get} from "firebase/database";
 import { AuthContext } from '../../context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 
 
 const StartMenu = ({route}) => {
@@ -13,6 +14,7 @@ const StartMenu = ({route}) => {
     const { firstName } = route.params;
     const { user } = useContext(AuthContext);
     console.log('User:', user);
+    const navigation = useNavigation();
 
 
     
@@ -52,6 +54,10 @@ const StartMenu = ({route}) => {
         }
     };
 
+    const handleProfilePress = () => {
+        navigation.navigate('Profile');
+    };
+
     return (
         <KeyboardAvoidingView behavior='padding'>
             <View>
@@ -62,7 +68,9 @@ const StartMenu = ({route}) => {
                         <Text style={stylesMenu.hText}>{firstName}</Text>
                     </View>
                     <View style={stylesMenu.rightContainer}>
-                       <View style={stylesMenu.pictureCircle} />
+                        <TouchableOpacity onPress={handleProfilePress}>
+                            <View style={stylesMenu.pictureCircle} />
+                        </TouchableOpacity>
                     </View>
                 </View>
 
