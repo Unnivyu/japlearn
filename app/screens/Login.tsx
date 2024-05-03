@@ -1,54 +1,80 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, View, TextInput, StyleSheet, Button, ActivityIndicator, KeyboardAvoidingView, Modal, Text, Image } from 'react-native';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, Auth } from 'firebase/auth';
-import { styles } from './styles';
-import Logo from '../../assets/jpLogo.svg'
-import CustomButton from '../../components/CustomButton';
-import Signup from './Signup';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, TextInput, Button, Text, TouchableOpacity, KeyboardAvoidingView, Modal, ActivityIndicator } from 'react-native';
+import { AuthContext } from '../../context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ref, get } from "firebase/database";
 import { db } from '../../config';
-import {ref,set,get} from "firebase/database";  
+import Logo from '../../assets/jpLogo.svg';
+import { styles } from './styles';
+import CustomButton from '../../components/CustomButton';
 
-const Login = ({navigation}) => {
+const Login = ({ navigation }) => {
+    const { user, login } = useContext(AuthContext); 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
 
-    const Signup = () => {
-        navigation.navigate('Signup'); // Navigate to the Login screen
-    };
+    useEffect(() => {
+        console.log("Current user:", user);
+        if (user) {
+            if (user.role === 'user') {
+                if (user.user.classcode) { 
+                    navigation.navigate('Menu');
+                } else {
+                    navigation.navigate('StartMenu', { firstName: user.user.firstname }); 
+                }
+            } else if (user.role === 'teacher') {
+                navigation.navigate('TeacherDashboard');
+            }
+        }
+    }, [user]);
+    
 
     const handleLogin = async () => {
         setLoading(true);
         try {
             const userRef = ref(db, 'users');
-            const snapshot = await get(userRef);
-            
-            if (snapshot.exists()) {
-                const users = snapshot.val();
-                
-                // Find the user with the provided email
-                const user = Object.values(users).find(user => user.email === email);
-                if (user) {
-                    // Compare passwords
-                    if (user.password === password) {
-                        // Check if the user has a classcode
-                        if (user.classcode) {
-                            // If the user has a classcode, navigate to Profile screen
-                            navigation.navigate('Menu', { firstName: user.firstname, classCode: user.classcode });
-                        } else {
-                            // If the user does not have a classcode, navigate to the main menu screen
-                            navigation.navigate('StartMenu', { firstName: user.firstname, classCode: user.classcode });
-                        }
+            const teacherRef = ref(db, 'Teacher/defaultTeacher');
+    
+            // Retrieve user data
+            const userSnapshot = await get(userRef);
+            const users = userSnapshot.exists() ? userSnapshot.val() : {};
+    
+            // Retrieve default teacher data
+            const teacherSnapshot = await get(teacherRef);
+            const defaultTeacher = teacherSnapshot.exists() ? teacherSnapshot.val() : {};
+    
+            // Find the user with the provided email
+            const user = Object.values(users).find(user => user.email === email);
+    
+            if (user) {
+    
+                // Compare passwords
+                if (user.password === password) {
+                    // Authentication successful for user
+                    const userData = { email: user.email, role: 'user', user };
+                    await login(userData);
+                    console.log(user.classcode);
+                    if (userData.user.classcode) {
+                        navigation.navigate('Menu');
                     } else {
-                        throw new Error('Incorrect password');
+                        navigation.navigate('StartMenu', { firstName: user.firstname });
                     }
+                } else {
+                    throw new Error('Incorrect password');
+                }
+            } else {
+                // Check if default teacher email and password match
+                if (defaultTeacher.email === email && defaultTeacher.password === password) {
+                    // Authentication successful for default teacher
+                    const userData = { email: defaultTeacher.email, role: 'teacher', user: defaultTeacher };
+                    await login(userData);
+                    navigation.navigate('TeacherDashboard');
                 } else {
                     throw new Error('User not found');
                 }
-            } else {
-                throw new Error('No users found');
             }
         } catch (error) {
             setModalMessage('Login failed: ' + error.message);
@@ -58,14 +84,17 @@ const Login = ({navigation}) => {
         }
     };
     
-    
-    
+    const handleSignup = () => {
+        navigation.navigate('Signup');
+    };
+
+    const handleForgotPassword = () => {
+        // Implement forgot password functionality
+    };
 
     return (
         <KeyboardAvoidingView style={styles.container} behavior='padding'>
             <View>
-
-                
                 <View style={styles.imageContainer}>
                     <Logo width={200} height={200} />
                 </View>
@@ -89,50 +118,37 @@ const Login = ({navigation}) => {
                         <ActivityIndicator size="large" color="#0000ff" />
                     ) : (
                         <>
-                            <CustomButton title="Login" onPress={handleLogin} style={styles.button} textStyle={styles.buttonText}/>
-                            {/*<CustomButton title="Create account" onPress={signUp} />*/}
+                            <CustomButton title="Login" onPress={handleLogin} style={styles.button} textStyle={styles.buttonText} />
                         </>
                     )}
                 </View>
                 <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
                     <Text>
-                        <TouchableOpacity onPress={Signup}>
+                        <TouchableOpacity onPress={handleSignup}>
                             <Text style={styles.linkText}>Create account?</Text>
                         </TouchableOpacity>
                     </Text>
-            
-                    
                     <TouchableOpacity>
                         <Text style={styles.linkText}>Forgot Password?</Text>
                     </TouchableOpacity>
                 </View>
-                
             </View>
             <Modal
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(false);
-                }}
+                onRequestClose={() => setModalVisible(false)}
             >
                 <View style={styles.modalView}>
                     <Text>{modalMessage}</Text>
                     <Button
-
                         title="Close"
-                        onPress={() => {
-                            setModalVisible(false);
-                        }}
+                        onPress={() => setModalVisible(false)}
                     />
                 </View>
             </Modal>
         </KeyboardAvoidingView>
     );
-
 };
 
 export default Login;
-
-
-

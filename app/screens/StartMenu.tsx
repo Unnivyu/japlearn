@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { TouchableOpacity, View, TextInput, StyleSheet, Button, ActivityIndicator, KeyboardAvoidingView, Modal, Text, Image, Alert } from 'react-native';
 import { stylesMenu } from './stylesMenu';
 import EmptyClass from '../../assets/empty.svg'
 import CustomButton from '../../components/CustomButton';
 import { db } from '../../config';
 import {ref,set, push, child, get} from "firebase/database";
+import { AuthContext } from '../../context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 
 
 const StartMenu = ({navigation,route}) => {
     const [classcode, setClasscode] = useState('');
     const { firstName } = route.params;
+<<<<<<< HEAD
     const {classCode} = route.params;
+=======
+    const { user } = useContext(AuthContext);
+    console.log('User:', user);
+    const navigation = useNavigation();
+
+>>>>>>> 330d16ac317cd597236d9054079e272be037ee7e
 
     
 
@@ -18,7 +27,7 @@ const StartMenu = ({navigation,route}) => {
         console.log('Joining class...');
         try {
             // Reference to the teacher's class list
-            const teacherRef = ref(db, `Teacher/Herrera/classList`);
+            const teacherRef = ref(db, `Teacher/defaultTeacher/classList`);
             const classSnapshot = await get(teacherRef);
             
             if (classSnapshot.exists()) {
@@ -34,6 +43,7 @@ const StartMenu = ({navigation,route}) => {
                         await set(userRef, { ...userData, classcode });
                         console.log('Database updated successfully');
                         alert(`Success! You have successfully joined class ${classcode}`);
+                        navigation.navigate('Menu')
                     } else {
                         alert(`Error: User ${firstName} not found.`);
                     }
@@ -49,9 +59,8 @@ const StartMenu = ({navigation,route}) => {
         }
     };
 
-    const handleProfileNavigation = () => {
-        // Navigate to Profile.tsx
-        navigation.navigate('Profile',{firstName: firstName, classCode: classCode});
+    const handleProfilePress = () => {
+        navigation.navigate('Profile');
     };
 
     return (
@@ -63,9 +72,11 @@ const StartMenu = ({navigation,route}) => {
                         <Text style={stylesMenu.hText}>Welcome Back</Text>
                         <Text style={stylesMenu.hText}>{firstName}</Text>
                     </View>
-                    <TouchableOpacity style={stylesMenu.rightContainer} onPress={handleProfileNavigation}>
-                        <View style={stylesMenu.pictureCircle} />
-                    </TouchableOpacity>
+                    <View style={stylesMenu.rightContainer}>
+                        <TouchableOpacity onPress={handleProfilePress}>
+                            <View style={stylesMenu.pictureCircle} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 <View style={stylesMenu.menuContainer}>

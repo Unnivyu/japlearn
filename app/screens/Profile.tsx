@@ -1,21 +1,26 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, TouchableOpacity, ImageBackground, Image} from 'react-native';
-import {stylesProfile} from './stylesProfile';
+import { stylesProfile } from './stylesProfile';
 import { SvgXml } from 'react-native-svg'; 
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 import BackIcon from '../../assets/back-icon.svg';
-import { db } from '../../config';
-import {ref,set, push, child, get} from "firebase/database";
+import { AuthContext } from '../../context/AuthContext';
 
-const Profile = ({navigation,route}) => {
-
-    const {firstName} = route.params
-    const {classCode} = route.params;
+const Profile = () => {
+    const { user, role, logout } = useContext(AuthContext);
+    const navigation = useNavigation(); 
 
     const handleBackPress = () => {
-        navigation.navigate('Menu');
+        navigation.goBack();
     }
+
     const handleScoresPress = () => {
         navigation.navigate('Score');
+    }
+
+    const handleLogout = () => {
+        logout();
+        navigation.navigate('Login');
     }
     
     return (
@@ -38,7 +43,7 @@ const Profile = ({navigation,route}) => {
                 <View style={stylesProfile.profileContainer}>
                 </View>
                 <View style={stylesProfile.whiteSpace}>
-                    <TouchableOpacity onPress={() => console.log("Button pressed")} style={stylesProfile.buttonContainer}>
+                    <TouchableOpacity onPress={handleLogout} style={stylesProfile.buttonContainer}>
                         <Text style={stylesProfile.buttonText}>Logout</Text>
                     </TouchableOpacity>
                 </View>
@@ -47,18 +52,20 @@ const Profile = ({navigation,route}) => {
             <View style={stylesProfile.description}>
                     
                 <View style={stylesProfile.descTextContainer}>
-                    <Text style={stylesProfile.descText}>Username: {firstName}</Text>
-                    <Text style={stylesProfile.descText}>Class Code: {classCode}</Text>
+                    
+                    <Text style={stylesProfile.descText}>Username: {role === 'teacher' ? (user ? user.name : '') : (user ? `${user.firstname} ${user.lastname}` : '')}</Text>
+                    {role === 'teacher' ? null : <Text style={stylesProfile.descText}>Class Code: {user ? user.classcode : ''}</Text>}
                 </View>
             </View>
-            <View style={stylesProfile.scoreArea}>
-                <TouchableOpacity onPress={handleScoresPress} style={stylesProfile.scoreButton}>
-                    <Text style={stylesProfile.scoreButtonText}>Score</Text>
-                </TouchableOpacity>
-            </View>
-            
-            
+            {role !== 'teacher' && (
+                <View style={stylesProfile.scoreArea}>
+                    <TouchableOpacity onPress={handleScoresPress} style={stylesProfile.scoreButton}>
+                        <Text style={stylesProfile.scoreButtonText}>Score</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </View>
     );
 }
+
 export default Profile;
