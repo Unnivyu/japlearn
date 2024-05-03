@@ -7,9 +7,10 @@ import { db } from '../../config';
 import {ref,set, push, child, get} from "firebase/database";
 
 
-const StartMenu = ({route}) => {
+const StartMenu = ({navigation,route}) => {
     const [classcode, setClasscode] = useState('');
     const { firstName } = route.params;
+    const {classCode} = route.params;
 
     
 
@@ -48,6 +49,11 @@ const StartMenu = ({route}) => {
         }
     };
 
+    const handleProfileNavigation = () => {
+        // Navigate to Profile.tsx
+        navigation.navigate('Profile',{firstName: firstName, classCode: classCode});
+    };
+
     return (
         <KeyboardAvoidingView behavior='padding'>
             <View>
@@ -57,9 +63,9 @@ const StartMenu = ({route}) => {
                         <Text style={stylesMenu.hText}>Welcome Back</Text>
                         <Text style={stylesMenu.hText}>{firstName}</Text>
                     </View>
-                    <View style={stylesMenu.rightContainer}>
-                       <View style={stylesMenu.pictureCircle} />
-                    </View>
+                    <TouchableOpacity style={stylesMenu.rightContainer} onPress={handleProfileNavigation}>
+                        <View style={stylesMenu.pictureCircle} />
+                    </TouchableOpacity>
                 </View>
 
                 <View style={stylesMenu.menuContainer}>

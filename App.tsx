@@ -3,6 +3,8 @@ import { Text, View, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Signup from './app/screens/Signup';
 import Login from './app/screens/Login';
@@ -33,6 +35,7 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     async function loadFonts() {
@@ -42,13 +45,52 @@ export default function App() {
     loadFonts();
   }, []);
 
+  useEffect(() => {
+    const auth = getAuth();
+
+    // Load saved user state from AsyncStorage
+    const loadUserState = async () => {
+        const savedUser = await AsyncStorage.getItem('user');
+        if (savedUser) {
+            setUser(JSON.parse(savedUser));
+        }
+    };
+
+    loadUserState();
+
+    // Listen for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+        if (authUser) {
+            // User is logged in
+            setUser(authUser);
+            // Save user state in AsyncStorage
+            await AsyncStorage.setItem('user', JSON.stringify(authUser));
+        } else {
+            // User is logged out
+            setUser(null);
+            // Clear user state from AsyncStorage
+            await AsyncStorage.removeItem('user');
+        }
+    });
+
+    // Unsubscribe from listener when the component unmounts
+    return () => {
+        unsubscribe();
+    };
+}, []);
+
+// Determine the initial route based on the user state
+const initialRouteName = 'Quackamole';
+
   if (!fontsLoaded) {
     return <View style={styles.container}><Text>Loading...</Text></View>;
   }
 
+  
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Signup">
+      <Stack.Navigator initialRouteName={initialRouteName}>
         <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />

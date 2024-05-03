@@ -4,11 +4,15 @@ import { stylesMenu } from './stylesMenu';
 import EmptyClass from '../../assets/empty.svg'
 import CustomButton from '../../components/CustomButton';
 import MenuButton from '../../components/MenuButton';
+import { db } from '../../config';
+import {ref,set, push, child, get} from "firebase/database";
 
 
 
-const Menu = ({navigation}) => {
-    const [classcode, setClasscode] = useState('');
+const Menu = ({navigation,route}) => {
+    
+    const { firstName } = route.params;
+    const {classCode} = route.params;
 
     const joinClass = async () => {
     }
@@ -24,7 +28,7 @@ const Menu = ({navigation}) => {
                     <View style={[stylesMenu.header, {padding: 20}]}>
                         <View style={stylesMenu.leftContainer}>
                             <Text style={stylesMenu.hText}>Welcome Back</Text>
-                            <Text style={stylesMenu.hText}>Jan Shaono</Text>
+                            <Text style={stylesMenu.hText}>{firstName}</Text>
                         </View>
                         <View style={stylesMenu.rightContainer}>
                             <TouchableOpacity onPress={handleProfilePress}> 

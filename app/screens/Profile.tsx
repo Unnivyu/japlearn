@@ -3,8 +3,13 @@ import { View, Text, TouchableOpacity, ImageBackground, Image} from 'react-nativ
 import {stylesProfile} from './stylesProfile';
 import { SvgXml } from 'react-native-svg'; 
 import BackIcon from '../../assets/back-icon.svg';
+import { db } from '../../config';
+import {ref,set, push, child, get} from "firebase/database";
 
-const Profile = ({navigation}) => {
+const Profile = ({navigation,route}) => {
+
+    const {firstName} = route.params
+    const {classCode} = route.params;
 
     const handleBackPress = () => {
         navigation.navigate('Menu');
@@ -40,10 +45,10 @@ const Profile = ({navigation}) => {
                 
             </View>
             <View style={stylesProfile.description}>
-                
+                    
                 <View style={stylesProfile.descTextContainer}>
-                    <Text style={stylesProfile.descText}>Username: Jan Shaono</Text>
-                    <Text style={stylesProfile.descText}>Class Code:</Text>
+                    <Text style={stylesProfile.descText}>Username: {firstName}</Text>
+                    <Text style={stylesProfile.descText}>Class Code: {classCode}</Text>
                 </View>
             </View>
             <View style={stylesProfile.scoreArea}>

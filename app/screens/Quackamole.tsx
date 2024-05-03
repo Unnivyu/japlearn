@@ -4,6 +4,34 @@ import { stylesSlate } from './stylesSlate';
 import { stylesClass} from './stylesClass';
 import BackIcon from '../../assets/back-icon.svg';
 
+const japaneseCharacters = [
+    {
+        japanese: 'じゅ',
+        romaji: 'ju' // 'じゅ' in Romaji
+    },
+    {
+        japanese: 'く',
+        romaji: 'ku' // 'く' in Romaji
+    },
+    {
+        japanese: 'た',
+        romaji: 'ta' // 'た' in Romaji
+    },
+    {
+        japanese: 'に',
+        romaji: 'ni' // 'に' in Romaji
+    },
+    {
+        japanese: 'か',
+        romaji: 'ka' // 'か' in Romaji
+    },
+    {
+        japanese: 'お',
+        romaji: 'o' // 'お' in Romaji
+    }
+    // Add more characters and their Romaji forms as needed
+];
+
 
 const Quackamole= () => {
     const [text, setText] = useState('');
