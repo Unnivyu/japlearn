@@ -12,14 +12,10 @@ import { useNavigation } from '@react-navigation/native';
 const StartMenu = ({navigation,route}) => {
     const [classcode, setClasscode] = useState('');
     const { firstName } = route.params;
-<<<<<<< HEAD
-    const {classCode} = route.params;
-=======
     const { user } = useContext(AuthContext);
     console.log('User:', user);
     const navigation = useNavigation();
 
->>>>>>> 330d16ac317cd597236d9054079e272be037ee7e
 
     
 
