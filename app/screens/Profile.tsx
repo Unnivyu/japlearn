@@ -2,14 +2,16 @@ import React, { useContext } from "react";
 import { View, Text, TouchableOpacity, ImageBackground, Image} from 'react-native';
 import { stylesProfile } from './stylesProfile';
 import { SvgXml } from 'react-native-svg'; 
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 import BackIcon from '../../assets/back-icon.svg';
 import { AuthContext } from '../../context/AuthContext';
 
-const Profile = ({ navigation }) => {
-    const { logout } = useContext(AuthContext);
+const Profile = () => {
+    const { user, role, logout } = useContext(AuthContext);
+    const navigation = useNavigation(); 
 
     const handleBackPress = () => {
-        navigation.navigate('Menu');
+        navigation.goBack();
     }
 
     const handleScoresPress = () => {
@@ -50,15 +52,18 @@ const Profile = ({ navigation }) => {
             <View style={stylesProfile.description}>
                 
                 <View style={stylesProfile.descTextContainer}>
-                    <Text style={stylesProfile.descText}>Username: Jan Shaono</Text>
-                    <Text style={stylesProfile.descText}>Class Code:</Text>
+                    
+                    <Text style={stylesProfile.descText}>Username: {role === 'teacher' ? (user ? user.name : '') : (user ? `${user.firstname} ${user.lastname}` : '')}</Text>
+                    {role === 'teacher' ? null : <Text style={stylesProfile.descText}>Class Code: {user ? user.classcode : ''}</Text>}
                 </View>
             </View>
-            <View style={stylesProfile.scoreArea}>
-                <TouchableOpacity onPress={handleScoresPress} style={stylesProfile.scoreButton}>
-                    <Text style={stylesProfile.scoreButtonText}>Score</Text>
-                </TouchableOpacity>
-            </View>
+            {role !== 'teacher' && (
+                <View style={stylesProfile.scoreArea}>
+                    <TouchableOpacity onPress={handleScoresPress} style={stylesProfile.scoreButton}>
+                        <Text style={stylesProfile.scoreButtonText}>Score</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </View>
     );
 }

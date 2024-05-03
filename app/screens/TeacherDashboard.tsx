@@ -4,8 +4,8 @@ import { stylesDashboard } from './stylesDashboard';
 import CustomButton from '../../components/CustomButton';
 import { styles } from './stylesTeacherDashboard';
 import { db } from '../../config';
-import { ref, get } from "firebase/database";
-import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect hook
+import {ref,set, push, child, get} from "firebase/database";
+import { useFocusEffect } from '@react-navigation/native'; 
 import { AuthContext } from '../../context/AuthContext';
 
 

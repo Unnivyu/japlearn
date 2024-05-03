@@ -33,7 +33,7 @@ const getFonts = () => Font.loadAsync({
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
+export default function App({navigation}) {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
