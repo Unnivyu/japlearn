@@ -24,6 +24,7 @@ import QuackmanEdit from './app/screens/QuackmanEdit';
 import QuackslateEdit from './app/screens/QuackslateEdit';
 import QuackamoleEdit from './app/screens/QuackamoleEdit';
 import Quackamole from './app/screens/Quackamole';
+import Quackman from './app/screens/Quackman';
 
 const getFonts = () => Font.loadAsync({
   'jua': require('./assets/fonts/Jua-Regular.ttf')
@@ -48,7 +49,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Signup">
+      <Stack.Navigator initialRouteName="Quackman">
         <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
@@ -69,6 +70,7 @@ export default function App() {
         <Stack.Screen name="QuackamoleOption2" component={QuackamoleOption2} options={{ headerShown: false }} />
         <Stack.Screen name="Quackslate" component={Quackslate} options={{ headerShown: false }} />
         <Stack.Screen name="Quackamole" component={Quackamole} options={{ headerShown: false }} />
+        <Stack.Screen name="Quackman" component={Quackman} options={{ headerShown: false }} />
 
 
       </Stack.Navigator>
