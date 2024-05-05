@@ -1,21 +1,15 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { TouchableOpacity, View, TextInput, StyleSheet, Button, ActivityIndicator, KeyboardAvoidingView, Modal, Text, Image, Alert } from 'react-native';
 import { stylesMenu } from './stylesMenu';
 import EmptyClass from '../../assets/empty.svg'
 import CustomButton from '../../components/CustomButton';
 import { db } from '../../config';
 import {ref,set, push, child, get} from "firebase/database";
-import { AuthContext } from '../../context/AuthContext';
-import { useNavigation } from '@react-navigation/native';
 
 
 const StartMenu = ({route}) => {
     const [classcode, setClasscode] = useState('');
     const { firstName } = route.params;
-    const { user } = useContext(AuthContext);
-    console.log('User:', user);
-    const navigation = useNavigation();
-
 
     
 
@@ -23,7 +17,7 @@ const StartMenu = ({route}) => {
         console.log('Joining class...');
         try {
             // Reference to the teacher's class list
-            const teacherRef = ref(db, `Teacher/defaultTeacher/classList`);
+            const teacherRef = ref(db, `Teacher/Herrera/classList`);
             const classSnapshot = await get(teacherRef);
             
             if (classSnapshot.exists()) {
@@ -39,7 +33,6 @@ const StartMenu = ({route}) => {
                         await set(userRef, { ...userData, classcode });
                         console.log('Database updated successfully');
                         alert(`Success! You have successfully joined class ${classcode}`);
-                        navigation.navigate('Menu')
                     } else {
                         alert(`Error: User ${firstName} not found.`);
                     }
@@ -55,10 +48,6 @@ const StartMenu = ({route}) => {
         }
     };
 
-    const handleProfilePress = () => {
-        navigation.navigate('Profile');
-    };
-
     return (
         <KeyboardAvoidingView behavior='padding'>
             <View>
@@ -69,9 +58,7 @@ const StartMenu = ({route}) => {
                         <Text style={stylesMenu.hText}>{firstName}</Text>
                     </View>
                     <View style={stylesMenu.rightContainer}>
-                        <TouchableOpacity onPress={handleProfilePress}>
-                            <View style={stylesMenu.pictureCircle} />
-                        </TouchableOpacity>
+                       <View style={stylesMenu.pictureCircle} />
                     </View>
                 </View>
 

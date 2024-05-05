@@ -21,13 +21,12 @@ const ClassDashboard = ({ navigation, route }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const userRef = ref(db, 'users');
+                const userRef = ref(db, 'users'); // Fetch data from the 'users' path
                 const userSnapshot = await get(userRef);
                 
                 if (userSnapshot.exists()) {
                     const data = userSnapshot.val();
-                    const usersOfClass = Object.values(data).filter(user => user.classcode === code);
-                    setUserData(usersOfClass);
+                    setUserData(data);
                 } else {
                     console.error('No user data found');
                 }
@@ -36,9 +35,8 @@ const ClassDashboard = ({ navigation, route }) => {
             }
         };
     
-        fetchUserData(); 
+        fetchUserData();
     }, []);
-    
     
     
 
