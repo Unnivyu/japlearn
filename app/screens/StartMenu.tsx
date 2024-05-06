@@ -23,7 +23,7 @@ const StartMenu = ({route}) => {
         console.log('Attempting to join class...');
         try {
             // Reference to the class codes in the Class table
-            const classCodeRef = ref(db, `Class/classcodes/${classcode}`);
+            const classCodeRef = ref(db, `Classes/classcodes/${classcode}`);
             const classCodeSnapshot = await get(classCodeRef);
         
             if (classCodeSnapshot.exists()) {
@@ -67,7 +67,7 @@ const StartMenu = ({route}) => {
                             console.log('User data updated successfully:', updatedData);
         
                             // Update the class data with the user's ID
-                            const classRef = ref(db, `Class/classcodes/${classcode}`);
+                            const classRef = ref(db, `Classes/classcodes/${classcode}`);
                             const classSnapshot = await get(classRef);
     
                             if (classSnapshot.exists()) {
