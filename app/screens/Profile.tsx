@@ -50,7 +50,7 @@ const Profile = () => {
                 
             </View>
             <View style={stylesProfile.description}>
-                    
+                
                 <View style={stylesProfile.descTextContainer}>
                     
                     <Text style={stylesProfile.descText}>Username: {role === 'teacher' ? (user ? user.name : '') : (user ? `${user.firstname} ${user.lastname}` : '')}</Text>

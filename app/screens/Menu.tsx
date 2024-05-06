@@ -21,7 +21,7 @@ const Menu = ({ navigation }) => {
                     <View style={[stylesMenu.header, { padding: 20 }]}>
                         <View style={stylesMenu.leftContainer}>
                             <Text style={stylesMenu.hText}>Welcome Back</Text>
-                            <Text style={stylesMenu.hText}>{user.user.firstname}</Text> 
+                            <Text style={stylesMenu.hText}>{user.firstname}</Text> 
                         </View>
                         <View style={stylesMenu.rightContainer}>
                             <TouchableOpacity onPress={handleProfilePress}> 
