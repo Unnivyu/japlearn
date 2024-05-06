@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
         width: 350,
         height: 125,
         overflow: 'hidden',
-        marginBottom: -300,
+        marginBottom: -300  ,
         marginTop: 300,
     },
     container: {

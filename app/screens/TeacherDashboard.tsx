@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Modal, View, KeyboardAvoidingView, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Button, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+    Modal, View, KeyboardAvoidingView, Text, TouchableOpacity, SafeAreaView, ScrollView,
+    TextInput, Button, StyleSheet
+} from 'react-native';
 import { stylesDashboard } from './stylesDashboard';
 import CustomButton from '../../components/CustomButton';
-import { styles } from './stylesTeacherDashboard';
+import {styles} from './stylesTeacherDashboard';
 import { db } from '../../config';
 import {ref,set, push, child, get} from "firebase/database";
-import { useFocusEffect } from '@react-navigation/native'; 
-import { AuthContext } from '../../context/AuthContext';
-
 
 const TeacherDashboard = ({ navigation }) => {
-    const [classes, setClasses] = useState([]);
+    const [classes, setClasses] = useState([{ name: 'Class 1', code: '333555' }]);
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [newClassCode, setNewClassCode] = useState('');
@@ -19,40 +19,6 @@ const TeacherDashboard = ({ navigation }) => {
     const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
     const [newClassName, setNewClassName] = useState('');
     const [teacherName, setTeacherName] = useState('');
-    const { user } = useContext(AuthContext);
-
-    const fetchTeacherData = async () => {
-        try {
-            const teacherName = 'defaultTeacher';
-            const teacherRef = ref(db, `Teacher/${teacherName}`);
-
-            const teacherSnapshot = await get(teacherRef);
-            const teacherData = teacherSnapshot.val();
-
-            if (teacherData && teacherData.classList) {
-                setClasses(
-                    teacherData.classList.map((classItem, index) => ({
-                        name: `Class ${index + 1}`,
-                        code: classItem
-                    }))
-                );
-            }
-        } catch (error) {
-            console.error('Error fetching teacher data:', error.message);
-        }
-    };
-
-    useFocusEffect(
-        React.useCallback(() => {
-            fetchTeacherData(); 
-        }, [])
-    );
-
-    useEffect(() => {
-        console.log("Current user:", user);
-    }, [user]);
-
-
 
     const handleProfilePress = () => {
         navigation.navigate('Profile');
@@ -68,51 +34,56 @@ const TeacherDashboard = ({ navigation }) => {
     };
 
     const handleClassNavigate = (classCode) => {
-        navigation.navigate('ClassDashboard', { code: classCode });
+        navigation.navigate('ClassDashboard' ,{code: classCode});
     };
 
     const addClass = async () => {
-        const teacherName = 'defaultTeacher';
+        const teacherName = 'Herrera'; //temporary variable, for testing purposes 
         const newClassName = `Class ${classes.length + 1}`;
-
+        
         if (!newClassCode) {
             console.error('Class code is missing');
             return;
         }
-
+    
         try {
             const teacherRef = ref(db, `Teacher/${teacherName}`); // Get a reference to 'Teacher/teacherName' in the database
-
-            const classListRef = child(teacherRef, 'classList');
+            
+            // Update classList
+            const classListRef = child(teacherRef, 'classList'); 
             const classListSnapshot = await get(classListRef);
             const classList = classListSnapshot.exists() ? classListSnapshot.val() : [];
-
+    
             const updatedClassList = [...classList, newClassCode];
-
+            
             await set(classListRef, updatedClassList);
-
+    
             setClasses(currentClasses => [...currentClasses, { name: newClassName, code: newClassCode }]);
             setNewClassCode('');
             setNewClassName('');
             setAddModalVisible(false);
         } catch (error) {
-            console.error('Error adding class to Firebase:', error.message);
+            console.error('Error adding class to Firebase:', error.message); // Log error message
         }
-    };
+    }; 
 
     const deleteClass = async () => {
         try {
-            const teacherName = 'defaultTeacher';
-            const teacherRef = ref(db, `Teacher/${teacherName}`);
+            const teacherName = 'Herrera'; //temporary variable, for testing purposes'
+            const teacherRef = ref(db, `Teacher/${teacherName}`); // Get a reference to 'Teacher/teacherName' in the database
 
+            // Fetch current classlist
             const classListRef = child(teacherRef, 'classList');
             const classListSnapshot = await get(classListRef);
             const classList = classListSnapshot.exists() ? classListSnapshot.val() : [];
 
+            // Find and remove the selected class from classList
             const updatedClassList = classList.filter(classItem => classItem !== selectedClassCode);
 
+            // Update classList in Firebase
             await set(classListRef, updatedClassList);
 
+            // update local state
             setClasses(currentClasses => {
                 const indexToRemove = currentClasses.findIndex(classItem => classItem.code === selectedClassCode);
                 const newClasses = [...currentClasses.slice(0, indexToRemove), ...currentClasses.slice(indexToRemove + 1)];
@@ -124,8 +95,8 @@ const TeacherDashboard = ({ navigation }) => {
             setDeleteModalVisible(false);
             setConfirmDeleteModalVisible(false);
             setSelectedClassCode(null);
-        } catch (error) {
-            console.error('Error deleting class from database:', error.message);
+        } catch(error) {
+            console.error('Error deleting class from database:', error.message); // Log error message
         }
     };
 
@@ -143,13 +114,13 @@ const TeacherDashboard = ({ navigation }) => {
 
     const handleConfirmDeletePress = () => {
         setConfirmDeleteModalVisible(true);
-
+        
     };
 
     const handleCancelDeletePress = () => {
         setSelectedClassCode(null);
         setConfirmDeleteModalVisible(false);
-
+        
     };
 
     return (
@@ -188,7 +159,7 @@ const TeacherDashboard = ({ navigation }) => {
                             ))}
                         </View>
                     </ScrollView>
-                    <Modal
+                <Modal
                         animationType="slide"
                         transparent={true}
                         visible={addModalVisible}
