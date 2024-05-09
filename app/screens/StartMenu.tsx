@@ -20,103 +20,40 @@ const StartMenu = ({route}) => {
     
 
     const joinClass = async () => {
-        console.log('Attempting to join class...');
+        console.log('Joining class...');
         try {
-            // Reference to the class codes in the Class table
-            const classCodeRef = ref(db, `Classes/classcodes/${classcode}`);
-            const classCodeSnapshot = await get(classCodeRef);
-        
-            if (classCodeSnapshot.exists()) {
-                console.log(`Class code ${classcode} exists in Class table.`);
-    
-                // Reference to the users node
-                const usersRef = ref(db, 'users');
-                const usersSnapshot = await get(usersRef);
-    
-                if (usersSnapshot.exists()) {
-                    const usersData = usersSnapshot.val();
-                    let userId = null;
-        
-                    // Find the user ID based on the provided firstName
-                    for (const id in usersData) {
-                        if (usersData[id].firstname === firstName) {
-                            userId = id;
-                            console.log('User ID found:', userId);
-                            break;
-                        }
-                    }
-    
-                    if (userId) {
-                        // Update the user's data with the class code
-                        const userRef = ref(db, `users/${userId}`);
-                        const userSnapshot = await get(userRef);
-    
-                        if (userSnapshot.exists()) {
-                            // Retrieve user data
-                            const userData = userSnapshot.val();
-                            console.log('User data before update:', userData);
-        
-                            // Update user data with the new class code
-                            const updatedData = {
-                                ...userData,
-                                classcode: classcode, // Add class code to the user data
-                            };
-    
-                            // Set the updated data in the database
-                            await set(userRef, updatedData);
-                            console.log('User data updated successfully:', updatedData);
-        
-                            // Update the class data with the user's ID
-                            const classRef = ref(db, `Classes/classcodes/${classcode}`);
-                            const classSnapshot = await get(classRef);
-    
-                            if (classSnapshot.exists()) {
-                                const classData = classSnapshot.val();
-                                console.log(`Class data for code ${classcode}:`, classData);
-    
-                                // Check if the class has a users list, if not initialize one
-                                let updatedClassData = classData;
-                                if (!updatedClassData.users) {
-                                    updatedClassData.users = [];
-                                }
-    
-                                // Add the user's ID to the class's user list if not already present
-                                if (!updatedClassData.users.includes(userId)) {
-                                    updatedClassData.users.push(userId);
-                                }
-    
-                                // Set the updated class data in the database
-                                await set(classRef, updatedClassData);
-                                console.log('Class data updated with user ID:', userId);
-                            } else {
-                                Alert.alert('Error', `Class with code ${classcode} not found.`);
-                                return;
-                            }
-    
-                            // Display a success message
-                            Alert.alert('Success', `You have successfully joined class ${classcode}`);
-                            // Navigate to the next screen
-                            navigation.navigate('Menu');
-                        } else {
-                            Alert.alert('Error', `User with ID ${userId} not found.`);
-                        }
+            // Reference to the teacher's class list
+            const teacherRef = ref(db, `Teacher/defaultTeacher/classList`);
+            const classSnapshot = await get(teacherRef);
+            
+            if (classSnapshot.exists()) {
+                // Check if the class exists in the class list
+                if (classSnapshot.val().includes(classcode)) {
+                    // Reference to the user data
+                    const userRef = ref(db, `users/${firstName}`);
+                    const userSnapshot = await get(userRef);
+                    
+                    if (userSnapshot.exists()) {
+                        // Update user data with the new class code
+                        const userData = userSnapshot.val();
+                        await set(userRef, { ...userData, classcode });
+                        console.log('Database updated successfully');
+                        alert(`Success! You have successfully joined class ${classcode}`);
+                        navigation.navigate('Menu')
                     } else {
-                        Alert.alert('Error', `User with first name ${firstName} not found.`);
+                        alert(`Error: User ${firstName} not found.`);
                     }
                 } else {
-                    Alert.alert('Error', 'Could not retrieve users list. Please try again later.');
+                    alert('Error: Invalid class code. Please enter a valid class code.');
                 }
             } else {
-                Alert.alert('Error', `Invalid class code: ${classcode}. Please enter a valid class code.`);
+                alert('Error: Could not retrieve class list. Please try again later.');
             }
         } catch (error) {
-            console.error('Error joining class:', error);
-            Alert.alert('Error', 'An error occurred while joining the class. Please try again later.');
+            console.error('Error joining class:', error.message);
+            alert('Error: An error occurred while joining the class. Please try again later.');
         }
     };
-    
-    
-    
 
     const handleProfilePress = () => {
         navigation.navigate('Profile');

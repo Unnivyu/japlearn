@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import CustomButton from '../../components/CustomButton';
 import { stylesClass } from './stylesClass';
+import { styles } from './stylesModal';
 import BackIcon from '../../assets/back-icon.svg';
 import { ImageBackground } from 'react-native';
 import Icon1 from '../../assets/gameIcon1.svg';
@@ -17,6 +18,7 @@ const ClassDashboard = ({ navigation, route }) => {
     const [activeCategory, setActiveCategory] = useState('MEMBERS');
     const { code = '' } = route?.params || {};
     const [userData, setUserData] = useState([]);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -38,9 +40,9 @@ const ClassDashboard = ({ navigation, route }) => {
     
         fetchUserData(); 
     }, []);
-    
-    
-    
+    const handleDeleteModalConfirm = () => {
+        setShowDeleteModal(false);
+    }
 
     const handleCategoryPress = (category) => {
         setActiveCategory(category);
@@ -71,6 +73,7 @@ const ClassDashboard = ({ navigation, route }) => {
                     <CustomButton title="GAMES" onPress={() => handleCategoryPress('GAMES')} style={stylesClass.categoryButton} textStyle={stylesClass.categoryButtonText} />
                 </View>
             </View>
+            
             <View>
                 {activeCategory !== 'GAMES' && (
                     <View style={stylesClass.buttonContainer}>
@@ -81,8 +84,8 @@ const ClassDashboard = ({ navigation, route }) => {
                             </>
                         ) : (
                             <>
-                                <CustomButton title="Add" onPress={handleOnPress} style={stylesClass.button} textStyle={stylesClass.buttonText} />
-                                <CustomButton title="Remove" onPress={handleOnPress} style={stylesClass.button} textStyle={stylesClass.buttonText} />
+                               <View></View>
+                                <CustomButton title="Remove" onPress={() => setShowDeleteModal(true)} style={stylesClass.button} textStyle={stylesClass.buttonText} />
                             </>
                         )}
                     </View>
@@ -148,6 +151,26 @@ const ClassDashboard = ({ navigation, route }) => {
                     )}
                 </View>
             </ScrollView>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={showDeleteModal}
+                onRequestClose={() => setShowDeleteModal(false)}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <View style={styles.closeButtonContainer}>
+                            <TouchableOpacity onPress={() => setShowDeleteModal(false)} style={styles.closeButton}>
+                                <Text style={styles.closeButtonText}>X</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={styles.text}>Are you sure you want to delete this?</Text>
+                        <View style={styles.modalContent}>
+                            <CustomButton title="Delete" onPress={handleDeleteModalConfirm} style={styles.button} textStyle={styles.buttonText} />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
