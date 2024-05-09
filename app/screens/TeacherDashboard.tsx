@@ -21,137 +21,45 @@ const TeacherDashboard = ({ navigation }) => {
     const [teacherName, setTeacherName] = useState('');
     const { user } = useContext(AuthContext);
 
-    const fetchTeacherData = async () => {
-        try {
-            const teacherName = 'defaultTeacher';
-            const teacherRef = ref(db, `Teacher/${teacherName}`);
+    // Function to handle adding a class by calling the backend API
+const addClassToBackend = async () => {
+    if (!newClassCode || newClassCode.trim() === '') {
+        alert('Please enter a valid class code.');
+        return;
+    }
 
-            const teacherSnapshot = await get(teacherRef);
-            const teacherData = teacherSnapshot.val();
+    try {
+        const response = await fetch(`http://localhost:8080/api/classes/${selectedClassCode}/addClassCode?classCode=${newClassCode}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
-            if (teacherData && teacherData.classList) {
-                setClasses(
-                    teacherData.classList.map((classItem, index) => ({
-                        name: `Class ${index + 1}`,
-                        code: classItem
-                    }))
+        if (response.ok) {
+            const updatedClass = await response.json();
+            alert(`Class Code "${newClassCode}" added successfully.`);
+            // Optionally, update local state with the new information.
+            setClasses((prevClasses) => {
+                const updatedClasses = prevClasses.map((c) =>
+                    c.id === updatedClass.id ? updatedClass : c
                 );
-            }
-        } catch (error) {
-            console.error('Error fetching teacher data:', error.message);
-        }
-    };
-
-    useFocusEffect(
-        React.useCallback(() => {
-            fetchTeacherData(); 
-        }, [])
-    );
-
-    useEffect(() => {
-        console.log("Current user:", user);
-    }, [user]);
-
-
-
-    const handleProfilePress = () => {
-        navigation.navigate('Profile');
-    };
-
-    const handleAddPress = () => {
-        setAddModalVisible(true);
-    };
-
-    const handleRemovePress = () => {
-        setDeleteModalVisible(true);
-        setSelectedClassCodes(classes.map(classItem => classItem.code));
-    };
-
-    const handleClassNavigate = (classCode) => {
-        navigation.navigate('ClassDashboard', { code: classCode });
-    };
-
-    const addClass = async () => {
-        const teacherName = 'defaultTeacher';
-        const newClassName = `Class ${classes.length + 1}`;
-
-        if (!newClassCode) {
-            console.error('Class code is missing');
-            return;
-        }
-
-        try {
-            const teacherRef = ref(db, `Teacher/${teacherName}`); // Get a reference to 'Teacher/teacherName' in the database
-
-            const classListRef = child(teacherRef, 'classList');
-            const classListSnapshot = await get(classListRef);
-            const classList = classListSnapshot.exists() ? classListSnapshot.val() : [];
-
-            const updatedClassList = [...classList, newClassCode];
-
-            await set(classListRef, updatedClassList);
-
-            setClasses(currentClasses => [...currentClasses, { name: newClassName, code: newClassCode }]);
-            setNewClassCode('');
-            setNewClassName('');
-            setAddModalVisible(false);
-        } catch (error) {
-            console.error('Error adding class to Firebase:', error.message);
-        }
-    };
-
-    const deleteClass = async () => {
-        try {
-            const teacherName = 'defaultTeacher';
-            const teacherRef = ref(db, `Teacher/${teacherName}`);
-
-            const classListRef = child(teacherRef, 'classList');
-            const classListSnapshot = await get(classListRef);
-            const classList = classListSnapshot.exists() ? classListSnapshot.val() : [];
-
-            const updatedClassList = classList.filter(classItem => classItem !== selectedClassCode);
-
-            await set(classListRef, updatedClassList);
-
-            setClasses(currentClasses => {
-                const indexToRemove = currentClasses.findIndex(classItem => classItem.code === selectedClassCode);
-                const newClasses = [...currentClasses.slice(0, indexToRemove), ...currentClasses.slice(indexToRemove + 1)];
-                newClasses.forEach((classItem, index) => {
-                    classItem.name = `Class ${index + 1}`;
-                });
-                return newClasses;
+                return updatedClasses;
             });
-            setDeleteModalVisible(false);
-            setConfirmDeleteModalVisible(false);
-            setSelectedClassCode(null);
-        } catch (error) {
-            console.error('Error deleting class from database:', error.message);
+        } else {
+            alert('Failed to add the class code. Please check your input.');
         }
-    };
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error while adding class code: ' + error.message);
+    }
+};
 
-    const closeModal = () => {
-        setAddModalVisible(false);
-        setDeleteModalVisible(false);
-        setConfirmDeleteModalVisible(false);
-        setSelectedClassCodes([]);
-        setSelectedClassCode(null);
-    };
+// Update the Button Component to use this function
+<Button title="Add Class" onPress={addClassToBackend} />
 
-    const handleClassCodePress = (code) => {
-        setSelectedClassCode(code);
-    };
 
-    const handleConfirmDeletePress = () => {
-        setConfirmDeleteModalVisible(true);
-
-    };
-
-    const handleCancelDeletePress = () => {
-        setSelectedClassCode(null);
-        setConfirmDeleteModalVisible(false);
-
-    };
-
+    
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>

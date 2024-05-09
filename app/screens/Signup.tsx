@@ -15,96 +15,82 @@ const Signup = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
-    const [errors, setErrors] = useState({
-        fname: '',
-        lname: '',
-        email: '',
-        password: '',
-        cpassword: ''
-    });
 
-    // Email validation function
-    const validateEmail = (email) => {
-        const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail.com$/;
-        return gmailRegex.test(email);
-    };
-
-    const signin = () => {
-        navigation.navigate('Login');
-    };
-
-    // Signup function
-    const signup = () => {
-        // Perform validation checks...
+        // Errors state, optional for input validation feedback
+        const [errors, setErrors] = useState({
+            fname: '',
+            lname: '',
+            email: '',
+            password: '',
+            cpassword: ''
+        });
     
-        // Define the reference to the "userCounter" in the database
-        const counterRef = ref(db, 'userCounter');
+        // Validate and submit user data
+        const signup = async () => {
+            // Optional: Add form validation checks here
     
-        // Retrieve the current user counter
-        get(counterRef)
-            .then((snapshot) => {
-                if (snapshot.exists()) {
-                    // Get the current counter value
-                    const currentCounter = snapshot.val();
-    
-                    // Create the new user ID in the form of `userID_{currentCounter}`
-                    const userId = `userID_${currentCounter}`;
-    
-                    // Define the reference to the new user entry using the new user ID
-                    const userRef = ref(db, `users/${userId}`);
-    
-                    // Create the new user entry
-                    set(userRef, {
-                        firstname: fname,
-                        lastname: lname,
-                        email: email,
-                        password: password
-                    })
-                    .then(() => {
-                        setModalMessage('Signup Complete!');
-                        setModalVisible(true);
-                        setTimeout(() => {
-                            setModalVisible(false);
-                            navigation.navigate('Login'); // Navigate to the Login screen
-                        }, 1500);
-                    })
-                    .catch((error) => {
-                        console.error('Failed to create user entry:', error);
-                        alert(`Signup Failed: Failed to create user entry: ${error.message}`);
-                    });
-    
-                    // Increment the counter and update the database
-                    const updates = { 'userCounter': currentCounter + 1 };
-    
-                    update(ref(db), updates)
-                        .then(() => {
-                            console.log('Counter updated successfully. New counter:', currentCounter + 1);
-                        })
-                        .catch((error) => {
-                            console.error('Error updating counter:', error);
-                            alert(`Error updating counter: ${error.message}`);
-                        });
-                } else {
-                    console.error("Failed to retrieve current counter from the database. Snapshot does not exist.");
-                    alert('Error: Failed to retrieve current counter from the database. Initializing counter to 0.');
-    
-                    // Optionally, initialize the user counter to 0 if it doesn't exist
-                    const initialCounter = 0;
-                    set(counterRef, initialCounter)
-                        .then(() => {
-                            console.log('User counter initialized to 0');
-                        })
-                        .catch(error => {
-                            console.error('Failed to initialize user counter:', error);
-                            alert(`Failed to initialize user counter: ${error.message}`);
-                        });
-                }
-            })
-            .catch((error) => {
-                console.error('Error retrieving current counter from the database:', error);
-                alert(`Error: Error retrieving current counter from the database: ${error.message}`);
+            // Clear previous errors
+            setErrors({
+                fname: '',
+                lname: '',
+                email: '',
+                password: '',
+                cpassword: ''
             });
-    };
+    
+            // Perform the signup operation
+            try {
+                setLoading(true);
+    
+                const response = await fetch('http://192.168.1.5:8080/api/users/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fname,
+                        lname,
+                        email,
+                        password
+                    })
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    // Registration was successful
+                    setModalMessage('Signup successful!');
+                    setModalVisible(true);
+    
+                    // Reset form or navigate to the next page
+                    setFname('');
+                    setLname('');
+                    setEmail('');
+                    setPassword('');
+                    setCPassword('');
+    
+                    // Navigate to a different screen (optional)
+                    // navigation.navigate('HomeScreen');
+                } else {
+                    // Handle server errors (like duplicate email)
+                    setModalMessage(`Signup failed: ${data.message || response.statusText}`);
+                    setModalVisible(true);
+                }
+            } catch (error) {
+                // Handle network errors
+                setModalMessage(`Signup failed: ${error.message}`);
+                setModalVisible(true);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        // Sign-in action
+        const signin = () => {
+            navigation.navigate('Signin');
+        };
+
+ 
     
     
     
