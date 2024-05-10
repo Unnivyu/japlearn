@@ -30,7 +30,7 @@ const TeacherDashboard = ({ navigation }) => {
     
         // Create the class entity to send to the backend
         const classEntity = {
-            classCode: [classCodes]
+            classCodes: classCodes
         };
     
         try {

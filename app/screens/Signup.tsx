@@ -73,7 +73,7 @@ const signup = async () => {
     try {
         setLoading(true);
 
-        const response = await fetch('http://localhost:8080/api/students/register', {
+        const response = await fetch('http://192.168.43.241:8080/api/students/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
