@@ -9,6 +9,7 @@ import { styles } from './styles';
 import CustomButton from '../../components/CustomButton';
 
 const Login = ({ navigation }) => {
+    const { login } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -16,7 +17,7 @@ const Login = ({ navigation }) => {
     const [modalMessage, setModalMessage] = useState('');
 
 
-    const login = async () => {
+    const Signin = async () => {
         // Check for empty email or password
         if (!email.trim() || !password.trim()) {
             setModalMessage("Please fill in both email and password");
@@ -93,7 +94,7 @@ const Login = ({ navigation }) => {
                         <ActivityIndicator size="large" color="#0000ff" />
                     ) : (
                         <>
-                            <CustomButton title="Login" onPress={login} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Login" onPress={Signin} style={styles.button} textStyle={styles.buttonText} />
                         </>
                     )}
                 </View>

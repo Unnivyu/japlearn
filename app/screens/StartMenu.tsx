@@ -9,64 +9,67 @@ import { AuthContext } from '../../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 
 
-const StartMenu = ({route}) => {
+const StartMenu = ({}) => {
     const [classcode, setClasscode] = useState('');
-    const { firstName } = route.params;
     const { user } = useContext(AuthContext);
-    console.log('User:', user);
     const navigation = useNavigation();
+    
 
 
     
 
     const joinClass = async () => {
-        console.log('Joining class...');
-        try {
-            // Reference to the teacher's class list
-            const teacherRef = ref(db, `Teacher/defaultTeacher/classList`);
-            const classSnapshot = await get(teacherRef);
-            
-            if (classSnapshot.exists()) {
-                // Check if the class exists in the class list
-                if (classSnapshot.val().includes(classcode)) {
-                    // Reference to the user data
-                    const userRef = ref(db, `users/${firstName}`);
-                    const userSnapshot = await get(userRef);
-                    
-                    if (userSnapshot.exists()) {
-                        // Update user data with the new class code
-                        const userData = userSnapshot.val();
-                        await set(userRef, { ...userData, classcode });
-                        console.log('Database updated successfully');
-                        alert(`Success! You have successfully joined class ${classcode}`);
-                        navigation.navigate('Menu')
-                    } else {
-                        alert(`Error: User ${firstName} not found.`);
-                    }
-                } else {
-                    alert('Error: Invalid class code. Please enter a valid class code.');
-                }
-            } else {
-                alert('Error: Could not retrieve class list. Please try again later.');
-            }
-        } catch (error) {
-            console.error('Error joining class:', error.message);
-            alert('Error: An error occurred while joining the class. Please try again later.');
+        console.log
+        if (!classcode.trim()) {
+          Alert.alert('Error', 'Please enter a class code.');
+          return;
         }
-    };
+    
+        if (!user || !user.fname) {
+          Alert.alert('Error', 'Unable to identify the user.');
+          return;
+        }
+    
+        try {
+          // Prepare the URL search parameters for the backend request
+          const params = new URLSearchParams({ fname: user.fname, classCode: classcode });
+    
+          // Send the POST request to the backend
+          const response = await fetch('http://localhost:8080/api/students/joinClass?' + params.toString(), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+    
+          // Handle the response appropriately
+          if (response.ok) {
+            const message = await response.text();
+            Alert.alert('Success', message);
+            navigation.navigate('Menu');
+          } else {
+            // Display the error message from the server response
+            const errorMessage = await response.text();
+            Alert.alert('Error', `Error joining class: ${errorMessage}`);
+          }
+        } catch (error) {
+          console.error('Error joining class:', error.message);
+          Alert.alert('Error', 'Error joining class. Please try again later.');
+        }
+      };
 
     const handleProfilePress = () => {
         navigation.navigate('Profile');
     };
 
-    return (
+    return (    
         <KeyboardAvoidingView behavior='padding'>
             <View>
                 
                 <View style={[stylesMenu.header, {padding: 20}]}>
                     <View style={stylesMenu.leftContainer}>
                         <Text style={stylesMenu.hText}>Welcome Back</Text>
-                        <Text style={stylesMenu.hText}>{firstName}</Text>
+                        <Text style={stylesMenu.hText}>{user?.fname}</Text>
                     </View>
                     <View style={stylesMenu.rightContainer}>
                         <TouchableOpacity onPress={handleProfilePress}>

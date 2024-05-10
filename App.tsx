@@ -34,7 +34,7 @@ const getFonts = () => Font.loadAsync({
 
 const Stack = createNativeStackNavigator();
 
-export default function App({navigation}) {
+export default function App({}) {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function App({navigation}) {
        <ClassCodeProvider>
         
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="TeacherDashboard">
+          <Stack.Navigator initialRouteName="Signup">
             <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
             <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
             <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
