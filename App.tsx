@@ -54,7 +54,7 @@ export default function App({navigation}) {
        <ClassCodeProvider>
         
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="TeacherDashboard">
+          <Stack.Navigator initialRouteName="Login">
             <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
             <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
             <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />

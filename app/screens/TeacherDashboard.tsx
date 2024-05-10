@@ -10,7 +10,7 @@ import { AuthContext } from '../../context/AuthContext';
 
 
 const TeacherDashboard = ({ navigation }) => {
-    const [classes, setClasses] = useState([]);
+    const [classCodes, setClassCodes] = useState('');
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [newClassCode, setNewClassCode] = useState('');
@@ -21,32 +21,48 @@ const TeacherDashboard = ({ navigation }) => {
     const [teacherName, setTeacherName] = useState('');
     const { user } = useContext(AuthContext);
 
-    const fetchTeacherData = async () => {
+    const addClass = async () => {
+        // Ensure there's a value in newClassCode
+        if (!classCodes.trim()) {
+            alert("Please enter a class code");
+            return;
+        }
+    
+        // Create the class entity to send to the backend
+        const classEntity = {
+            classCode: [classCodes]
+        };
+    
         try {
-            const teacherName = 'defaultTeacher';
-            const teacherRef = ref(db, `Teacher/${teacherName}`);
-
-            const teacherSnapshot = await get(teacherRef);
-            const teacherData = teacherSnapshot.val();
-
-            if (teacherData && teacherData.classList) {
-                setClasses(
-                    teacherData.classList.map((classItem, index) => ({
-                        name: `Class ${index + 1}`,
-                        code: classItem
-                    }))
-                );
+            // Send the class entity to your backend API endpoint
+            const response = await fetch('http://localhost:8080/api/classes/addClass', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(classEntity)
+            });
+    
+            if (response.ok) {
+                // Parse response data if needed
+                const data = await response.json();
+                console.log('Class added successfully:', data);
+                // Close the modal and reset the input
+                setAddModalVisible(false);
+                setNewClassCode('');
+                // Optionally, refresh the classes list here
+            } else {
+                const errorData = await response.json();
+                alert(`Error adding class: ${errorData.message}`);
             }
         } catch (error) {
-            console.error('Error fetching teacher data:', error.message);
+            console.error('Error adding class:', error);
+            alert('Error adding class');
         }
     };
 
-    useFocusEffect(
-        React.useCallback(() => {
-            fetchTeacherData(); 
-        }, [])
-    );
+   
+
 
     useEffect(() => {
         console.log("Current user:", user);
@@ -62,72 +78,10 @@ const TeacherDashboard = ({ navigation }) => {
         setAddModalVisible(true);
     };
 
-    const handleRemovePress = () => {
-        setDeleteModalVisible(true);
-        setSelectedClassCodes(classes.map(classItem => classItem.code));
-    };
+  
 
-    const handleClassNavigate = (classCode) => {
-        navigation.navigate('ClassDashboard', { code: classCode });
-    };
 
-    const addClass = async () => {
-        const teacherName = 'defaultTeacher';
-        const newClassName = `Class ${classes.length + 1}`;
-
-        if (!newClassCode) {
-            console.error('Class code is missing');
-            return;
-        }
-
-        try {
-            const teacherRef = ref(db, `Teacher/${teacherName}`); // Get a reference to 'Teacher/teacherName' in the database
-
-            const classListRef = child(teacherRef, 'classList');
-            const classListSnapshot = await get(classListRef);
-            const classList = classListSnapshot.exists() ? classListSnapshot.val() : [];
-
-            const updatedClassList = [...classList, newClassCode];
-
-            await set(classListRef, updatedClassList);
-
-            setClasses(currentClasses => [...currentClasses, { name: newClassName, code: newClassCode }]);
-            setNewClassCode('');
-            setNewClassName('');
-            setAddModalVisible(false);
-        } catch (error) {
-            console.error('Error adding class to Firebase:', error.message);
-        }
-    };
-
-    const deleteClass = async () => {
-        try {
-            const teacherName = 'defaultTeacher';
-            const teacherRef = ref(db, `Teacher/${teacherName}`);
-
-            const classListRef = child(teacherRef, 'classList');
-            const classListSnapshot = await get(classListRef);
-            const classList = classListSnapshot.exists() ? classListSnapshot.val() : [];
-
-            const updatedClassList = classList.filter(classItem => classItem !== selectedClassCode);
-
-            await set(classListRef, updatedClassList);
-
-            setClasses(currentClasses => {
-                const indexToRemove = currentClasses.findIndex(classItem => classItem.code === selectedClassCode);
-                const newClasses = [...currentClasses.slice(0, indexToRemove), ...currentClasses.slice(indexToRemove + 1)];
-                newClasses.forEach((classItem, index) => {
-                    classItem.name = `Class ${index + 1}`;
-                });
-                return newClasses;
-            });
-            setDeleteModalVisible(false);
-            setConfirmDeleteModalVisible(false);
-            setSelectedClassCode(null);
-        } catch (error) {
-            console.error('Error deleting class from database:', error.message);
-        }
-    };
+  
 
     const closeModal = () => {
         setAddModalVisible(false);
@@ -137,9 +91,7 @@ const TeacherDashboard = ({ navigation }) => {
         setSelectedClassCode(null);
     };
 
-    const handleClassCodePress = (code) => {
-        setSelectedClassCode(code);
-    };
+
 
     const handleConfirmDeletePress = () => {
         setConfirmDeleteModalVisible(true);
@@ -173,19 +125,12 @@ const TeacherDashboard = ({ navigation }) => {
                         </View>
                         <View style={stylesDashboard.buttonContainer}>
                             <CustomButton title="Add" onPress={handleAddPress} style={stylesDashboard.button} textStyle={stylesDashboard.buttonText} />
-                            <CustomButton title="Remove" onPress={handleRemovePress} style={stylesDashboard.button} textStyle={stylesDashboard.buttonText} />
+                            <CustomButton title="Remove" onPress={handleAddPress} style={stylesDashboard.button} textStyle={stylesDashboard.buttonText} />
                         </View>
                     </View>
                     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                         <View style={stylesDashboard.classContainer}>
-                            {classes.map((classItem, index) => (
-                                <TouchableOpacity key={index} onPress={() => handleClassNavigate(classItem.code)}>
-                                    <View style={stylesDashboard.classContent}>
-                                        <Text style={stylesDashboard.classContentText}>Name: {classItem.name}</Text>
-                                        <Text style={stylesDashboard.classContentText}>Code: {classItem.code}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            ))}
+                           
                         </View>
                     </ScrollView>
                     <Modal
@@ -207,8 +152,8 @@ const TeacherDashboard = ({ navigation }) => {
                                     <View>
                                         <TextInput
                                             placeholder="Class Code"
-                                            value={newClassCode}
-                                            onChangeText={setNewClassCode}
+                                            value={classCodes}
+                                            onChangeText={setClassCodes}
                                             style={styles.input}
                                         />
                                     </View>
@@ -236,7 +181,7 @@ const TeacherDashboard = ({ navigation }) => {
                                 <View style={styles.modalContent}>
                                     <View style={styles.stack}>
                                         {selectedClassCodes.map((code, index) => (
-                                            <TouchableOpacity key={index} onPress={() => handleClassCodePress(code)} style={[styles.stackText, selectedClassCode === code && { backgroundColor: 'gray' }]}>
+                                            <TouchableOpacity key={index} onPress={() => addClass} style={[styles.stackText, selectedClassCode === code && { backgroundColor: 'gray' }]}>
                                                 <Text style={styles.stackText}>{code}</Text>
                                             </TouchableOpacity>
                                         ))}
@@ -262,7 +207,7 @@ const TeacherDashboard = ({ navigation }) => {
                                 </View>
                                 <View style={styles.modalContent}>
                                     <Text style={styles.text}>Are you sure you want to delete class {selectedClassCode}?</Text>
-                                    <CustomButton title="Delete" onPress={deleteClass} style={styles.button} textStyle={styles.buttonText} />
+                                    <CustomButton title="Delete" onPress={addClass} style={styles.button} textStyle={styles.buttonText} />
                                 </View>
                                 
                             </View>

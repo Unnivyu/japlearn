@@ -9,81 +9,56 @@ import { styles } from './styles';
 import CustomButton from '../../components/CustomButton';
 
 const Login = ({ navigation }) => {
-    const { user, login } = useContext(AuthContext); 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
 
-    useEffect(() => {
-        console.log("Current user:", user);
-        if (user) {
-            if (user.role === 'user') {
-                if (user.user.classcode) { 
-                    navigation.navigate('Menu');
-                } else {
-                    navigation.navigate('StartMenu', { firstName: user.user.firstname }); 
-                }
-            } else if (user.role === 'teacher') {
-                navigation.navigate('TeacherDashboard');
-            }
-        }
-    }, [user]);
-    
 
-    const handleLogin = async () => {
+    const login = async () => {
+        // Check for empty email or password
+        if (!email.trim() || !password.trim()) {
+            setModalMessage("Please fill in both email and password");
+            setModalVisible(true);
+            return;
+        }
+    
         setLoading(true);
+        const requestData = new URLSearchParams({ email, password });
+    
         try {
-            const userRef = ref(db, 'users');
-            const teacherRef = ref(db, 'Teacher/defaultTeacher');
+            // Make a POST request to your backend `/login` endpoint
+            const response = await fetch('http://localhost:8080/api/students/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: requestData.toString()
+            });
     
-            // Retrieve user data
-            const userSnapshot = await get(userRef);
-            const users = userSnapshot.exists() ? userSnapshot.val() : {};
-    
-            // Retrieve default teacher data
-            const teacherSnapshot = await get(teacherRef);
-            const defaultTeacher = teacherSnapshot.exists() ? teacherSnapshot.val() : {};
-    
-            // Find the user with the provided email
-            const user = Object.values(users).find(user => user.email === email);
-    
-            if (user) {
-    
-                // Compare passwords
-                if (user.password === password) {
-                    // Authentication successful for user
-                    const userData = { email: user.email, role: 'user', user };
-                    await login(userData);
-                    console.log(user.classcode);
-                    if (userData.user.classcode) {
-                        navigation.navigate('Menu');
-                    } else {
-                        navigation.navigate('StartMenu', { firstName: user.firstname });
-                    }
-                } else {
-                    throw new Error('Incorrect password');
-                }
+            if (response.ok) {
+                // Success: navigate to the StartMenu screen
+                const userData = await response.json();
+                // Save any necessary user data here (e.g., AsyncStorage) or in context
+                console.log("User Data: ", userData);
+                navigation.navigate('StartMenu');
             } else {
-                // Check if default teacher email and password match
-                if (defaultTeacher.email === email && defaultTeacher.password === password) {
-                    // Authentication successful for default teacher
-                    const userData = { email: defaultTeacher.email, role: 'teacher', user: defaultTeacher };
-                    await login(userData);
-                    navigation.navigate('TeacherDashboard');
-                } else {
-                    throw new Error('User not found');
-                }
+                // Handle the error response
+                const errorMessage = await response.text();
+                setModalMessage(errorMessage || "Login failed");
+                setModalVisible(true);
             }
         } catch (error) {
-            setModalMessage('Login failed: ' + error.message);
+            console.error('Login Error:', error);
+            setModalMessage('Login failed. Please try again.');
             setModalVisible(true);
         } finally {
             setLoading(false);
         }
     };
     
+
     const handleSignup = () => {
         navigation.navigate('Signup');
     };
@@ -118,7 +93,7 @@ const Login = ({ navigation }) => {
                         <ActivityIndicator size="large" color="#0000ff" />
                     ) : (
                         <>
-                            <CustomButton title="Login" onPress={handleLogin} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Login" onPress={login} style={styles.button} textStyle={styles.buttonText} />
                         </>
                     )}
                 </View>

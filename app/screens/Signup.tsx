@@ -6,6 +6,7 @@ import Logo from '../../assets/jpLogo.svg';
 import CustomButton from '../../components/CustomButton';
 import { db } from '../../config';
 
+
 const Signup = ({ navigation }) => {
     const [fname, setFname] = useState('');
     const [lname, setLname] = useState('');
@@ -26,68 +27,104 @@ const Signup = ({ navigation }) => {
         });
     
         // Validate and submit user data
-        const signup = async () => {
-            // Optional: Add form validation checks here
-    
-            // Clear previous errors
-            setErrors({
-                fname: '',
-                lname: '',
-                email: '',
-                password: '',
-                cpassword: ''
-            });
-    
-            // Perform the signup operation
-            try {
-                setLoading(true);
-    
-                const response = await fetch('http://192.168.1.5:8080/api/users/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        fname,
-                        lname,
-                        email,
-                        password
-                    })
-                });
-    
-                const data = await response.json();
-    
-                if (response.ok) {
-                    // Registration was successful
-                    setModalMessage('Signup successful!');
-                    setModalVisible(true);
-    
-                    // Reset form or navigate to the next page
-                    setFname('');
-                    setLname('');
-                    setEmail('');
-                    setPassword('');
-                    setCPassword('');
-    
-                    // Navigate to a different screen (optional)
-                    // navigation.navigate('HomeScreen');
-                } else {
-                    // Handle server errors (like duplicate email)
-                    setModalMessage(`Signup failed: ${data.message || response.statusText}`);
-                    setModalVisible(true);
-                }
-            } catch (error) {
-                // Handle network errors
-                setModalMessage(`Signup failed: ${error.message}`);
-                setModalVisible(true);
-            } finally {
-                setLoading(false);
-            }
-        };
+        // Validate and submit user data
+const signup = async () => {
+    // Initialize error messages
+    let validationErrors = {
+        fname: '',
+        lname: '',
+        email: '',
+        password: '',
+        cpassword: ''
+    };
+
+    // Check if any field is missing or empty
+    if (!fname) {
+        validationErrors.fname = 'Please enter your first name';
+    }
+    if (!lname) {
+        validationErrors.lname = 'Please enter your last name';
+    }
+    if (!email) {
+        validationErrors.email = 'Please enter your email';
+    } else if (!email.endsWith('@gmail.com')) {
+        validationErrors.email = 'Invalid email';
+    }   
+    if (!password) {
+        validationErrors.password = 'Please enter your password';
+    }
+    if (!cpassword) {
+        validationErrors.cpassword = 'Please confirm your password';
+    } else if (password !== cpassword) {
+        validationErrors.cpassword = 'Passwords do not match';
+    }
+
+    // Update errors state
+    setErrors(validationErrors);
+
+    // If there are any validation errors, do not proceed with signup
+    if (Object.values(validationErrors).some(error => error !== '')) {
+        setModalMessage('Please correct the highlighted fields.');
+        setModalVisible(true);
+        return;
+    }
+
+    // Perform the signup operation
+    try {
+        setLoading(true);
+
+        const response = await fetch('http://localhost:8080/api/students/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                fname,
+                lname,
+                email,
+                password
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Registration was successful
+            setModalMessage('Signup successful!');
+            setModalVisible(true);
+
+            // Reset form or navigate to the next page
+            setFname('');
+            setLname('');
+            setEmail('');
+            setPassword('');
+            setCPassword('');
+
+            setTimeout(() => {
+                setModalVisible(false);
+                navigation.navigate('Login');
+            }, 2000);
+
+            // Navigate to a different screen (optional)
+            // navigation.navigate('HomeScreen');
+        } else {
+            // Handle server errors (like duplicate email)
+            setModalMessage(`Signup failed: ${data.message || response.statusText}`);
+            setModalVisible(true);
+        }
+    } catch (error) {
+        // Handle network errors
+        setModalMessage(`Signup failed: ${error.message}`);
+        setModalVisible(true);
+    } finally {
+        setLoading(false);
+    }
+};
+
     
         // Sign-in action
         const signin = () => {
-            navigation.navigate('Signin');
+            navigation.navigate('Login');
         };
 
  
