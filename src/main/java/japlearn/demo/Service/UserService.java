@@ -1,39 +1,46 @@
 package japlearn.demo.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import japlearn.demo.Entity.User;
 import japlearn.demo.Repository.UserRepository;
 
 @Service
-
 public class UserService {
-
-    private UserRepository userRepository = null;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    /**
-     * Registers a new user and saves them to the MongoDB database.
-     *
-     * @param user The user to be registered.
-     * @return The saved user.
-     */
-    public User registerUser(User user) {
-        // Perform any business logic or validations here, if needed.
-        // For example, you can check if a user with the same email already exists.
+    public String registerUser(User user) {
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            return "duplicate"; 
+        }
 
-        // Save the user to the MongoDB database using the repository.
-        User savedUser = userRepository.save(user);
-
-        // Return the saved user.
-        return savedUser;
+        String encryptedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encryptedPassword);
+        userRepository.save(user);
+        return "success";
+    }
+    
+    public User authenticate(String email, String rawPassword) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+        return user;
     }
 
-    
-    
 }

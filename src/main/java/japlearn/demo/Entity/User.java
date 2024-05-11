@@ -13,18 +13,20 @@ public class User {
     private String lname;
     private String email;
     private String password;
+    private String role;
    
 
     
     public User() {
     }
     
-    public User(String id, String fname, String lname, String email, String password) {
+    public User(String id, String fname, String lname, String email, String password, String role) {
         this.id = id;
         this.fname = fname;
         this.lname = lname;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
     public String getId() {
         return id;
@@ -55,6 +57,12 @@ public class User {
     }
     public void setPassword(String password) {
         this.password = password;
+    }
+    public String getRole() {
+        return role;
+    }
+    public void setRole(String role) {
+        this.role = role;
     }
 
 
