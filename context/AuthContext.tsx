@@ -1,34 +1,46 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Create a TypeScript interface for user data
 interface User {
   email: string;
   fname: string;
   lname: string;
-  password: string;
-  // Other fields as needed
+  role: string;
 }
 
-// Create an AuthContext interface
 interface AuthContextProps {
   user: User | null;
-  login: (user: User) => void;
+  login: (user: User) => Promise<void>; // Updated login function to accept a User object
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextProps>({
   user: null,
-  login: () => {},
+  login: async () => {},
   logout: () => {},
 });
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const login = async (user: User) => {
-    setUser(user);
-    await AsyncStorage.setItem('user', JSON.stringify(user));
+  useEffect(() => {
+    const loadUserData = async () => {
+      const userDataString = await AsyncStorage.getItem('user');
+      if (userDataString) {
+        const userData: User = JSON.parse(userDataString);
+        setUser(userData);
+      }
+    };
+    loadUserData();
+  }, []);
+
+  const login = async (userData: User) => { // Updated login function to accept a User object
+    try {
+      setUser(userData);
+      await AsyncStorage.setItem('user', JSON.stringify(userData));
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   const logout = async () => {

@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, View, TextInput, KeyboardAvoidingView, Modal,Button, Text, ActivityIndicator, ScrollView } from 'react-native';
-import { ref, set, get, update } from "firebase/database";
+import { TouchableOpacity, View, TextInput, KeyboardAvoidingView, Modal, Button, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { styles } from './styles';
 import Logo from '../../assets/jpLogo.svg';
 import CustomButton from '../../components/CustomButton';
-import { db } from '../../config';
-
 
 const Signup = ({ navigation }) => {
     const [fname, setFname] = useState('');
@@ -17,120 +14,112 @@ const Signup = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
 
-        // Errors state, optional for input validation feedback
-        const [errors, setErrors] = useState({
-            fname: '',
-            lname: '',
-            email: '',
-            password: '',
-            cpassword: ''
-        });
-    
-        // Validate and submit user data
-        // Validate and submit user data
-const signup = async () => {
-    // Initialize error messages
-    let validationErrors = {
+    const [errors, setErrors] = useState({
         fname: '',
         lname: '',
         email: '',
         password: '',
         cpassword: ''
+    });
+
+    const signup = async () => {
+        let validationErrors = {
+            fname: '',
+            lname: '',
+            email: '',
+            password: '',
+            cpassword: ''
+        };
+    
+        if (!fname.trim()) {
+            validationErrors.fname = 'Please enter your first name';
+        }
+        if (!lname.trim()) {
+            validationErrors.lname = 'Please enter your last name';
+        }
+        if (!email.trim()) {
+            validationErrors.email = 'Please enter your email';
+        } else if (!email.endsWith('@gmail.com')) {
+            validationErrors.email = 'Invalid email format';
+        }
+        if (!password) {
+            validationErrors.password = 'Please enter your password';
+        } else {
+            if (password.length < 8) {
+                validationErrors.password = 'Password must be at least 8 characters long';
+            }
+            if (!/[A-Z]/.test(password)) {
+                validationErrors.password = validationErrors.password + ' Include at least one uppercase letter';
+            }
+            if (!/[0-9]/.test(password)) {
+                validationErrors.password = validationErrors.password + ' Include at least one number';
+            }
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                validationErrors.password = validationErrors.password + ' Include at least one special character';
+            }
+        }
+        if (!cpassword) {
+            validationErrors.cpassword = 'Please confirm your password';
+        } else if (password !== cpassword) {
+            validationErrors.cpassword = 'Passwords do not match';
+        }
+    
+        setErrors(validationErrors);
+    
+        if (Object.values(validationErrors).some(error => error !== '')) {
+            setModalMessage('Please correct the highlighted fields.');
+            setModalVisible(true);
+            return;
+        }
+    
+        // Perform the signup operation
+        try {
+            setLoading(true);
+            const response = await fetch('http://localhost:8080/api/users/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fname,
+                    lname,
+                    email,
+                    password,
+                    role: 'student'
+                })
+            });
+    
+            const data = await response.json();
+            if (response.ok) {
+                setModalMessage('Signup successful!');
+                setModalVisible(true);
+                setFname('');
+                setLname('');
+                setEmail('');
+                setPassword('');
+                setCPassword('');
+    
+                setTimeout(() => {
+                    setModalVisible(false);
+                    navigation.navigate('Login');
+                }, 2000);
+            } else {
+                const errorMessage = await response.text();
+                console.error('Error response:', errorMessage);
+                setModalMessage(`Signup failed: ${errorMessage}`);
+                setModalVisible(true);
+            }
+        } catch (error) {
+            setModalMessage(`Signup failed: ${error.message}`);
+            setModalVisible(true);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Check if any field is missing or empty
-    if (!fname) {
-        validationErrors.fname = 'Please enter your first name';
+    const handleNavSignin = () => {
+        navigation.navigate('Login');
     }
-    if (!lname) {
-        validationErrors.lname = 'Please enter your last name';
-    }
-    if (!email) {
-        validationErrors.email = 'Please enter your email';
-    } else if (!email.endsWith('@gmail.com')) {
-        validationErrors.email = 'Invalid email';
-    }   
-    if (!password) {
-        validationErrors.password = 'Please enter your password';
-    }
-    if (!cpassword) {
-        validationErrors.cpassword = 'Please confirm your password';
-    } else if (password !== cpassword) {
-        validationErrors.cpassword = 'Passwords do not match';
-    }
-
-    // Update errors state
-    setErrors(validationErrors);
-
-    // If there are any validation errors, do not proceed with signup
-    if (Object.values(validationErrors).some(error => error !== '')) {
-        setModalMessage('Please correct the highlighted fields.');
-        setModalVisible(true);
-        return;
-    }
-
-    // Perform the signup operation
-    try {
-        setLoading(true);
-
-        const response = await fetch('http://192.168.43.241:8080/api/students/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                fname,
-                lname,
-                email,
-                password
-            })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            // Registration was successful
-            setModalMessage('Signup successful!');
-            setModalVisible(true);
-
-            // Reset form or navigate to the next page
-            setFname('');
-            setLname('');
-            setEmail('');
-            setPassword('');
-            setCPassword('');
-
-            setTimeout(() => {
-                setModalVisible(false);
-                navigation.navigate('Login');
-            }, 2000);
-
-            // Navigate to a different screen (optional)
-            // navigation.navigate('HomeScreen');
-        } else {
-            // Handle server errors (like duplicate email)
-            setModalMessage(`Signup failed: ${data.message || response.statusText}`);
-            setModalVisible(true);
-        }
-    } catch (error) {
-        // Handle network errors
-        setModalMessage(`Signup failed: ${error.message}`);
-        setModalVisible(true);
-    } finally {
-        setLoading(false);
-    }
-};
-
-    
-        // Sign-in action
-        const signin = () => {
-            navigation.navigate('Login');
-        };
-
- 
-    
-    
-    
 
     return (
         <KeyboardAvoidingView style={styles.container} behavior='padding'>
@@ -147,12 +136,9 @@ const signup = async () => {
                         autoCapitalize="none"
                         onChangeText={(text) => setFname(text)}
                     />
-                    {errors.fname ? (
-                        <View style={{ flexDirection: 'column' }}>
-                            <View style={styles.triangleUp} />
-                            <Text style={styles.errorText}>{errors.fname}</Text>
-                        </View>
-                    ) : null}
+                    {errors.fname && (
+                        <Text style={styles.errorText}>{errors.fname}</Text>
+                    )}
 
                     <TextInput
                         style={[styles.input, errors.lname ? styles.errorInput : null]}
@@ -161,13 +147,10 @@ const signup = async () => {
                         autoCapitalize="none"
                         onChangeText={(text) => setLname(text)}
                     />
-                    {errors.lname ? (
-                        <View style={{ flexDirection: 'column' }}>
-                            <View style={styles.triangleUp} />
-                            <Text style={styles.errorText}>{errors.lname}</Text>
-                        </View>
-                    ) : null}
-                    
+                    {errors.lname && (
+                        <Text style={styles.errorText}>{errors.lname}</Text>
+                    )}
+
                     <TextInput
                         style={[styles.input, errors.email ? styles.errorInput : null]}
                         value={email}
@@ -175,12 +158,9 @@ const signup = async () => {
                         autoCapitalize="none"
                         onChangeText={(text) => setEmail(text)}
                     />
-                    {errors.email ? (
-                        <View style={{ flexDirection: 'column' }}>
-                            <View style={styles.triangleUp} />
-                            <Text style={styles.errorText}>{errors.email}</Text>
-                        </View>
-                    ) : null}
+                    {errors.email && (
+                        <Text style={styles.errorText}>{errors.email}</Text>
+                    )}
 
                     <TextInput
                         style={[styles.input, errors.password ? styles.errorInput : null]}
@@ -190,12 +170,9 @@ const signup = async () => {
                         autoCapitalize="none"
                         onChangeText={(text) => setPassword(text)}
                     />
-                    {errors.password ? (
-                        <View style={{ flexDirection: 'column' }}>
-                            <View style={styles.triangleUp} />
-                            <Text style={styles.errorText}>{errors.password}</Text>
-                        </View>
-                    ) : null}
+                    {errors.password && (
+                        <Text style={styles.errorText}>{errors.password}</Text>
+                    )}
 
                     <TextInput
                         style={[styles.input, errors.cpassword ? styles.errorInput : null]}
@@ -205,30 +182,22 @@ const signup = async () => {
                         autoCapitalize="none"
                         onChangeText={(text) => setCPassword(text)}
                     />
-                    {errors.cpassword ? (
-                        <View style={{ flexDirection: 'column' }}>
-                            <View style={styles.triangleUp} />
-                            <Text style={styles.errorText}>{errors.cpassword}</Text>
-                        </View>
-                    ) : null}
+                    {errors.cpassword && (
+                        <Text style={styles.errorText}>{errors.cpassword}</Text>
+                    )}
 
                     <View style={styles.buttonContainer}>
                         {loading ? (
                             <ActivityIndicator size="large" color="#0000ff" />
                         ) : (
-                            <>
-                                <CustomButton title="Sign Up" onPress={signup} style={styles.button} textStyle={styles.buttonText}/>
-                            </>
+                            <CustomButton title="Sign Up" onPress={signup} style={styles.button} textStyle={styles.buttonText}/>
                         )}
                     </View>
 
                     <View style={{ justifyContent: 'center', flexDirection: 'row' }}>
-                        <Text>
-                            <Text style={styles.extraText}>Already have an account? </Text>
-                            <TouchableOpacity onPress={signin}>
-                                <Text style={styles.linkText}>Sign In</Text>
-                            </TouchableOpacity>
-                        </Text>
+                        <TouchableOpacity onPress={handleNavSignin}>
+                            <Text style={styles.linkText}>Already have an account? Sign In</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
 

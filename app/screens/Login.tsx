@@ -2,23 +2,38 @@ import React, { useState, useContext, useEffect } from 'react';
 import { View, TextInput, Button, Text, TouchableOpacity, KeyboardAvoidingView, Modal, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ref, get } from "firebase/database";
-import { db } from '../../config';
+import { useNavigation } from '@react-navigation/native';
 import Logo from '../../assets/jpLogo.svg';
 import { styles } from './styles';
 import CustomButton from '../../components/CustomButton';
 
-const Login = ({ navigation }) => {
-    const { login } = useContext(AuthContext);
+const Login = () => {
+    const { user, login } = useContext(AuthContext);
+    const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
 
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            if (user) {
+                navigateBasedOnRole(user.role);
+            }
+        };
+        checkLoginStatus();
+    }, [user]);
+
+    const navigateBasedOnRole = (role) => {
+        if (role === 'student') {
+            navigation.navigate('StartMenu');
+        } else if (role === 'teacher') {
+            navigation.navigate('TeacherDashboard');
+        }
+    };
 
     const Signin = async () => {
-        // Check for empty email or password
         if (!email.trim() || !password.trim()) {
             setModalMessage("Please fill in both email and password");
             setModalVisible(true);
@@ -26,32 +41,33 @@ const Login = ({ navigation }) => {
         }
     
         setLoading(true);
-        const requestData = new URLSearchParams({ email, password });
     
         try {
-            // Make a POST request to your backend `/login` endpoint
-            const response = await fetch('http://localhost:8080/api/students/login', {
+            const response = await fetch('http://localhost:8080/api/users/login', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/json'
                 },
-                body: requestData.toString()
+                body: JSON.stringify({ email, password })
             });
     
+            const data = await response.json();
+    
             if (response.ok) {
-                // Success: navigate to the StartMenu screen
-                const userData = await response.json();
-                // Save any necessary user data here (e.g., AsyncStorage) or in context
-                console.log("User Data: ", userData);
-                navigation.navigate('StartMenu');
+                const userData = {
+                    email: data.email,
+                    fname: data.fname,
+                    lname: data.lname,
+                    role: data.role
+                };
+                console.log(userData);
+                await login(userData); 
+                navigateBasedOnRole(data.role);
             } else {
-                // Handle the error response
-                const errorMessage = await response.text();
-                setModalMessage(errorMessage || "Login failed");
+                setModalMessage(`Login failed: ${data.error || 'Check input'}`);
                 setModalVisible(true);
             }
         } catch (error) {
-            console.error('Login Error:', error);
             setModalMessage('Login failed. Please try again.');
             setModalVisible(true);
         } finally {
@@ -59,13 +75,12 @@ const Login = ({ navigation }) => {
         }
     };
     
-
     const handleSignup = () => {
         navigation.navigate('Signup');
     };
 
     const handleForgotPassword = () => {
-        // Implement forgot password functionality
+        // Placeholder for forgot password functionality
     };
 
     return (
@@ -79,7 +94,7 @@ const Login = ({ navigation }) => {
                     value={email}
                     placeholder='Email'
                     autoCapitalize="none"
-                    onChangeText={(text) => setEmail(text)}
+                    onChangeText={setEmail}
                 />
                 <TextInput
                     style={styles.input}
@@ -87,24 +102,20 @@ const Login = ({ navigation }) => {
                     value={password}
                     placeholder='Password'
                     autoCapitalize="none"
-                    onChangeText={(text) => setPassword(text)}
+                    onChangeText={setPassword}
                 />
                 <View style={styles.buttonContainer}>
                     {loading ? (
                         <ActivityIndicator size="large" color="#0000ff" />
                     ) : (
-                        <>
-                            <CustomButton title="Login" onPress={Signin} style={styles.button} textStyle={styles.buttonText} />
-                        </>
+                        <CustomButton title="Login" onPress={Signin} style={styles.button} textStyle={styles.buttonText} />
                     )}
                 </View>
                 <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
-                    <Text>
-                        <TouchableOpacity onPress={handleSignup}>
-                            <Text style={styles.linkText}>Create account?</Text>
-                        </TouchableOpacity>
-                    </Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={handleSignup}>
+                        <Text style={styles.linkText}>Create account?</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleForgotPassword}>
                         <Text style={styles.linkText}>Forgot Password?</Text>
                     </TouchableOpacity>
                 </View>
@@ -117,10 +128,7 @@ const Login = ({ navigation }) => {
             >
                 <View style={styles.modalView}>
                     <Text>{modalMessage}</Text>
-                    <Button
-                        title="Close"
-                        onPress={() => setModalVisible(false)}
-                    />
+                    <Button title="Close" onPress={() => setModalVisible(false)} />
                 </View>
             </Modal>
         </KeyboardAvoidingView>
