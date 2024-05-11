@@ -1,167 +1,131 @@
 import { StyleSheet } from 'react-native';
 
 export const stylesQuackman = StyleSheet.create({
-
-    buttonContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    textStyle: {
-        fontWeight: 'bold', 
-        fontSize: 30, 
-        marginTop: -500
-    },
-    imageStyle:{
-        marginTop: -200, 
-        width: 200, 
-        height: 200,
-        marginLeft: 80
-        
-    },
-    SlateBody: {
-        marginTop:100, 
-        width: 360, 
-        height: 300,
-    },
-    menuButton: {
-        width: 200,
-        height: 200,
-        marginBottom: 20,
-    },
-    input: {
-        backgroundColor:'#EFECEC',
-        color: '#A4A4A4',
-        borderRadius: 10,
-        padding: 10,
-        width: 340,
-        marginBottom: 10,
-        height: 70,
-    },
-    header: {
-        backgroundColor: '#8423D9',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 10,
-        paddingTop: 30,
-        marginBottom: 100, 
-        borderBottomWidth: 10, 
-        borderBottomColor: '#6C3A99',
-        
-    },
-    hText: {
-        fontFamily: 'jua',
-        color: 'white',
-        fontSize: 15,
-    },
-    leftContainer: {
-        flex: 1,
-    },
-    rightContainer: {
-        flex: 1,
-        alignItems: 'flex-end',
-    },
     menuContainer: {
-        flexDirection: 'row', // Set flexDirection to row to display items horizontally
-        alignItems: 'center', // Align items vertically in the center
-        position: 'relative', // Ensure the container is relative for absolute positioning of the upper image
-        zIndex: 0, // Set z-index to default for buttons to be behind the upper image
-        marginTop: -50 // Adjust margin-top as needed
+        flexDirection: 'row',  // Align children horizontally
+        alignItems: 'flex-end',  // Align items to the bottom
+        justifyContent: 'center',  // Center the contents within the container horizontally
     },
-    menuText: {
-        fontFamily: 'jua',
-        fontSize: 30,
-    },
-    MenuAll:{
-        flex: 1, justifyContent: 'center', alignItems: 'center'
-    },
-    button: {
-        backgroundColor:'#8ED94D',
-        borderBottomColor: '#74A14C',
-        borderBottomWidth: 6,
-        padding: 5,
-        height: 60,
-        width: 100,
-        marginBottom: 20,
-        borderRadius: 30,
+    MenuAll: {
+        flex: 1,
         justifyContent: 'center',
-        position: 'relative', // Ensure the button is relative for z-index stacking
-        zIndex: 1, // Set z-index higher than default for the buttons to be above other content
+        alignItems: 'center'
     },
-    buttonText: {
-        fontSize: 20,
-        textAlign: 'center',
-        marginTop: 80, // Adjust as needed for text positioning
-        color: 'white', // Adjust text color as needed
-    },
-    Progress:{
+    Progress: {
         position: 'absolute', 
-        top: -260, 
+        top: -270, 
         left: 240, 
         width: 105, 
         height: 45, 
         justifyContent: 'center', 
         alignItems: 'center' 
-        
     },
-    pictureCircle: {
-        backgroundColor: 'white',
-        width: 50, 
-        height: 50, 
-        borderRadius: 50,
-    },
-    
-    
     BackButton: {
         position: 'absolute', 
-        top: -230, 
+        top: -185, 
         left: 20
     },
-    NextButton: {
-        position: 'absolute', 
-        top: 400, 
-        left: 250
-    },
-    NextButtonS:{
-        width: 85, 
-        height: 40
-    },
-
     upperLeftButtonImage: {
-        width: 70, height: 40,
-        top : -80
-    },
-    upperImage: {
-        position: 'absolute',
-        top: 150,
-        left: '25%',
-        marginLeft: -83, // Half of the width to center it horizontally
-        width: 350, // Same width as buttons
-        height: 180, // Adjust height as needed
-        marginBottom: 20, // Adjust margin bottom as needed
-        zIndex: 2, // Set z-index higher than buttons to display above them
-    },
-    textInput: {
-        width: '80%',
+        width: 70,
         height: 40,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 20, // Increased border radius for smoother edges
-        paddingHorizontal: 100, // Adjusted padding for better appearance
-        marginTop: 200,
-    },
-    Mole: {
-        position: 'absolute', // Position the Mole absolutely within the SlateBody
-        top: 100, // Adjust as needed
-        left: 35, // Adjust as needed
-        width: 70, // Adjust as needed
-        height: 80, // Adjust as needed
+        top: -80
     },
     Quacklogo: {
-        marginRight: 10, // Adjust margin-right to create space between the image and text
-        width: 100, // Adjust width as needed
-        height: 100, // Adjust height as needed
-        borderRadius: 25,
-        top: -250 // Adjust border radius for a circular image
+        width: 100,
+        height: 100,
+        marginRight: 20,  // Space between the logo and the text
+        marginTop: -300, 
+        marginBottom: 100 // Move the logo up relative to the text
     },
-    
+    textStyle: {
+        fontWeight: 'bold', 
+        fontSize: 30,
+        marginTop: -300,
+        marginBottom: 135
+    },
+    QuackChance: {
+        width: 50,
+        height: 40,
+        borderRadius: 10,
+        marginRight: 10,  // Right margin for spacing between images
+        marginLeft: 10,  // Left margin if needed for spacing
+    },
+    quackChanceContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+        marginTop: -200,
+        marginBottom: -180
+    },
+    QuackmanOptions: {
+        width: 50,  // Example width, adjust as needed
+        height: 50,  // Example height, adjust as needed
+        marginTop: 30,  // Space above the button to separate it from the images
+        alignSelf: 'center'  // Center the button horizontally
+    },
+    QuackmanBGImage: {
+        marginBottom: -200
+    },
+    QuackmanBGText: {
+        position: 'absolute',
+        top: '55%',
+        left: '10%',
+        fontSize: 20,
+        color: 'black',
+        
+    },
+    gridContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',  // This will space out the buttons evenly
+        width: '100%',  // Ensure the container takes full width of the screen
+        marginTop: 80,
+        marginBottom: 50,
+        paddingHorizontal: 10,  // Add horizontal padding if needed
+    },
+    button: {
+        width: 60,  // Adjust size based on your preference and screen size
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 5,  // Vertical spacing between rows
+    },
+    buttonText: {
+        fontSize: 12,  // Make sure text is readable
+        color: 'white',  // Ensure contrast against button background
+        fontWeight: 'bold',
+        position: 'absolute',  // Overlay text on the image
+    },
+    buttonImage: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        borderRadius: 5,  // Optional: adds rounded corners to the button image
+    },
+    purpleBoxContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',  // Space boxes horizontally
+        marginTop: 10,
+                          // Adjust vertical spacing
+    },
+    purpleBox: {
+        width: 50,                       // Square width
+        height: 50,                      // Square height
+        backgroundColor: 'white',        // White background for text input
+        borderColor: 'purple',           // Purple border color
+        borderWidth: 2,                  // Thickness of the border
+        justifyContent: 'center',        // Center text vertically
+        alignItems: 'center',            // Center text horizontally
+        borderRadius: 4,                 // Rounded corners (optional)
+        marginHorizontal: 10,            // Horizontal spacing between boxes
+        marginVertical: 5,    
+        marginBottom: 30           // Vertical spacing between rows
+    },
+    textInputStyle: {
+        flex: 1,
+        color: 'purple',                 // Text color for visibility
+        textAlign: 'center',             // Center text horizontally
+        fontWeight: 'bold',              // Bold text
+    },
 });
