@@ -6,12 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import japlearn.demo.Entity.Student;
 import japlearn.demo.Service.StudentService;
 
 @RestController
@@ -30,8 +28,8 @@ public class StudentController {
     }
 
     @PostMapping("/joinClass")
-    public ResponseEntity<String> joinClass(@RequestParam String fname, @RequestParam String classCodes) {
-        boolean success = studentService.joinClassCodeByFname(fname, classCodes);
+    public ResponseEntity<String> joinClass(@RequestParam String fname, @RequestParam String classCode) {
+        boolean success = studentService.joinClassCodeByFname(fname, classCode);
 
         if (success) {
             return ResponseEntity.ok("Successfully joined the class.");

@@ -1,6 +1,7 @@
 package japlearn.demo.Controller;
 
 import java.util.Collections;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import japlearn.demo.DTO.LoginRequest;
 import japlearn.demo.Entity.User;
 import japlearn.demo.Service.UserService;
+import japlearn.demo.DTO.LoginRequest;
 
 @RestController
 @RequestMapping("/api/users")
@@ -41,8 +42,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", "Registration failed"));
         }
     }
-
-    //testtt
 
     @PostMapping("/login")
 public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
