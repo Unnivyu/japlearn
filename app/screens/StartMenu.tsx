@@ -9,11 +9,9 @@ import { AuthContext } from '../../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 
 
-const StartMenu = ({}) => {
+const StartMenu = ({navigation}) => {
     const [classcode, setClasscode] = useState('');
     const { user } = useContext(AuthContext);
-    const navigation = useNavigation();
-    
 
 
     

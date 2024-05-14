@@ -22,6 +22,14 @@ const QuackmanLevels = ({ navigation }) => {
         navigation.navigate('QuackslateEdit')
     }
 
+    const handleLevelNavigatePress2 = () => {
+        navigation.navigate('QuackslateEdit2')
+    }
+
+    const handleLevelNavigatePress3 = () => {
+        navigation.navigate('QuackslateEdit3')
+    }
+
     const handleRemovePress = () => {
         setRemoveModalVisible(true);
     };
@@ -58,7 +66,23 @@ const QuackmanLevels = ({ navigation }) => {
                     <View style={stylesLevels.levelContainer}>
                         <TouchableOpacity onPress={handleLevelNavigatePress}>
                             <View style={stylesLevels.level}>
-                                <Text style={stylesLevels.levelText}>Level Name</Text>
+                                <Text style={stylesLevels.levelText}>Intro</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={stylesLevels.levelContainer}>
+                        <TouchableOpacity onPress={handleLevelNavigatePress2}>
+                            <View style={stylesLevels.level}>
+                                <Text style={stylesLevels.levelText}>Basics 1</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={stylesLevels.levelContainer}>
+                        <TouchableOpacity onPress={handleLevelNavigatePress3}>
+                            <View style={stylesLevels.level}>
+                                <Text style={stylesLevels.levelText}>Basics 2</Text>
                             </View>
                         </TouchableOpacity>
                     </View>

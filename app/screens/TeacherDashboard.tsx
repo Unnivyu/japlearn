@@ -1,40 +1,47 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Modal, View, KeyboardAvoidingView, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Button, StyleSheet } from 'react-native';
-import { stylesDashboard } from './stylesDashboard';
+import { Modal, View, KeyboardAvoidingView, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, StyleSheet } from 'react-native';
 import CustomButton from '../../components/CustomButton';
+import { stylesDashboard } from './stylesDashboard';
 import { styles } from './stylesModal';
-import { db } from '../../config';
-import {ref,set, push, child, get} from "firebase/database";
-import { useFocusEffect } from '@react-navigation/native'; 
 import { AuthContext } from '../../context/AuthContext';
 
-
 const TeacherDashboard = ({ navigation }) => {
-    const [classCodes, setClassCodes] = useState('');
+    const [classCodes, setClassCodes] = useState([]);
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [deleteClassCode, setDeleteClassCode] = useState('');
     const [newClassCode, setNewClassCode] = useState('');
-    const [selectedClassCodes, setSelectedClassCodes] = useState([]);
-    const [selectedClassCode, setSelectedClassCode] = useState(null);
-    const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
-    const [newClassName, setNewClassName] = useState('');
-    const [teacherName, setTeacherName] = useState('');
     const { user } = useContext(AuthContext);
 
+    const fetchClassCodes = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/classes/getAllClasses');
+            if (response.ok) {
+                const data = await response.json();
+                setClassCodes(data.map(item => item.classCodes));
+            } else {
+                const errorData = await response.json();
+                throw new Error('Failed to fetch class codes: ' + errorData.message);
+            }
+        } catch (error) {
+            console.error('Fetch error:', error.message);
+            alert('Failed to load class codes: ' + error.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchClassCodes();
+    }, []);
+
     const addClass = async () => {
-        // Ensure there's a value in newClassCode
-        if (!classCodes.trim()) {
+        if (!newClassCode.trim()) {
             alert("Please enter a class code");
             return;
         }
-    
-        // Create the class entity to send to the backend
         const classEntity = {
-            classCodes: classCodes
+            classCodes: newClassCode
         };
-    
         try {
-            // Send the class entity to your backend API endpoint
             const response = await fetch('http://localhost:8080/api/classes/addClass', {
                 method: 'POST',
                 headers: {
@@ -42,33 +49,42 @@ const TeacherDashboard = ({ navigation }) => {
                 },
                 body: JSON.stringify(classEntity)
             });
-    
+            const data = await response.json(); // Parse the JSON data
             if (response.ok) {
-                // Parse response data if needed
-                const data = await response.json();
-                console.log('Class added successfully:', data);
-                // Close the modal and reset the input
+                fetchClassCodes();
                 setAddModalVisible(false);
                 setNewClassCode('');
-                // Optionally, refresh the classes list here
             } else {
-                const errorData = await response.json();
-                alert(`Error adding class: ${errorData.message}`);
+                alert(data.error || 'Error adding class'); // Show error from backend
             }
         } catch (error) {
             console.error('Error adding class:', error);
-            alert('Error adding class');
+            alert('Error adding class: ' + error.message);
         }
     };
 
-   
-
-
-    useEffect(() => {
-        console.log("Current user:", user);
-    }, [user]);
-
-
+    const handleRemoveClass = async () => {
+        if (!deleteClassCode.trim()) {
+            alert("Please enter a valid class code to delete");
+            return;
+        }
+        try {
+            const response = await fetch(`http://localhost:8080/api/classes/removeClass?classCode=${deleteClassCode}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json(); // Always parse JSON
+            if (response.ok) {
+                alert(data.message); // Handle successful removal
+                fetchClassCodes();
+                setDeleteModalVisible(false);
+                setDeleteClassCode('');
+            } else {
+                throw new Error(data.error || 'Failed to delete class'); // Handle errors
+            }
+        } catch (error) {
+            alert(`Error removing class: ${error.message}`);
+        }
+    };
 
     const handleProfilePress = () => {
         navigation.navigate('Profile');
@@ -78,30 +94,14 @@ const TeacherDashboard = ({ navigation }) => {
         setAddModalVisible(true);
     };
 
-  
-
-
-  
+    const handleRemovePress = () => {
+        setDeleteModalVisible(true);
+    };
 
     const closeModal = () => {
         setAddModalVisible(false);
         setDeleteModalVisible(false);
-        setConfirmDeleteModalVisible(false);
-        setSelectedClassCodes([]);
-        setSelectedClassCode(null);
-    };
-
-
-
-    const handleConfirmDeletePress = () => {
-        setConfirmDeleteModalVisible(true);
-
-    };
-
-    const handleCancelDeletePress = () => {
-        setSelectedClassCode(null);
-        setConfirmDeleteModalVisible(false);
-
+        setDeleteClassCode('');
     };
 
     return (
@@ -125,13 +125,15 @@ const TeacherDashboard = ({ navigation }) => {
                         </View>
                         <View style={stylesDashboard.buttonContainer}>
                             <CustomButton title="Add" onPress={handleAddPress} style={stylesDashboard.button} textStyle={stylesDashboard.buttonText} />
-                            <CustomButton title="Remove" onPress={handleAddPress} style={stylesDashboard.button} textStyle={stylesDashboard.buttonText} />
+                            <CustomButton title="Remove" onPress={handleRemovePress} style={stylesDashboard.button} textStyle={stylesDashboard.buttonText} />
                         </View>
                     </View>
-                    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                        <View style={stylesDashboard.classContainer}>
-                           
-                        </View>
+                    <ScrollView contentContainerStyle={stylesDashboard.classContainer}>
+                        {classCodes.map((code, index) => (
+                            <View key={index} style={stylesDashboard.classContent}>
+                                <Text style={stylesDashboard.classContentText}>{code}</Text>
+                            </View>
+                        ))}
                     </ScrollView>
                     <Modal
                         animationType="slide"
@@ -139,9 +141,7 @@ const TeacherDashboard = ({ navigation }) => {
                         visible={addModalVisible}
                         onRequestClose={closeModal}
                     >
-                        
                         <View style={styles.centeredView}>
-                            
                             <View style={styles.modalView}>
                                 <View style={styles.closeButtonContainer}>
                                     <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
@@ -149,20 +149,16 @@ const TeacherDashboard = ({ navigation }) => {
                                     </TouchableOpacity>
                                 </View>
                                 <View style={styles.modalContent}>
-                                    <View>
-                                        <TextInput
-                                            placeholder="Class Code"
-                                            value={classCodes}
-                                            onChangeText={setClassCodes}
-                                            style={styles.input}
-                                        />
-                                    </View>
+                                    <TextInput
+                                        placeholder="Class Code"
+                                        value={newClassCode}
+                                        onChangeText={setNewClassCode}
+                                        style={styles.input}
+                                    />
                                     <CustomButton title="Add" onPress={addClass} style={styles.button} textStyle={styles.buttonText} />
                                 </View>
-                                
                             </View>
                         </View>
-
                     </Modal>
                     <Modal
                         animationType="slide"
@@ -177,39 +173,16 @@ const TeacherDashboard = ({ navigation }) => {
                                         <Text style={styles.closeButtonText}>X</Text>
                                     </TouchableOpacity>
                                 </View>
-                                <Text style={styles.text}>Class Selection</Text>
                                 <View style={styles.modalContent}>
-                                    <View style={styles.stack}>
-                                        {selectedClassCodes.map((code, index) => (
-                                            <TouchableOpacity key={index} onPress={() => addClass} style={[styles.stackText, selectedClassCode === code && { backgroundColor: 'gray' }]}>
-                                                <Text style={styles.stackText}>{code}</Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </View>
-                                    <CustomButton title="Delete" onPress={handleConfirmDeletePress} style={styles.button} textStyle={styles.buttonText} />
+                                    <Text style={styles.text}>Are you sure you want to delete the following class?</Text>
+                                    <TextInput
+                                        placeholder="Enter Class Code"
+                                        value={deleteClassCode}
+                                        onChangeText={setDeleteClassCode}
+                                        style={styles.input}
+                                    />
+                                    <CustomButton title="Delete" onPress={handleRemoveClass} style={styles.button} textStyle={styles.buttonText} />
                                 </View>
-                                
-                            </View>
-                        </View>
-                    </Modal>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={confirmDeleteModalVisible}
-                        onRequestClose={closeModal}
-                    >
-                        <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
-                                <View style={styles.closeButtonContainer}>
-                                    <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
-                                        <Text style={styles.closeButtonText}>X</Text>
-                                    </TouchableOpacity>
-                                </View>
-                                <View style={styles.modalContent}>
-                                    <Text style={styles.text}>Are you sure you want to delete class {selectedClassCode}?</Text>
-                                    <CustomButton title="Delete" onPress={addClass} style={styles.button} textStyle={styles.buttonText} />
-                                </View>
-                                
                             </View>
                         </View>
                     </Modal>

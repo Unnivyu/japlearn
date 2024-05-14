@@ -6,11 +6,16 @@ import CustomButton from '../../components/CustomButton';
 import MenuButton from '../../components/MenuButton';
 import { AuthContext } from '../../context/AuthContext'; // Import AuthContext
 
-const Menu = ({ navigation }) => {
+const Menu = ({navigation}) => {
     const { user } = useContext(AuthContext); // Access user data from AuthContext
 
     const handleProfilePress = () => {
         navigation.navigate('Profile');
+    }
+
+    
+    const handleNavigateToQuackslateOption = () => {
+        navigation.navigate('QuackslateOption');
     }
     
     return (
@@ -43,7 +48,7 @@ const Menu = ({ navigation }) => {
                         <MenuButton
                             imageSource={require('../../assets/button3.png')}
                             buttonText="SENTENCE AND GRAMMAR"
-                            onPress={() => console.log('Button pressed')}
+                            onPress={handleNavigateToQuackslateOption}
                         />
                     </View>
                 </View>

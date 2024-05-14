@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-export const stylesDashboard = StyleSheet.create ({
+export const stylesDashboard = StyleSheet.create({
     input: {
         backgroundColor:'#EFECEC',
         color: '#A4A4A4',
@@ -16,8 +16,8 @@ export const stylesDashboard = StyleSheet.create ({
         justifyContent: 'space-between',
         padding: 20,
         paddingTop: 40,
-        marginBottom: 10, 
-        borderBottomWidth: 10, 
+        marginBottom: 10,
+        borderBottomWidth: 10,
         borderBottomColor: '#6C3A99',
         height: 130,
     },
@@ -50,14 +50,16 @@ export const stylesDashboard = StyleSheet.create ({
         width: 100,
         borderRadius: 30,
         justifyContent: 'center',
+        alignItems: 'center',
     },
     buttonText: {
         fontSize: 20,
+        color: 'white', // Ensure text is white
     },
     pictureCircle: {
         backgroundColor: 'white',
-        width: 65, 
-        height: 65, 
+        width: 65,
+        height: 65,
         borderRadius: 50,
     },
     titleText: {
@@ -66,7 +68,6 @@ export const stylesDashboard = StyleSheet.create ({
         marginBottom: 30
     },
     buttonContainer: {
-        flex: 1,
         flexDirection: 'row',
         padding: 10,
         alignItems: 'center',
@@ -81,19 +82,25 @@ export const stylesDashboard = StyleSheet.create ({
     classContent: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        backgroundColor: '#C7C3C3', 
+        justifyContent: 'center',
+        backgroundColor: 'lightgray', // Use a light background for better contrast
         marginTop: 20,
-        padding: 10,
+        padding: 20,
         height: 80,
-        borderRadius: 10,
+        borderRadius: 30,
         marginVertical: 5,
-        width: '100%'
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 3,
+        width: 300, // Adjust the width to your preference
+        alignSelf: 'center' // Center the classContent boxes
     },
     classContentText: {
-        color: 'white',
-        fontFamily:'jua',
-        fontSize: 15,
-        paddingHorizontal: 10
+        color: '#333', // Use darker text for readability
+        fontFamily: 'jua',
+        fontSize: 18, // Increase font size for visibility
+        textAlign: 'center', // Center the text within the box
     }
 });

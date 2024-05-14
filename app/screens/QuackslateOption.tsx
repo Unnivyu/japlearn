@@ -7,13 +7,25 @@ import OptionButton from '../../components/OptionButton'; // Updated import
 import BackIcon from '../../assets/back-icon.svg';
 import { stylesClass } from './stylesClass';
 
-const QuackslateOption = () => {
+const QuackslateOption = ({navigation}) => {
     const [classcode, setClasscode] = useState('');
 
     const handleBackPress = () => {
         console.log('Back button pressed');
         // Add logic to handle back button press
     };
+
+    const intro = () => {
+        navigation.navigate('Quackslate');
+    }
+
+    const basics1 = () => {
+        navigation.navigate('Quackslate2');
+    }
+
+    const basics2 = () => {
+        navigation.navigate('Quackslate3');
+    }
 
     return (
         <KeyboardAvoidingView behavior='padding'>
@@ -34,17 +46,17 @@ const QuackslateOption = () => {
                     <OptionButton
                         imageSource={require('../../assets/QuackslateButton.png')}
                         buttonText="Intro"
-                        onPress={() => console.log('Button pressed')}
+                        onPress={intro}
                     />
                     <OptionButton
                         imageSource={require('../../assets/QuackslateButton.png')}
                         buttonText="Basics I"
-                        onPress={() => console.log('Button pressed')}
+                        onPress={basics1}
                     />
                     <OptionButton
                         imageSource={require('../../assets/QuackslateButton.png')}
                         buttonText="Basics II"
-                        onPress={() => console.log('Button pressed')}
+                        onPress={basics2}
                     />
                 </View>
             

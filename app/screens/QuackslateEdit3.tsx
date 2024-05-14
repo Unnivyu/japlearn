@@ -5,7 +5,7 @@ import { styles } from './stylesModal';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
 
-const QuackslateEdit = ({ navigation }) => {
+const QuackslateEdit3 = ({ navigation }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
     const [wordToTranslate, setWordToTranslate] = useState('');
@@ -13,7 +13,7 @@ const QuackslateEdit = ({ navigation }) => {
 
     const addTranslationToDatabase = async () => {
         try {
-            let response = await fetch('http://localhost:8080/api/quackslateintro/add', {
+            let response = await fetch('http://localhost:8080/api/quackslatebasics2/add2', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -147,4 +147,4 @@ const QuackslateEdit = ({ navigation }) => {
     );
 }
 
-export default QuackslateEdit;
+export default QuackslateEdit3;

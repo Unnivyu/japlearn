@@ -12,7 +12,7 @@ type Phrase = {
 
 
 
-const Quackslate = () => {
+const Quackslate2 = () => {
     const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
     const [engtext, setEngText] = useState('');
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -30,7 +30,7 @@ const Quackslate = () => {
 
     const fetchPhrases = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/quackslateintro/all');
+            const response = await fetch('http://localhost:8080/api/quackslatebasics1/all1');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -115,7 +115,7 @@ const Quackslate = () => {
              {isQuizComplete ? (
             <View style={stylesOption.promptContainer}>
                 <View style={stylesOption.promptBox}>
-                    <Text style={stylesOption.promptText}>Quiz Complete! Your final score is: {points}/{phrases.length}</Text>
+                    <Text style={stylesOption.promptText}>Quiz Complete! Your final score is: {points}</Text>
                     <TouchableOpacity onPress={() => { setIsQuizComplete(false); setShowPrompt(true); setPoints(0); setTimer(300); }} style={stylesOption.startButton}>
                         <Text style={stylesOption.startButtonText}>Restart Quiz</Text>
                     </TouchableOpacity>
@@ -204,4 +204,4 @@ const Quackslate = () => {
         </KeyboardAvoidingView>
     );
 };
-export default Quackslate;
+export default Quackslate2;

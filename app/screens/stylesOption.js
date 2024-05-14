@@ -2,6 +2,55 @@ import { StyleSheet } from 'react-native';
 
 export const stylesOption = StyleSheet.create({
 
+    topBarContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginHorizontal: 20,
+        marginTop: 10,
+    },
+
+    timerContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 10, // Add some margin for spacing
+    },
+    timerText: {
+        fontSize: 20, // Font size for the timer text
+        fontWeight: 'bold', // Bold font for emphasis
+    },
+
+    promptContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)', // Semi-transparent background
+    },
+
+    promptBox: {
+        width: 500, // Width of the prompt box
+        padding: 50, // Padding inside the prompt box
+        backgroundColor: 'white', // Background color of the prompt box
+        borderRadius: 10, // Rounded corners
+        alignItems: 'center', // Center align the content inside the prompt box
+    },
+
+    promptText: {
+        fontSize: 18, // Font size of the text inside the prompt box
+        textAlign: 'center', // Center align the text
+        marginBottom: 20, // Margin at the bottom of the text
+        letterSpacing:1.1,
+    },
+    startButton: {
+        backgroundColor: '#8423D9', // Background color of the start button
+        padding: 10, // Padding inside the start button
+        borderRadius: 5, // Rounded corners of the start button
+    },
+    startButtonText: {
+        color: 'white', // Text color of the start button
+        fontSize: 16, // Font size of the start button text
+    },
+
     buttonContainer: {
         alignItems: 'center',
         justifyContent: 'center',

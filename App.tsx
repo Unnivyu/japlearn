@@ -27,6 +27,10 @@ import QuackslateEdit from './app/screens/QuackslateEdit';
 import QuackamoleEdit from './app/screens/QuackamoleEdit';
 import Quackamole from './app/screens/Quackamole';
 import Quackman from './app/screens/Quackman';
+import QuackslateEdit2 from './app/screens/QuackslateEdit2';
+import QuackslateEdit3 from './app/screens/QuackslateEdit3';
+import Quackslate2 from './app/screens/Quackslate2';
+import Quackslate3 from './app/screens/Quackslate3';
 
 const getFonts = () => Font.loadAsync({
   'jua': require('./assets/fonts/Jua-Regular.ttf')
@@ -54,7 +58,7 @@ export default function App({}) {
        <ClassCodeProvider>
         
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Login">
+          <Stack.Navigator initialRouteName="TeacherDashboard">
             <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
             <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
             <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
@@ -68,6 +72,8 @@ export default function App({}) {
             <Stack.Screen name="QuackslateLevels" component={QuackslateLevels} options={{headerShown: false}}/>
             <Stack.Screen name="QuackmanEdit" component={QuackmanEdit} options={{ headerShown: false }} />
             <Stack.Screen name="QuackslateEdit" component={QuackslateEdit} options={{ headerShown: false }} />
+            <Stack.Screen name="QuackslateEdit2" component={QuackslateEdit2} options={{ headerShown: false }} />
+            <Stack.Screen name="QuackslateEdit3" component={QuackslateEdit3} options={{ headerShown: false }} />
             <Stack.Screen name="QuackamoleEdit" component={QuackamoleEdit} options={{ headerShown: false }} />
             <Stack.Screen name="QuackmanOption" component={QuackmanOption} options={{ headerShown: false }} />
             <Stack.Screen name="QuackslateOption" component={QuackslateOption} options={{ headerShown: false }} />
@@ -76,6 +82,8 @@ export default function App({}) {
             <Stack.Screen name="Quackslate" component={Quackslate} options={{ headerShown: false }} />
             <Stack.Screen name="Quackamole" component={Quackamole} options={{ headerShown: false }} />
             <Stack.Screen name="Quackman" component={Quackman} options={{ headerShown: false }} />
+            <Stack.Screen name="Quackslate2" component={Quackslate2} options={{ headerShown: false }} />
+            <Stack.Screen name="Quackslate3" component={Quackslate3} options={{ headerShown: false }} />
 
           </Stack.Navigator>
         </NavigationContainer>
