@@ -58,7 +58,7 @@ export default function App({}) {
        <ClassCodeProvider>
         
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Quackamole">
+          <Stack.Navigator initialRouteName="Quackslate">
             <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
             <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
             <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />

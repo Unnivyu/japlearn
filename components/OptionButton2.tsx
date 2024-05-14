@@ -24,15 +24,12 @@ const styles = StyleSheet.create({
         width: 350,
         height: 125,
         overflow: 'hidden',
-        marginBottom:-480,
-        marginTop: 470,
     },
     container: {
         width: '100%',
         height: '100%',
         position: 'relative',
-        borderRadius: 20, // Add border radius for smooth edges
-        overflow: 'hidden', // Hide overflow for smooth edges
+        overflow: 'hidden',
         
     },
     imageContainer: {

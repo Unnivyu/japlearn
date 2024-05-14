@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, View, TextInput, StyleSheet, Button, ActivityIndicator, KeyboardAvoidingView, Modal, Text, Image, Alert } from 'react-native';
-import { stylesOption } from './stylesOption'; // Updated import
-import EmptyClass from '../../assets/empty.svg';
-import CustomButton from '../../components/CustomButton';
-import OptionButton2 from '../../components/OptionButton2'; // Updated import
+import { TouchableOpacity, View, TextInput, StyleSheet, Button, ActivityIndicator, KeyboardAvoidingView, Modal, Text, Image, Alert, ScrollView } from 'react-native';
+import { stylesOption } from './stylesOption';
+import OptionButton2 from '../../components/OptionButton2';
+import Banner from '../../assets/moleBanner.svg';
 import BackIcon from '../../assets/back-icon.svg';
 import { stylesClass } from './stylesClass';
 
@@ -12,12 +11,10 @@ const QuackamoleOption = () => {
 
     const handleBackPress = () => {
         console.log('Back button pressed');
-        // Add logic to handle back button press
     };
 
     return (
-        <KeyboardAvoidingView behavior='padding'>
-             <View style={stylesClass.container}>
+        <View style={stylesClass.container}>
             <View style={stylesClass.header}>
                 <TouchableOpacity onPress={handleBackPress}>
                     <View style={stylesClass.backButtonContainer}>
@@ -25,34 +22,32 @@ const QuackamoleOption = () => {
                     </View>
                 </TouchableOpacity>
             </View>
-
-                {/* Image above buttons */}
-                <Image source={require('../../assets/Quackamole.png')} style={stylesOption.upperImage} />
-
-                <View style={stylesOption.menuContainer}>
-                    <OptionButton2
-                        imageSource={require('../../assets/QuackamoleButton.png')}
-                        buttonText="Hiragana I"
-                        onPress={() => console.log('Button pressed')}
-                    />
-                    <OptionButton2
-                        imageSource={require('../../assets/QuackamoleButton.png')}
-                        buttonText="Hiragana II"
-                        onPress={() => console.log('Button pressed')}
-                    />
-                    <OptionButton2
-                        imageSource={require('../../assets/QuackamoleButton.png')}
-                        buttonText="Hiragana Dakuten"
-                        onPress={() => console.log('Button pressed')}
-                    />
-                    <OptionButton2
-                        imageSource={require('../../assets/QuackamoleButton.png')}
-                        buttonText="Hiragana Handakuten"
-                        onPress={() => console.log('Button pressed')}
-                    />
-                </View>
+            <View style={stylesOption.bannerContainer}>
+                <Banner width={300} height={150} />
             </View>
-        </KeyboardAvoidingView>
+            <ScrollView contentContainerStyle={stylesOption.menuContainer}>
+                <OptionButton2
+                    imageSource={require('../../assets/QuackamoleButton.png')}
+                    buttonText="Hiragana I"
+                    onPress={() => console.log('Button pressed')}
+                />
+                <OptionButton2
+                    imageSource={require('../../assets/QuackamoleButton.png')}
+                    buttonText="Hiragana II"
+                    onPress={() => console.log('Button pressed')}
+                />
+                <OptionButton2
+                    imageSource={require('../../assets/QuackamoleButton.png')}
+                    buttonText="Hiragana Dakuten"
+                    onPress={() => console.log('Button pressed')}
+                />
+                <OptionButton2
+                    imageSource={require('../../assets/QuackamoleButton.png')}
+                    buttonText="Hiragana Handakuten"
+                    onPress={() => console.log('Button pressed')}
+                />
+            </ScrollView>
+        </View>
     );
 };
 
