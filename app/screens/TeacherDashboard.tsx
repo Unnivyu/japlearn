@@ -34,7 +34,7 @@ const TeacherDashboard = ({ navigation }) => {
     }, []);
 
     const addClass = async () => {
-        if (!newClassCode.trim()) {
+        if (!classCodes.trim()) {
             alert("Please enter a class code");
             return;
         }
@@ -115,7 +115,7 @@ const TeacherDashboard = ({ navigation }) => {
                     <View style={stylesDashboard.header}>
                         <View style={stylesDashboard.leftContainer}>
                             <Text style={stylesDashboard.hText}>Welcome Back</Text>
-                            <Text style={stylesDashboard.hText}>Teacher</Text>
+                            <Text style={stylesDashboard.hText}>{user?.fname} {user?.lname}</Text>
                         </View>
                         <View style={stylesDashboard.rightContainer}>
                             <TouchableOpacity onPress={handleProfilePress}>
