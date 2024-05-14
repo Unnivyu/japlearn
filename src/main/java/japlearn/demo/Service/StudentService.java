@@ -1,5 +1,6 @@
 package japlearn.demo.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +34,9 @@ public class StudentService {
             return true;
         }
         return false;
+    }
+
+    public List<Student> getStudentsByClassCode(String classCode) {
+        return studentRepository.findByClassCode(classCode);
     }
 }
