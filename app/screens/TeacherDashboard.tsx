@@ -104,6 +104,10 @@ const TeacherDashboard = ({ navigation }) => {
         setDeleteClassCode('');
     };
 
+    const handleClassPress = (classCode) => {
+        navigation.navigate('ClassDashboard', { classCode });
+    };
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
@@ -130,9 +134,11 @@ const TeacherDashboard = ({ navigation }) => {
                     </View>
                     <ScrollView contentContainerStyle={stylesDashboard.classContainer}>
                         {classCodes.map((code, index) => (
-                            <View key={index} style={stylesDashboard.classContent}>
-                                <Text style={stylesDashboard.classContentText}>{code}</Text>
-                            </View>
+                            <TouchableOpacity key={index} onPress={() => handleClassPress(code)}>
+                                <View style={stylesDashboard.classContent}>
+                                    <Text style={stylesDashboard.classContentText}>{code}</Text>
+                                </View>
+                            </TouchableOpacity>
                         ))}
                     </ScrollView>
                     <Modal
