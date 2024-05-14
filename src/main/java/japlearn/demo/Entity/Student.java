@@ -19,6 +19,12 @@ public class Student extends User {
         this.classCode = "";
     }
 
+    public Student(User user, String classCode) {
+        super(user.getId(), user.getFname(), user.getLname(), user.getEmail(), user.getPassword(), user.getRole());
+        this.classCode = classCode;
+    }
+    
+
     public String getClassCode() {
         return classCode;
     }
