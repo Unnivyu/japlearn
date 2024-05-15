@@ -8,13 +8,14 @@ import { stylesEdit } from './stylesEdit';
 
 
 
-const QuackmamoleLevels = ({navigation}) => {
+const QuackamoleLevels = ({navigation, route}) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
+    const { classCode } = route.params;
     const [newLevelName, setNewLevelName] = useState('');
     
     const handleBackPress = () => {
-        navigation.navigate('ClassDashboard');
+        navigation.navigate('ClassDashboard', { classCode: classCode });
     }
 
     const handleOnPress = () => {
@@ -33,14 +34,37 @@ const QuackmamoleLevels = ({navigation}) => {
         setRemoveModalVisible(true);
     }
 
-    const handleAddLevel = () => {
-        // Implement logic to add the new level
-        setAddModalVisible(false);
-        setNewLevelName('');
-    }
+    const handleAddLevel = async () => {
+        const url = 'http://localhost:8080/api/quackamoleLevels/';
+        const levelData = {
+            levelName: newLevelName,
+            classCode: classCode
+        };
+    
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(levelData)
+            });
+    
+            const data = await response.json();  // Assuming the server sends back some data or error message
+            if (response.ok) {
+                console.log('Level added successfully:', data);
+                setAddModalVisible(false);
+                setNewLevelName('');
+            } else {
+                throw new Error(`Failed to add level: ${data.message} (Status code: ${response.status})`);
+            }
+        } catch (error) {
+            console.error('Error adding level:', error);
+        }
+    };
+    
 
     const handleRemoveLevel = () => {
-        // Implement logic to remove the selected level
         setRemoveModalVisible(false);
     }
 
@@ -124,4 +148,4 @@ const QuackmamoleLevels = ({navigation}) => {
     );
 }
 
-export default QuackmamoleLevels;
+export default QuackamoleLevels;

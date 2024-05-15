@@ -52,16 +52,18 @@ const Login = () => {
             });
     
             const data = await response.json();
-    
+            console.log(data);
             if (response.ok) {
                 const userData = {
+                    userId: data.id,
                     email: data.email,
                     fname: data.fname,
                     lname: data.lname,
                     role: data.role
                 };
                 console.log(userData);
-                await login(userData); 
+                await login(userData);
+                console.log(user?.userId);
                 navigateBasedOnRole(data.role);
             } else {
                 setModalMessage(`Login failed: ${data.error || 'Check input'}`);
