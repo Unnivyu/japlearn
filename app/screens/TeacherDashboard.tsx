@@ -18,6 +18,7 @@ const TeacherDashboard = ({ navigation }) => {
             const response = await fetch('http://localhost:8080/api/classes/getAllClasses');
             if (response.ok) {
                 const data = await response.json();
+                console.log(data);
                 setClassCodes(data.map(item => item.classCodes));
             } else {
                 const errorData = await response.json();
@@ -49,7 +50,7 @@ const TeacherDashboard = ({ navigation }) => {
                 },
                 body: JSON.stringify(classEntity)
             });
-            const data = await response.json(); // Parse the JSON data
+            const data = await response.json();
             if (response.ok) {
                 fetchClassCodes();
                 setAddModalVisible(false);
@@ -72,14 +73,14 @@ const TeacherDashboard = ({ navigation }) => {
             const response = await fetch(`http://localhost:8080/api/classes/removeClass?classCode=${deleteClassCode}`, {
                 method: 'DELETE'
             });
-            const data = await response.json(); // Always parse JSON
+            const data = await response.json();
             if (response.ok) {
-                alert(data.message); // Handle successful removal
+                alert(data.message);
                 fetchClassCodes();
                 setDeleteModalVisible(false);
                 setDeleteClassCode('');
             } else {
-                throw new Error(data.error || 'Failed to delete class'); // Handle errors
+                throw new Error(data.error || 'Failed to delete class'); 
             }
         } catch (error) {
             alert(`Error removing class: ${error.message}`);

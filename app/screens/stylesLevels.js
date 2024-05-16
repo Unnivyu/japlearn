@@ -54,8 +54,12 @@ export const stylesLevels = StyleSheet.create ({
         height: 100,
         borderRadius: 10,
         borderBottomWidth: 8,
-        borderBottomColor: '#81AF59'
+        borderBottomColor: '#81AF59',
+        marginBottom: 10,
         
+    },
+    selectedLevel: {
+        backgroundColor: '#ACFF63', 
     },
     levelText: {
         fontFamily: 'jua',
