@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import japlearn.demo.Entity.QuackamoleLevels;
 import japlearn.demo.Service.QuackamoleLevelsService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/quackamolelevels")
 @CrossOrigin(origins = "http://localhost:8081")
@@ -28,5 +30,11 @@ public class QuackamoleLevelsController {
     public String removeQuackamoleLevel(@PathVariable("id") String id) {
         return quackamoleLevelsService.removeQuackamoleLevelById(id);
     }
+
+    @GetMapping("/getLevels/{classId}")
+    public List<QuackamoleLevels> getLevelsByClassId(@PathVariable String classId) {
+        return quackamoleLevelsService.findLevelsByClassId(classId);
+    }
+
 }
 
