@@ -3,30 +3,48 @@ package japlearn.demo.Entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document(collection = "quackamoleContent")
 public class QuackamoleContent {
 
     @Id
-    private String id;
-    private String[][] kanaRomajiPairs; // Each sub-array contains [kana, romaji]
+    private String levelId;
+    private List<String> kana;
+    private List<String> romaji;
+
+    // Constructors, getters, and setters
 
     public QuackamoleContent() {
     }
 
-    // Getters and setters
-    public String getId() {
-        return id;
+    public QuackamoleContent(String levelId, List<String> kana, List<String> romaji) {
+        this.levelId = levelId;
+        this.kana = kana;
+        this.romaji = romaji;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getLevelId() {
+        return levelId;
     }
 
-    public String[][] getKanaRomajiPairs() {
-        return kanaRomajiPairs;
+    public void setLevelId(String levelId) {
+        this.levelId = levelId;
     }
 
-    public void setKanaRomajiPairs(String[][] kanaRomajiPairs) {
-        this.kanaRomajiPairs = kanaRomajiPairs;
+    public List<String> getKana() {
+        return kana;
+    }
+
+    public void setKana(List<String> kana) {
+        this.kana = kana;
+    }
+
+    public List<String> getRomaji() {
+        return romaji;
+    }
+
+    public void setRomaji(List<String> romaji) {
+        this.romaji = romaji;
     }
 }
