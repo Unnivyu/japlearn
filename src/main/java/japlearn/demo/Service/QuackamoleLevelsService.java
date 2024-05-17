@@ -1,0 +1,42 @@
+package japlearn.demo.Service;
+
+import japlearn.demo.Entity.QuackamoleLevels;
+import japlearn.demo.Repository.QuackamoleLevelsRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class QuackamoleLevelsService {
+
+    @Autowired
+    private QuackamoleLevelsRepository quackamoleLevelsRepository;
+
+    public QuackamoleLevels createQuackamoleLevel(QuackamoleLevels quackamoleLevels) {
+        return quackamoleLevelsRepository.save(quackamoleLevels);
+    }
+
+    public QuackamoleLevels findQuackamoleLevelById(String id) throws Exception {
+        Optional<QuackamoleLevels> quackamoleLevel = quackamoleLevelsRepository.findById(id);
+        if (quackamoleLevel.isPresent()) {
+            return quackamoleLevel.get();
+        } else {
+            throw new Exception("Level " + id + " not found");
+        }
+    }
+
+    public String removeQuackamoleLevelById(String id) {
+        Optional<QuackamoleLevels> quackamoleLevel = quackamoleLevelsRepository.findById(id);
+        if (quackamoleLevel.isPresent()) {
+            quackamoleLevelsRepository.deleteById(id);
+            return "Successfully deleted level";
+        }
+        return "Failed to delete";
+    }
+
+    public List<QuackamoleLevels> findLevelsByClassId(String classId) {
+        return quackamoleLevelsRepository.findByClassId(classId);
+    }
+}
