@@ -127,12 +127,11 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
     },
     modalText: {
-        fontFamily: 'jua',
         fontSize: 20,
         marginBottom: 20,
     },
     modalButton: {
-        backgroundColor: '#8ED94D',
+        backgroundColor: '#8423D9',
         padding: 10,
         borderRadius: 10,
 
@@ -153,20 +152,34 @@ export const styles = StyleSheet.create({
         fontSize: 36,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#ff6347',
+        color: '#8ED94D',
     },
     scoreText: {
         fontSize: 24,
         marginBottom: 40,
     },
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',  // This will ensure that buttons are evenly spaced
+        width: '75%',  // Takes full width to spread out buttons
+    },
     endButton: {
-        backgroundColor: '#8ED94D',
-        height: 60,
-        width: 100,
+        backgroundColor: '#8423D9',
+        height: 50,
+        width: 80,
         
     },
     endButtonText: {
-        fontFamily: 'jua',
+        fontSize: 20,
+        color: '#fff'
+    },
+    retryButton: {
+        backgroundColor: '#8423D9',
+        height: 50,
+        width: 80,
+        
+    },
+    retryButtonText: {
         fontSize: 20,
         color: '#fff'
     },

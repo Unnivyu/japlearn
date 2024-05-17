@@ -53,11 +53,10 @@ const Profile = () => {
                 
                 <View style={stylesProfile.descTextContainer}>
                     
-                    <Text style={stylesProfile.descText}>Username: {role === 'teacher' ? (user ? user.name : '') : (user ? `${user.fname} ${user.lname}` : '')}</Text>
-                    {role === 'teacher' ? null : <Text style={stylesProfile.descText}>Class Code: {user ? user.classcode : ''}</Text>}
+                    <Text style={stylesProfile.descText}>Username: {role === 'teacher' ? (user ? user.fname : '') : (user ? `${user.fname} ${user.lname}` : '')}</Text>
                 </View>
             </View>
-            {role !== 'teacher' && (
+            {role === 'student' && (
                 <View style={stylesProfile.scoreArea}>
                     <TouchableOpacity onPress={handleScoresPress} style={stylesProfile.scoreButton}>
                         <Text style={stylesProfile.scoreButtonText}>Score</Text>
