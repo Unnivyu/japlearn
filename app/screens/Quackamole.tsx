@@ -27,6 +27,21 @@ const Quackamole = ({ navigation }) => {
         }
     }, [currentIndex, secondCounter, gameOver, isGameStarted]);
 
+    const resetGame = () => {
+        setCurrentIndex(0);
+        setSecondCounter(0);
+        setHoles(new Array(9).fill(null));
+        setScore(0);
+        setGameOver(false);
+        setUpdateCharacter(true);
+        setAttempts(0);
+        setIsGameStarted(true);
+    };
+
+    const handleRetry = () => {
+        resetGame();
+    };
+
     const updateMoles = () => {
         if (secondCounter >= 29) {
             const nextIndex = currentIndex + 1;
@@ -115,11 +130,23 @@ const Quackamole = ({ navigation }) => {
 
     if (gameOver) {
         return (
-            <View style={styles.gameOverContainer}>
-                <Text style={styles.gameOverText}>Game Over!</Text>
-                <Text style={styles.scoreText}>Your final score: {score}</Text>
-                <CustomButton title="OK" onPress={handleBackPress} style={styles.endButton} textStyle={styles.endButtonText} />
+            <Modal
+            visible={gameOver}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setGameOver(false)}
+        >
+            <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                    <Text style={styles.gameOverText}>Game Over!</Text>
+                    <Text style={styles.scoreText}>Your final score: {score}</Text>
+                    <View style={styles.buttonRow}>
+                        <CustomButton title="OK" onPress={handleBackPress} style={styles.endButton} textStyle={styles.endButtonText} />
+                        <CustomButton title="Retry" onPress={handleRetry} style={styles.retryButton} textStyle={styles.retryButtonText} />
+                    </View>
+                </View>
             </View>
+        </Modal>
         );
     }
 
