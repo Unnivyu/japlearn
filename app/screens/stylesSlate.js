@@ -197,6 +197,7 @@ export const stylesSlate = StyleSheet.create({
         backgroundColor: '#8423D9', // Background color of the start button
         padding: 10, // Padding inside the start button
         borderRadius: 5, // Rounded corners of the start button
+        margin: 5,
     },
     startButtonText: {
         color: 'white', // Text color of the start button

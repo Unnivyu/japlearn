@@ -11,7 +11,7 @@ const QuackslateOption = ({navigation}) => {
 
     const handleBackPress = () => {
         console.log('Back button pressed');
-        // Add logic to handle back button press
+        navigation.navigate('Menu')
     };
 
     const intro = () => {

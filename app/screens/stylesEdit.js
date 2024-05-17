@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const stylesEdit = StyleSheet.create ({
+export const stylesEdit = StyleSheet.create({
     header: {
         height: 105,
         backgroundColor: '#8423D9',
@@ -28,8 +28,8 @@ export const stylesEdit = StyleSheet.create ({
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 10, 
-        paddingHorizontal: 10, 
+        marginBottom: 10,
+        paddingHorizontal: 10,
     },
     button: {
         backgroundColor: '#8ED94D',
@@ -46,15 +46,17 @@ export const stylesEdit = StyleSheet.create ({
         padding: 20,
     },
     quackmaneditContent: {
-        height: 200,
-        width: '100%',
+        height: 80,
+        width: '30%',
         backgroundColor: '#8ED94D',
-        borderRadius: 10,
+        borderRadius: 50,
         justifyContent: 'center',
-        padding: 20,
+        padding: 10,
+        marginVertical: 5,
         borderBottomColor: '#83C449',
-        borderBottomWidth: 10
-
+        borderBottomWidth: 5,
+        alignSelf: 'center', // Center the content
+        alignItems: 'center',
     },
     picker: {
         fontSize: 10,
@@ -75,10 +77,9 @@ export const stylesEdit = StyleSheet.create ({
     charContainer: {
         paddingHorizontal: 10,
         flexDirection: 'row',
-        justifyContent: 'space-between', 
-        flexWrap: 'wrap', 
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
     },
-    
     characterButton: {
         width: '18%',
         padding: 2,
@@ -87,8 +88,8 @@ export const stylesEdit = StyleSheet.create ({
         backgroundColor: '#C9C8C8',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 5, 
-        marginBottom: 15, 
+        borderRadius: 5,
+        marginBottom: 15,
     },
     characterText: {
         fontFamily: 'jua',
@@ -97,9 +98,9 @@ export const stylesEdit = StyleSheet.create ({
         color: '#333333',
     },
     scrollViewContent: {
-        flexGrow: 1, 
+        flexGrow: 1,
     },
     selectedCharacter: {
-        backgroundColor: '#C1FF8B', 
+        backgroundColor: '#C1FF8B',
     }
 });

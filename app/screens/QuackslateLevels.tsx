@@ -1,48 +1,104 @@
-import React, { useState } from 'react';
-import { Text, View, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View, TouchableOpacity, Modal, TextInput, ScrollView, Alert } from 'react-native';
 import { stylesLevels } from './stylesLevels';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
 import { styles } from './stylesModal';
 
-const QuackmanLevels = ({ navigation }) => {
+const QuackslateLevels = ({ navigation, route }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
     const [newLevelName, setNewLevelName] = useState('');
+    const [levels, setLevels] = useState([]);
+    const [selectedLevelID, setSelectedLevelID] = useState(null);
+    const { classCode } = route.params; // Extract classCode from route params
+
+    useEffect(() => {
+        fetchLevels();
+    }, []);
+
+    const fetchLevels = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/quackslateLevels/allquackslatelevels?classCode=${classCode}`);
+            if (response.ok) {
+                const data = await response.json();
+                setLevels(data);
+            } else {
+                throw new Error('Failed to fetch levels');
+            }
+        } catch (error) {
+            console.error('Error fetching levels:', error);
+            Alert.alert('Error', 'Failed to fetch levels');
+        }
+    };
 
     const handleBackPress = () => {
-        navigation.navigate('ClassDashboard');
+        navigation.navigate('ClassDashboard', { classCode });
     };
 
     const handleAddPress = () => {
         setAddModalVisible(true);
     };
-    
-    const handleLevelNavigatePress = () => {
-        navigation.navigate('QuackslateEdit')
-    }
-
-    const handleLevelNavigatePress2 = () => {
-        navigation.navigate('QuackslateEdit2')
-    }
-
-    const handleLevelNavigatePress3 = () => {
-        navigation.navigate('QuackslateEdit3')
-    }
 
     const handleRemovePress = () => {
         setRemoveModalVisible(true);
     };
 
-    const handleAddLevel = () => {
-        setAddModalVisible(false);
-        // Add logic here to handle adding the new level
-        setNewLevelName('');
+    const handleAddLevel = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/quackslateLevels/addquackslatelevel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    levelID: Math.floor(Math.random() * 10000), // Generate a random ID or handle it differently
+                    title: newLevelName,
+                    classID: classCode, // Use classCode as classID
+                }),
+            });
+
+            if (response.ok) {
+                Alert.alert('Success', 'Level added successfully!');
+                setAddModalVisible(false);
+                setNewLevelName('');
+                fetchLevels(); // Refresh the list of levels
+            } else {
+                throw new Error('Failed to add level');
+            }
+        } catch (error) {
+            console.error('Error adding level:', error);
+            Alert.alert('Error', 'Failed to add level');
+        }
     };
 
-    const handleRemoveLevel = () => {
-        setRemoveModalVisible(false);
-        // Add logic here to handle removing the selected level
+    const handleRemoveLevel = async () => {
+        if (!selectedLevelID) {
+            Alert.alert('Error', 'Please select a level to remove.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/quackslateLevels/deletequackslatelevel/${selectedLevelID}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                Alert.alert('Success', 'Level removed successfully!');
+                setRemoveModalVisible(false);
+                setSelectedLevelID(null);
+                fetchLevels(); // Refresh the list of levels
+            } else {
+                throw new Error('Failed to remove level');
+            }
+        } catch (error) {
+            console.error('Error removing level:', error);
+            Alert.alert('Error', 'Failed to remove level');
+        }
+    };
+
+    const handleLevelNavigate = (levelID, title) => {
+        navigation.navigate('QuackslateEdit', { classCode, levelID, title });
     };
 
     return (
@@ -62,31 +118,15 @@ const QuackmanLevels = ({ navigation }) => {
                 <CustomButton title="Remove" onPress={handleRemovePress} style={stylesLevels.button} textStyle={stylesLevels.buttonText} />
             </View>
             <ScrollView>
-                
-                    <View style={stylesLevels.levelContainer}>
-                        <TouchableOpacity onPress={handleLevelNavigatePress}>
+                {levels.map((level) => (
+                    <View key={level.levelID} style={stylesLevels.levelContainer}>
+                        <TouchableOpacity onPress={() => handleLevelNavigate(level.levelID, level.title)}>
                             <View style={stylesLevels.level}>
-                                <Text style={stylesLevels.levelText}>Intro</Text>
+                                <Text style={stylesLevels.levelText}>{level.title}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
-
-                    <View style={stylesLevels.levelContainer}>
-                        <TouchableOpacity onPress={handleLevelNavigatePress2}>
-                            <View style={stylesLevels.level}>
-                                <Text style={stylesLevels.levelText}>Basics 1</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={stylesLevels.levelContainer}>
-                        <TouchableOpacity onPress={handleLevelNavigatePress3}>
-                            <View style={stylesLevels.level}>
-                                <Text style={stylesLevels.levelText}>Basics 2</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                
+                ))}
             </ScrollView>
 
             <Modal
@@ -130,7 +170,16 @@ const QuackmanLevels = ({ navigation }) => {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.modalContent}>
-                            <Text style={styles.text}>Are you sure you want to remove this level?</Text>
+                            <Text style={styles.text}>Select a level to remove:</Text>
+                            <ScrollView>
+                                {levels.map((level) => (
+                                    <TouchableOpacity key={level.levelID} onPress={() => setSelectedLevelID(level.levelID)}>
+                                        <View style={selectedLevelID === level.levelID ? stylesLevels.selectedLevel : stylesLevels.level}>
+                                            <Text style={stylesLevels.levelText}>{level.title}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
                             <CustomButton title="Remove" onPress={handleRemoveLevel} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
@@ -140,4 +189,4 @@ const QuackmanLevels = ({ navigation }) => {
     );
 };
 
-export default QuackmanLevels;
+export default QuackslateLevels;

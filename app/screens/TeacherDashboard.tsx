@@ -34,7 +34,7 @@ const TeacherDashboard = ({ navigation }) => {
     }, []);
 
     const addClass = async () => {
-        if (!classCodes.trim()) {
+        if (!newClassCode.trim()) { // Corrected this line
             alert("Please enter a class code");
             return;
         }

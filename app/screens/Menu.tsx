@@ -7,7 +7,8 @@ import MenuButton from '../../components/MenuButton';
 import { AuthContext } from '../../context/AuthContext'; // Import AuthContext
 
 const Menu = ({navigation}) => {
-    const { user } = useContext(AuthContext); // Access user data from AuthContext
+    const { user, login } = useContext(AuthContext);
+    
 
     const handleProfilePress = () => {
         navigation.navigate('Profile');
@@ -26,7 +27,7 @@ const Menu = ({navigation}) => {
                     <View style={[stylesMenu.header, { padding: 20 }]}>
                         <View style={stylesMenu.leftContainer}>
                             <Text style={stylesMenu.hText}>Welcome Back</Text>
-                            <Text style={stylesMenu.hText}>{user.firstname}</Text> 
+                            <Text style={stylesMenu.hText}>{user?.fname}</Text> 
                         </View>
                         <View style={stylesMenu.rightContainer}>
                             <TouchableOpacity onPress={handleProfilePress}> 
