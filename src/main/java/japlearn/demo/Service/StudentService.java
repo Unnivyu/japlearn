@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import japlearn.demo.Entity.Classes;
@@ -19,9 +20,19 @@ public class StudentService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
     @Autowired
     private ClassesRepository classesRepository;
+
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
+    }
+
+    
 
     public boolean joinClassCodeByFname(String fname, String classCode) {
         Optional<Classes> existingClass = classesRepository.findByClassCodes(classCode);
@@ -39,4 +50,14 @@ public class StudentService {
     public List<Student> getStudentsByClassCode(String classCode) {
         return studentRepository.findByClassCode(classCode);
     }
+
+    public Student verifyCredentials(String email, String password) {
+        Student student = studentRepository.findByEmail(email);
+        if (student != null && passwordEncoder.matches(password, student.getPassword())) {
+            return student;
+        } else {
+            return null;
+        }
+    }
+    
 }
