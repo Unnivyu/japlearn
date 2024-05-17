@@ -73,17 +73,13 @@ export const stylesEdit = StyleSheet.create ({
         borderColor: 'red',
     },
     charContainer: {
-        paddingHorizontal: 10,
+        padding: 10,
         flexDirection: 'row',
-        justifyContent: 'space-between', 
+        justifyContent: 'space-around',
+        columnGap: 10,
         flexWrap: 'wrap', 
     },
-    
     characterButton: {
-        width: '18%',
-        padding: 2,
-        height: '18%',
-        aspectRatio: 1,
         backgroundColor: '#C9C8C8',
         alignItems: 'center',
         justifyContent: 'center',

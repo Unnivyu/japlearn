@@ -40,8 +40,7 @@ const QuackamoleLevels = ({ navigation, route }) => {
     };
 
     const handleLevelNavigatePress = (level) => {
-        // Add your logic for navigating to the level edit screen
-        console.log(`Navigating to edit screen for level: ${level.title}`);
+        navigation.navigate('QuackamoleEdit', { classCode, levelId: level.levelId });
     };
 
     const handleAddPress = () => {
@@ -127,7 +126,7 @@ const QuackamoleLevels = ({ navigation, route }) => {
             </View>
             <ScrollView contentContainerStyle={stylesLevels.levelContainer}>
                 {levels.map((level) => (
-                    <TouchableOpacity key={level.levelId} onPress={() => toggleLevelSelection(level.levelId)}>
+                    <TouchableOpacity key={level.levelId} onPress={() => handleLevelNavigatePress(level)}>
                         <View style={[stylesLevels.level, selectedLevelId === level.levelId && stylesLevels.selectedLevel]}>
                             <Text style={stylesLevels.levelText}>{level.title}</Text>
                         </View>
