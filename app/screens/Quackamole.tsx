@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Animated, Easing, Alert, Modal, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Animated, Easing, Alert, Modal } from 'react-native';
 import { styles } from './stylesMole';
 import { stylesClass } from './stylesClass';
 import BackIcon from '../../assets/back-icon.svg';
 import Mole from '../../assets/mole.svg';
 import CustomButton from '../../components/CustomButton';
 
-const kanaCharacters = ['あ', 'い', 'う', 'え', 'お', 'か', 'き', 'く', 'け', 'こ'];
-const romajiCharacters = ['a', 'i', 'u', 'e', 'o', 'ka', 'ki', 'ku', 'ke', 'ko'];
-
-const Quackamole = ({ navigation }) => {
+const Quackamole = ({ navigation, route }) => {
+    const { levelId } = route.params;
     const [currentIndex, setCurrentIndex] = useState(0);
     const [secondCounter, setSecondCounter] = useState(0);
     const [holes, setHoles] = useState(new Array(9).fill(null));
@@ -18,7 +16,25 @@ const Quackamole = ({ navigation }) => {
     const [updateCharacter, setUpdateCharacter] = useState(true);
     const [attempts, setAttempts] = useState(0);
     const [isGameStarted, setIsGameStarted] = useState(false);
+    const [kanaCharacters, setKanaCharacters] = useState([]);
+    const [romajiCharacters, setRomajiCharacters] = useState([]);
     const scaleYAnimations = useRef(holes.map(() => new Animated.Value(0))).current;
+
+    useEffect(() => {
+        const fetchContent = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/api/quackamolecontent/getContent/${levelId}`);
+                const data = await response.json();
+                console.log(data);
+                setKanaCharacters(data.kana);
+                setRomajiCharacters(data.romaji);
+            } catch (error) {
+                console.error('Error fetching content:', error);
+            }
+        };
+
+        fetchContent();
+    }, [levelId]);
 
     useEffect(() => {
         if (isGameStarted) {
@@ -53,13 +69,13 @@ const Quackamole = ({ navigation }) => {
                 return; // Exit the function to stop further execution
             }
         }
-    
+
         if (gameOver) return;
-    
+
         let newHoles = new Array(9).fill(null);
         const activeMolesCount = Math.floor(Math.random() * 3) + 1;
         const activeIndexes = [];
-    
+
         while (activeIndexes.length < activeMolesCount) {
             const randomIndex = Math.floor(Math.random() * 9);
             if (!activeIndexes.includes(randomIndex)) {
@@ -69,12 +85,11 @@ const Quackamole = ({ navigation }) => {
                 setTimeout(() => animateMole(randomIndex, false), 3000);  // Animate mole retracting
             }
         }
-    
+
         setHoles(newHoles);
         setSecondCounter(prevCounter => prevCounter + 1);
         setUpdateCharacter(!updateCharacter); // Toggle the character update
     };
-    
 
     const animateMole = (index, shouldPopUp) => {
         Animated.timing(scaleYAnimations[index], {
@@ -82,14 +97,8 @@ const Quackamole = ({ navigation }) => {
             duration: 1000,
             useNativeDriver: true,
             easing: Easing.inOut(Easing.ease),
-            transform: [{ scaleY: scaleYAnimations[index].interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 1],
-                extrapolate: 'clamp',
-            }) }],
         }).start();
     };
-    
 
     const handleBackPress = () => {
         navigation.goBack();
@@ -123,7 +132,7 @@ const Quackamole = ({ navigation }) => {
             }
         }
     };
-    
+
     const startGame = () => {
         setIsGameStarted(true);
     };
@@ -131,22 +140,22 @@ const Quackamole = ({ navigation }) => {
     if (gameOver) {
         return (
             <Modal
-            visible={gameOver}
-            transparent={true}
-            animationType="slide"
-            onRequestClose={() => setGameOver(false)}
-        >
-            <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                    <Text style={styles.gameOverText}>Game Over!</Text>
-                    <Text style={styles.scoreText}>Your final score: {score}</Text>
-                    <View style={styles.buttonRow}>
-                        <CustomButton title="OK" onPress={handleBackPress} style={styles.endButton} textStyle={styles.endButtonText} />
-                        <CustomButton title="Retry" onPress={handleRetry} style={styles.retryButton} textStyle={styles.retryButtonText} />
+                visible={gameOver}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setGameOver(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.gameOverText}>Game Over!</Text>
+                        <Text style={styles.scoreText}>Your final score: {score}</Text>
+                        <View style={styles.buttonRow}>
+                            <CustomButton title="OK" onPress={handleBackPress} style={styles.endButton} textStyle={styles.endButtonText} />
+                            <CustomButton title="Retry" onPress={handleRetry} style={styles.retryButton} textStyle={styles.retryButtonText} />
+                        </View>
                     </View>
                 </View>
-            </View>
-        </Modal>
+            </Modal>
         );
     }
 
@@ -206,4 +215,5 @@ const Quackamole = ({ navigation }) => {
         </View>
     );
 };
+
 export default Quackamole;

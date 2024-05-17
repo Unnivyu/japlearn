@@ -14,6 +14,9 @@ const Menu = ({navigation}) => {
         navigation.navigate('Profile');
     }
 
+    const handleNavigateToQuackamoleOption = () => {
+        navigation.navigate('QuackamoleOption');
+    }
     
     const handleNavigateToQuackslateOption = () => {
         navigation.navigate('QuackslateOption');
@@ -39,7 +42,7 @@ const Menu = ({navigation}) => {
                         <MenuButton
                             imageSource={require('../../assets/button1.png')}
                             buttonText="KANA"
-                            onPress={() => console.log('Button pressed')}
+                            onPress={handleNavigateToQuackamoleOption}
                         />
                         <MenuButton
                             imageSource={require('../../assets/button2.png')}
