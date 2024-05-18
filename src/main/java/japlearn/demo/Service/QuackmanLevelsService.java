@@ -1,11 +1,13 @@
 package japlearn.demo.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.hibernate.annotations.processing.Suppress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import japlearn.demo.Entity.QuackamoleLevels;
 import japlearn.demo.Entity.QuackmanLevels;
 import japlearn.demo.Repository.QuackmanLevelsRepository;
 
@@ -40,4 +42,8 @@ public class QuackmanLevelsService {
 		
 		return "Failed to delete";
 	}
+	
+    public List<QuackmanLevels> findLevelsByClassId(String classId) {
+        return quackmanLevelsRepository.findByClassId(classId);
+    }
 }

@@ -1,5 +1,7 @@
 package japlearn.demo.Controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import japlearn.demo.Entity.QuackamoleLevels;
 import japlearn.demo.Entity.QuackmanLevels;
 import japlearn.demo.Service.QuackmanLevelsService;
 
@@ -35,4 +38,9 @@ public class QuackmanLevelsController {
 	public String removeQuackmanLevel(@PathVariable("Id") String Id) {
 		return quackmanLevelsService.removeQuackmanLevelbyId(Id);
 	}
+	
+    @GetMapping("/getLevels/{classId}")
+    public List<QuackmanLevels> getLevelsByClassId(@PathVariable String classId) {
+        return quackmanLevelsService.findLevelsByClassId(classId);
+    }
 }
