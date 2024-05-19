@@ -1,17 +1,20 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { TouchableOpacity, View, TextInput, StyleSheet, Button, ActivityIndicator, KeyboardAvoidingView, Modal, Text, Image, Alert } from 'react-native';
 import { stylesMenu } from './stylesMenu';
 import EmptyClass from '../../assets/empty.svg'
 import CustomButton from '../../components/CustomButton';
 import { db } from '../../config';
 import {ref,set, push, child, get} from "firebase/database";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import expoconfig from '../../expoconfig';
 
 
 const StartMenu = ({navigation}) => {
     const [classcode, setClasscode] = useState('');
-    const { user } = useContext(AuthContext);
+    const { user} = useContext(AuthContext);
+
 
 
     
@@ -33,7 +36,7 @@ const StartMenu = ({navigation}) => {
           const params = new URLSearchParams({ fname: user.fname, classCode: classcode });
     
           // Send the POST request to the backend
-          const response = await fetch('http://localhost:8080/api/students/joinClass?' + params.toString(), {
+          const response = await fetch(`${expoconfig.API_URL}/api/students/joinClass?` + params.toString(), {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -44,7 +47,9 @@ const StartMenu = ({navigation}) => {
           if (response.ok) {
             const message = await response.text();
             Alert.alert('Success', message);
+            await AsyncStorage.setItem('classCode', classcode);
             navigation.navigate('Menu');
+            
           } else {
             // Display the error message from the server response
             const errorMessage = await response.text();

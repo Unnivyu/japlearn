@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Modal, TextInput } from 'react-native';
 import CustomButton from '../../components/CustomButton';
 import { stylesClass } from './stylesClass';
 import { styles } from './stylesModal';
@@ -7,6 +7,7 @@ import BackIcon from '../../assets/back-icon.svg';
 import Icon1 from '../../assets/gameIcon1.svg';
 import Icon2 from '../../assets/gameIcon2.svg';
 import Icon3 from '../../assets/gameIcon3.svg';
+import expoconfig from '../../expoconfig';
 
 const ClassDashboard = ({ navigation, route }) => {
     const [activeCategory, setActiveCategory] = useState('MEMBERS');
@@ -17,11 +18,12 @@ const ClassDashboard = ({ navigation, route }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [selectedGame, setSelectedGame] = useState(null);
+    const [studentToRemove, setStudentToRemove] = useState('');
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/students/getByClassCode?classCode=${classCode}`);
+                const response = await fetch(`${expoconfig.API_URL}/api/students/getByClassCode?classCode=${classCode}`);
                 if (response.ok) {
                     const data = await response.json();
                     setUserData(data);
@@ -38,7 +40,7 @@ const ClassDashboard = ({ navigation, route }) => {
 
     const fetchScoresData = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/quackslateScores/getScoresByClasscode/${classCode}`);
+            const response = await fetch(`${expoconfig.API_URL}/api/quackslateScores/getScoresByClasscode/${classCode}`);
             if (response.ok) {
                 const data = await response.json();
                 setScoresData(data);
@@ -57,9 +59,32 @@ const ClassDashboard = ({ navigation, route }) => {
         }
     }, [activeCategory]);
 
-    const handleDeleteModalConfirm = () => {
+    const handleDeleteModalConfirm = async () => {
         setShowDeleteModal(false);
+        console.log('Removing student:', studentToRemove);
+        try {
+            const response = await fetch(`${expoconfig.API_URL}/api/students/removeStudent`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ classCode, name: studentToRemove })
+            });
+            console.log('Response:', response);
+            if (response.ok) {
+                const updatedUserData = userData.filter(user => `${user.fname} ${user.lname}`.toLowerCase() !== studentToRemove.toLowerCase());
+                setUserData(updatedUserData);
+                console.log('Student removed successfully');
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to remove student:', errorData);
+            }
+        } catch (error) {
+            console.error('Error removing student:', error);
+        }
     }
+
+    
 
     const handleCategoryPress = (category) => {
         setActiveCategory(category);
@@ -206,9 +231,14 @@ const ClassDashboard = ({ navigation, route }) => {
                                 <Text style={styles.closeButtonText}>X</Text>
                             </TouchableOpacity>
                         </View>
-                        <Text style={styles.text}>Are you sure you want to delete this?</Text>
+                        <Text style={styles.text}>Are you sure you want to remove this student?</Text>
+                        <TextInput
+                            placeholder="Enter student's full name"
+                            value={studentToRemove}
+                            onChangeText={setStudentToRemove}
+                        />
                         <View style={styles.modalContent}>
-                            <CustomButton title="Delete" onPress={handleDeleteModalConfirm} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Remove" onPress={handleDeleteModalConfirm} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
                 </View>

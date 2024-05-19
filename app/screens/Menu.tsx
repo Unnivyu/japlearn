@@ -5,9 +5,12 @@ import EmptyClass from '../../assets/empty.svg'
 import CustomButton from '../../components/CustomButton';
 import MenuButton from '../../components/MenuButton';
 import { AuthContext } from '../../context/AuthContext'; // Import AuthContext
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import expoconfig from '../../expoconfig';
 
 const Menu = ({navigation}) => {
     const { user, login } = useContext(AuthContext);
+
     
 
     const handleProfilePress = () => {

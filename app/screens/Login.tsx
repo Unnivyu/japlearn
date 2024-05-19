@@ -7,6 +7,7 @@
     import Logo from '../../assets/jpLogo.svg';
     import { styles } from './styles';
     import CustomButton from '../../components/CustomButton';
+    import expoconfig from '../../expoconfig';
 
     const Login = () => {
         const { user, login } = useContext(AuthContext);
@@ -21,15 +22,17 @@
         useEffect(() => {
             const checkLoginStatus = async () => {
                 const storedUser = await AsyncStorage.getItem('user');
+                const storedClassCode = await AsyncStorage.getItem('classCode');
                 if (storedUser) {
                     const parsedUser = JSON.parse(storedUser);
-                    const storedClassCode = await AsyncStorage.getItem('classCode');
                     console.log("User already logged in:", parsedUser);
+                    console.log("Stored class code:", storedClassCode);
                     navigateBasedOnRoleAndClassCode(parsedUser.role, storedClassCode);
                 }
             };
             checkLoginStatus();
         }, []);
+        
 
         const navigateBasedOnRoleAndClassCode = (role, classCode) => {
             console.log("Navigating based on role and classCode:", role, classCode);
@@ -59,7 +62,7 @@
         
             try {
                 // First, try to log in as a student
-                const studentResponse = await fetch('http://localhost:8080/api/students/login', {
+                const studentResponse = await fetch(`${expoconfig.API_URL}/api/students/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -83,7 +86,7 @@
                     navigateBasedOnRoleAndClassCode(studentData.role, studentData.classCode);
                 } else {
                     // If student login fails, try to log in as a user
-                    const userResponse = await fetch('http://localhost:8080/api/users/login', {
+                    const userResponse = await fetch(`${expoconfig.API_URL}/api/users/login`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -101,7 +104,7 @@
                         };
                         console.log(userData);
                         await login(userData);  
-                        setClassCode(''); 
+                        await AsyncStorage.setItem('classCode', '');
                         navigateBasedOnRoleAndClassCode(userData.role, '');
                     } else {
                         setModalMessage('Invalid email or password.');

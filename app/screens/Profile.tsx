@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native'; // Import useNavigatio
 import BackIcon from '../../assets/back-icon.svg';
 import { AuthContext } from '../../context/AuthContext';
 
+
 const Profile = () => {
     const { user, role, logout } = useContext(AuthContext);
     const navigation = useNavigation(); 

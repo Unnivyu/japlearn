@@ -3,6 +3,7 @@ import { TouchableOpacity, View, TextInput, KeyboardAvoidingView, Modal, Button,
 import { styles } from './styles';
 import Logo from '../../assets/jpLogo.svg';
 import CustomButton from '../../components/CustomButton';
+import expoconfig from '../../expoconfig';
 
 const Signup = ({ navigation }) => {
     const [fname, setFname] = useState('');
@@ -75,7 +76,7 @@ const Signup = ({ navigation }) => {
         // Perform the signup operation
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:8080/api/users/register', {
+            const response = await fetch(`${expoconfig.API_URL}/api/users/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -4,6 +4,7 @@ import CustomButton from '../../components/CustomButton';
 import { stylesDashboard } from './stylesDashboard';
 import { styles } from './stylesModal';
 import { AuthContext } from '../../context/AuthContext';
+import expoconfig from '../../expoconfig';
 
 const TeacherDashboard = ({ navigation }) => {
     const [classCodes, setClassCodes] = useState([]);
@@ -15,7 +16,7 @@ const TeacherDashboard = ({ navigation }) => {
 
     const fetchClassCodes = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/classes/getAllClasses');
+            const response = await fetch(`${expoconfig.API_URL}/api/classes/getAllClasses`);
             if (response.ok) {
                 const data = await response.json();
                 console.log(data);
@@ -43,7 +44,7 @@ const TeacherDashboard = ({ navigation }) => {
             classCodes: newClassCode
         };
         try {
-            const response = await fetch('http://localhost:8080/api/classes/addClass', {
+            const response = await fetch(`${expoconfig.API_URL}/api/classes/addClass`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -70,7 +71,7 @@ const TeacherDashboard = ({ navigation }) => {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8080/api/classes/removeClass?classCode=${deleteClassCode}`, {
+            const response = await fetch(`${expoconfig.API_URL}/api/classes/removeClass?classCode=${deleteClassCode}`, {
                 method: 'DELETE'
             });
             const data = await response.json();
