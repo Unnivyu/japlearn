@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, View, TextInput, StyleSheet, Button, ActivityIndicator, KeyboardAvoidingView, Modal, Text, Image, Alert, ScrollView } from 'react-native';
-import { stylesOption } from './stylesOption';
+import React, { useState, useEffect } from 'react';
+import { TouchableOpacity, View, ScrollView, Text } from 'react-native';
 import OptionButton2 from '../../components/OptionButton2';
 import Banner from '../../assets/moleBanner.svg';
 import BackIcon from '../../assets/back-icon.svg';
+import { stylesOption } from './stylesOption';
 import { stylesClass } from './stylesClass';
+import { useClassCode } from '../../context/ClassCodeContext';
 
-const QuackamoleOption = () => {
-    const [classcode, setClasscode] = useState('');
+const QuackamoleOption = ({ navigation }) => {
+    const { classCode } = useClassCode();
+    const [levels, setLevels] = useState([]);
+
+    useEffect(() => {
+        const fetchLevels = async () => {
+            if (!classCode) return; // Exit if classCode is not available
+
+            try {
+                const response = await fetch(`http://localhost:8080/api/quackamolelevels/getLevels/${classCode}`);
+                const data = await response.json();
+                console.log(data);
+                setLevels(data);
+            } catch (error) {
+                console.error('Error fetching levels:', error);
+            }
+        };
+
+        fetchLevels();
+    }, [classCode]); // Add classCode as a dependency
 
     const handleBackPress = () => {
         console.log('Back button pressed');
@@ -26,26 +45,14 @@ const QuackamoleOption = () => {
                 <Banner width={300} height={150} />
             </View>
             <ScrollView contentContainerStyle={stylesOption.menuContainer}>
-                <OptionButton2
-                    imageSource={require('../../assets/QuackamoleButton.png')}
-                    buttonText="Hiragana I"
-                    onPress={() => console.log('Button pressed')}
-                />
-                <OptionButton2
-                    imageSource={require('../../assets/QuackamoleButton.png')}
-                    buttonText="Hiragana II"
-                    onPress={() => console.log('Button pressed')}
-                />
-                <OptionButton2
-                    imageSource={require('../../assets/QuackamoleButton.png')}
-                    buttonText="Hiragana Dakuten"
-                    onPress={() => console.log('Button pressed')}
-                />
-                <OptionButton2
-                    imageSource={require('../../assets/QuackamoleButton.png')}
-                    buttonText="Hiragana Handakuten"
-                    onPress={() => console.log('Button pressed')}
-                />
+                {levels.map((level) => (
+                    <OptionButton2
+                        key={level.levelId}
+                        imageSource={require('../../assets/QuackamoleButton.png')}
+                        buttonText={level.title}
+                        onPress={() => navigation.navigate('Quackamole', { levelId: level.levelId })}
+                    />
+                ))}
             </ScrollView>
         </View>
     );

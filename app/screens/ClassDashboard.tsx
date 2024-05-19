@@ -192,7 +192,7 @@ const ClassDashboard = ({ navigation, route }) => {
 
                             </View>
                             <View style={stylesClass.gameContent}>
-                                <CustomButton title="Edit" onPress={() => navigation.navigate('QuackmanLevels')} style={stylesClass.gameButton} textStyle={stylesClass.buttonText} />
+                                <CustomButton title="Edit" onPress={() => navigation.navigate('QuackmanLevels', { classCode })} style={stylesClass.gameButton} textStyle={stylesClass.buttonText} />
                                 <View style={stylesClass.gameTextContainer}>
                                     <Text style={stylesClass.gameContentText}>Quackman</Text>
                                 </View>
