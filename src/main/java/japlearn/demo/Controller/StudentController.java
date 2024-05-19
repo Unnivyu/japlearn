@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,7 @@ public class StudentController {
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
+
 
     @PostMapping("/joinClass")
     public ResponseEntity<String> joinClass(@RequestParam String fname, @RequestParam String classCode) {
@@ -65,4 +67,18 @@ public class StudentController {
         }
     }
 
+    @DeleteMapping("/removeStudent")
+    public ResponseEntity<String> removeStudent(@RequestBody Map<String, String> payload) {
+        String classCode = payload.get("classCode");
+        String fname = payload.get("name").split(" ")[0];
+        String lname = payload.get("name").split(" ")[1];
+        boolean success = studentService.removeStudentByFullName(classCode, fname, lname);
+ 
+        if (success) {
+            return ResponseEntity.ok("Successfully removed the student.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found.");
+        }
+    }
+    
 }
