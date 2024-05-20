@@ -4,6 +4,7 @@ import { stylesEdit } from './stylesEdit';
 import { styles } from './stylesModal';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
+import expoconfig from '../../expoconfig';
 
 const QuackslateEdit2 = ({ navigation }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
@@ -13,7 +14,7 @@ const QuackslateEdit2 = ({ navigation }) => {
 
     const addTranslationToDatabase = async () => {
         try {
-            let response = await fetch('http://localhost:8080/api/quackslatebasics1/add1', {
+            let response = await fetch(`${expoconfig.API_URL}/api/quackslatebasics1/add1`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

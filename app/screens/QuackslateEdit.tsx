@@ -4,6 +4,7 @@ import { stylesEdit } from './stylesEdit';
 import { styles } from './stylesModal';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
+import expoconfig from '../../expoconfig';
 
 const QuackslateEdit = ({ navigation, route }) => {
     const { classCode, levelID, title } = route.params;
@@ -19,7 +20,7 @@ const QuackslateEdit = ({ navigation, route }) => {
 
     const fetchContent = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/quackslateContent/getByLevel/${title}`);
+            const response = await fetch(`${expoconfig.API_URL}/api/quackslateContent/getByLevel/${title}`);
             if (response.ok) {
                 const data = await response.json();
                 setContent(data);
@@ -34,7 +35,7 @@ const QuackslateEdit = ({ navigation, route }) => {
 
     const addTranslationToDatabase = async () => {
         try {
-            let response = await fetch('http://localhost:8080/api/quackslateContent/addQuackslateContent', {
+            let response = await fetch(`${expoconfig.API_URL}/api/quackslateContent/addQuackslateContent`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

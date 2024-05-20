@@ -180,7 +180,7 @@ export const stylesSlate = StyleSheet.create({
     },
 
     promptBox: {
-        width: 500, // Width of the prompt box
+        width: '90%', // Width of the prompt box
         padding: 50, // Padding inside the prompt box
         backgroundColor: 'white', // Background color of the prompt box
         borderRadius: 10, // Rounded corners

@@ -5,6 +5,7 @@ import { styles } from './stylesModal';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
 import { stylesEdit } from './stylesEdit';
+import expoconfig from '../../expoconfig';
 
 const QuackamoleLevels = ({ navigation, route }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
@@ -16,7 +17,7 @@ const QuackamoleLevels = ({ navigation, route }) => {
 
     // Fetch levels from the server
     const fetchLevels = async () => {
-        const url = `http://localhost:8080/api/quackamolelevels/getLevels/${classCode}`;
+        const url = `${expoconfig.API_URL}/api/quackamolelevels/getLevels/${classCode}`;
         try {
             const response = await fetch(url);
             const data = await response.json();
@@ -56,7 +57,7 @@ const QuackamoleLevels = ({ navigation, route }) => {
     };
 
     const handleAddLevel = async () => {
-        const url = 'http://localhost:8080/api/quackamolelevels/addLevel';
+        const url = `${expoconfig.API_URL}/api/quackamolelevels/addLevel`;
         const levelData = {
             title: newTitle,
             classId: classCode
@@ -86,7 +87,7 @@ const QuackamoleLevels = ({ navigation, route }) => {
     };
 
     const handleRemoveLevel = async () => {
-        const url = `http://localhost:8080/api/quackamolelevels/deleteLevel/${selectedLevelId}`;
+        const url = `${expoconfig.API_URL}/api/quackamolelevels/deleteLevel/${selectedLevelId}`;
         console.log(`Sending DELETE request to: ${url}`);
         try {
             const response = await fetch(url, { method: 'DELETE' });

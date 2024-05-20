@@ -138,7 +138,7 @@ const ClassDashboard = ({ navigation, route }) => {
                         ) : (
                             <>
                                 <View></View>
-                                <CustomButton title="Remove" onPress={() => setShowDeleteModal(true)} style={stylesClass.button} textStyle={stylesClass.buttonText} />
+                                <CustomButton title="Remove Student" onPress={() => setShowDeleteModal(true)} style={stylesClass.button} textStyle={stylesClass.buttonText} />
                             </>
                         )}
                     </View>

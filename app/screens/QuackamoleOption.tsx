@@ -6,6 +6,7 @@ import BackIcon from '../../assets/back-icon.svg';
 import { stylesOption } from './stylesOption';
 import { stylesClass } from './stylesClass';
 import { useClassCode } from '../../context/ClassCodeContext';
+import expoconfig from '../../expoconfig';
 
 const QuackamoleOption = ({ navigation }) => {
     const { classCode } = useClassCode();
@@ -16,7 +17,7 @@ const QuackamoleOption = ({ navigation }) => {
             if (!classCode) return; // Exit if classCode is not available
 
             try {
-                const response = await fetch(`http://localhost:8080/api/quackamolelevels/getLevels/${classCode}`);
+                const response = await fetch(`${expoconfig.API_URL}/api/quackamolelevels/getLevels/${classCode}`);
                 const data = await response.json();
                 console.log(data);
                 setLevels(data);
@@ -29,7 +30,7 @@ const QuackamoleOption = ({ navigation }) => {
     }, [classCode]); // Add classCode as a dependency
 
     const handleBackPress = () => {
-        console.log('Back button pressed');
+        navigation.navigate('Menu')
     };
 
     return (

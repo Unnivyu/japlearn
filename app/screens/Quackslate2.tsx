@@ -5,6 +5,7 @@ import { stylesClass } from './stylesClass';
 import BackIcon from '../../assets/back-icon.svg';
 import { AuthContext } from '../../context/AuthContext';
 import { useClassCode } from '../../context/ClassCodeContext';
+import expoconfig from '../../expoconfig';
 
 type Phrase = {
     japPhrase: string;
@@ -31,7 +32,7 @@ const Quackslate2 = ({ navigation }) => {
 
     const fetchPhrases = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/quackslateContent/getByLevel/Basics 1');
+            const response = await fetch(`${expoconfig.API_URL}/api/quackslateContent/getByLevel/Basics 1`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -47,8 +48,7 @@ const Quackslate2 = ({ navigation }) => {
     };
 
     const handleBackPress = () => {
-        console.log('Back button pressed');
-        // Add logic to handle back button press
+        navigation.navigate('QuackslateOption')
     };
 
     const handleNextButtonPress = () => {
@@ -90,7 +90,7 @@ const Quackslate2 = ({ navigation }) => {
         };
     
         try {
-            const response = await fetch('http://localhost:8080/api/quackslateScores/addScore', {
+            const response = await fetch(`${expoconfig.API_URL}/api/quackslateScores/addScore`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

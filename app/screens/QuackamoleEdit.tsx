@@ -3,6 +3,7 @@ import { Text, View, ScrollView, TouchableOpacity, Button, Dimensions } from 're
 import { Picker } from '@react-native-picker/picker';
 import { stylesEdit } from './stylesEdit';
 import BackIcon from '../../assets/back-icon.svg';
+import expoconfig from '../../expoconfig';
 
 const QuackamoleEdit = ({ navigation, route }) => {
     const { classCode, levelId } = route.params;
@@ -87,7 +88,7 @@ const QuackamoleEdit = ({ navigation, route }) => {
     }, [levelId]);
 
     const fetchContent = async () => {
-        const url = `http://localhost:8080/api/quackamolecontent/getContent/${levelId}`;
+        const url = `${expoconfig.API_URL}/api/quackamolecontent/getContent/${levelId}`;
         try {
             const response = await fetch(url);
             const data = await response.json();
@@ -107,7 +108,7 @@ const QuackamoleEdit = ({ navigation, route }) => {
     }
 
     const addCharacter = async (character) => {
-        const url = `http://localhost:8080/api/quackamolecontent/addCharacter`;
+        const url = `${expoconfig.API_URL}/api/quackamolecontent/addCharacter`;
         const contentData = {
             levelId,
             kana: character.kana,
@@ -135,7 +136,7 @@ const QuackamoleEdit = ({ navigation, route }) => {
     }
 
     const removeCharacter = async (character) => {
-        const url = `http://localhost:8080/api/quackamolecontent/removeCharacter`;
+        const url = `${expoconfig.API_URL}/api/quackamolecontent/removeCharacter`;
         const contentData = {
             levelId,
             kana: character.kana,

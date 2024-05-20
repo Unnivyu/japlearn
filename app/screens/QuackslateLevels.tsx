@@ -4,6 +4,7 @@ import { stylesLevels } from './stylesLevels';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
 import { styles } from './stylesModal';
+import expoconfig from '../../expoconfig';
 
 const QuackslateLevels = ({ navigation, route }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
@@ -19,7 +20,7 @@ const QuackslateLevels = ({ navigation, route }) => {
 
     const fetchLevels = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/quackslateLevels/allquackslatelevels?classCode=${classCode}`);
+            const response = await fetch(`${expoconfig.API_URL}/api/quackslateLevels/allquackslatelevels?classCode=${classCode}`);
             if (response.ok) {
                 const data = await response.json();
                 setLevels(data);
@@ -46,7 +47,7 @@ const QuackslateLevels = ({ navigation, route }) => {
 
     const handleAddLevel = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/quackslateLevels/addquackslatelevel', {
+            const response = await fetch(`${expoconfig.API_URL}/api/quackslateLevels/addquackslatelevel`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -79,7 +80,7 @@ const QuackslateLevels = ({ navigation, route }) => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/quackslateLevels/deletequackslatelevel/${selectedLevelID}`, {
+            const response = await fetch(`${expoconfig.API_URL}/api/quackslateLevels/deletequackslatelevel/${selectedLevelID}`, {
                 method: 'DELETE',
             });
 

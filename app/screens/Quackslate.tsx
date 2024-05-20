@@ -5,6 +5,7 @@ import { stylesClass } from './stylesClass';
 import BackIcon from '../../assets/back-icon.svg';
 import { AuthContext } from '../../context/AuthContext';
 import { useClassCode } from '../../context/ClassCodeContext';
+import expoconfig from '../../expoconfig';
 
 type Phrase = {
     japPhrase: string;
@@ -31,7 +32,7 @@ const Quackslate = ({ navigation }) => {
 
     const fetchPhrases = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/quackslateContent/getByLevel/Intro');
+            const response = await fetch(`${expoconfig.API_URL}/api/quackslateContent/getByLevel/Intro`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -47,8 +48,7 @@ const Quackslate = ({ navigation }) => {
     };
 
     const handleBackPress = () => {
-        console.log('Back button pressed');
-        // Add logic to handle back button press
+        navigation.navigate('QuackslateOption')
     };
 
     const handleNextButtonPress = () => {
@@ -90,7 +90,7 @@ const Quackslate = ({ navigation }) => {
         };
     
         try {
-            const response = await fetch('http://localhost:8080/api/quackslateScores/addScore', {
+            const response = await fetch(`${expoconfig.API_URL}/api/quackslateScores/addScore`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -192,7 +192,7 @@ const Quackslate = ({ navigation }) => {
                             <Text style={[stylesSlate.textStyle]}>Translate it to English.</Text>
                         </View>
                         <Image source={require('../../assets/QuackslateDisplay.png')} style={[stylesSlate.imageStyle]} />
-                        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 400, justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 430, justifyContent: 'center', alignItems: 'center', marginTop: -15 }}>
                             {phrases.length > 0 && (
                                 <Text style={{ fontSize: 24, color: 'black', textAlign: 'center' }}>
                                     {phrases[currentPhraseIndex].japPhrase}
@@ -200,7 +200,7 @@ const Quackslate = ({ navigation }) => {
                             )}
                         </View>
                         <TouchableOpacity style={[stylesSlate.BackButton]} onPress={() => console.log('GameBack Button pressed')}>
-                            <Image source={require('../../assets/GameBack.png')} style={[stylesSlate.upperLeftButtonImage]} />
+                           
                         </TouchableOpacity>
                         <View style={[stylesSlate.Progress]}>
                             <Image source={require('../../assets/GameRect.png')} style={{ width: '100%', height: '100%' }} />

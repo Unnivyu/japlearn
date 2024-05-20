@@ -5,6 +5,7 @@ import { stylesClass } from './stylesClass';
 import BackIcon from '../../assets/back-icon.svg';
 import Mole from '../../assets/mole.svg';
 import CustomButton from '../../components/CustomButton';
+import expoconfig from '../../expoconfig';
 
 const Quackamole = ({ navigation, route }) => {
     const { levelId } = route.params;
@@ -23,7 +24,7 @@ const Quackamole = ({ navigation, route }) => {
     useEffect(() => {
         const fetchContent = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/quackamolecontent/getContent/${levelId}`);
+                const response = await fetch(`${expoconfig.API_URL}/api/quackamolecontent/getContent/${levelId}`);
                 const data = await response.json();
                 console.log(data);
                 setKanaCharacters(data.kana);

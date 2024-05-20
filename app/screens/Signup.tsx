@@ -111,7 +111,7 @@ const Signup = ({ navigation }) => {
                 setModalVisible(true);
             }
         } catch (error) {
-            setModalMessage(`Signup failed: ${error.message}`);
+            setModalMessage(`Signup failed email account already used:`);
             setModalVisible(true);
         } finally {
             setLoading(false);
