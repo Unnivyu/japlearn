@@ -8,7 +8,9 @@ import { styles } from './stylesModal';
 const QuackmanLevels = ({ navigation, route }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
     const [newLevelName, setNewLevelName] = useState('');
+    const [updatedLevelName, setUpdatedLevelName] = useState('');
     const [levels, setLevels] = useState([]);
     const [selectedLevelID, setSelectedLevelID] = useState(null);
     const { classCode } = route.params; 
@@ -97,6 +99,39 @@ const QuackmanLevels = ({ navigation, route }) => {
         }
     };
 
+    const handleEditPress = (level) => {
+        setSelectedLevelID(level.levelId);
+        setUpdatedLevelName(level.title);
+        setEditModalVisible(true);
+    };
+
+    const handleSaveLevel = async () => {
+        if (!selectedLevelID) return;
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/quackmanlevels/updateLevel/${selectedLevelID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: updatedLevelName,
+                }),
+            });
+
+            if (response.ok) {
+                Alert.alert('Success', 'Level updated successfully!');
+                setEditModalVisible(false);
+                fetchLevels(); // Refresh the list of levels
+            } else {
+                throw new Error('Failed to update level');
+            }
+        } catch (error) {
+            console.error('Error updating level:', error);
+            Alert.alert('Error', 'Failed to update level');
+        }
+    };
+
     const handleLevelNavigate = (levelId, title) => {
         navigation.navigate('QuackmanEdit', { classCode, levelId});
     };
@@ -119,7 +154,7 @@ const QuackmanLevels = ({ navigation, route }) => {
             </View>
             <ScrollView contentContainerStyle={stylesLevels.levelContainer} style={{ flex: 1 }}>
                 {levels.map((level) => (
-                    <TouchableOpacity key={level.levelId} onPress={() => handleLevelNavigate(level.levelId, level.title)}>
+                    <TouchableOpacity key={level.levelId} onPress={() => handleLevelNavigate(level.levelId, level.title)} onLongPress={() => handleEditPress(level)}>
                         <View style={stylesLevels.level}>
                             <Text style={stylesLevels.levelText}>{level.title}</Text>
                         </View>
@@ -179,6 +214,33 @@ const QuackmanLevels = ({ navigation, route }) => {
                                 ))}
                             </ScrollView>
                             <CustomButton title="Remove" onPress={handleRemoveLevel} style={styles.button} textStyle={styles.buttonText} />
+                        </View>
+                    </View>
+                </ScrollView>
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={editModalVisible}
+                onRequestClose={() => setEditModalVisible(false)}
+            >
+                <ScrollView contentContainerStyle={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <View style={styles.closeButtonContainer}>
+                            <TouchableOpacity onPress={() => setEditModalVisible(false)} style={styles.closeButton}>
+                                <Text style={styles.closeButtonText}>X</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.text}>Edit level name:</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={updatedLevelName}
+                                onChangeText={setUpdatedLevelName}
+                                placeholder="Level Name"
+                            />
+                            <CustomButton title="Save" onPress={handleSaveLevel} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
                 </ScrollView>
