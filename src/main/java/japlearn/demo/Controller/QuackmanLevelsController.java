@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +34,11 @@ public class QuackmanLevelsController {
 	public QuackmanLevels getQuackmanLevel(@PathVariable("Id") String Id) throws Exception {
 		return quackmanLevelsService.findQuackmanLevelbyId(Id);
 	}
+
+	@PutMapping("/updateLevel/{Id}")
+    public QuackmanLevels updateQuackmanLevel(@PathVariable("Id") String Id, @RequestBody QuackmanLevels updatedLevel) throws Exception {
+        return quackmanLevelsService.updateQuackmanLevel(Id, updatedLevel);
+    }
 	
 	@DeleteMapping("/deleteLevel/{Id}")
 	public String removeQuackmanLevel(@PathVariable("Id") String Id) {

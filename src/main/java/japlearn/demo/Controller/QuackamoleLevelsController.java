@@ -35,6 +35,10 @@ public class QuackamoleLevelsController {
     public List<QuackamoleLevels> getLevelsByClassId(@PathVariable String classId) {
         return quackamoleLevelsService.findLevelsByClassId(classId);
     }
+    @PutMapping("/updateLevel/{id}")
+    public QuackamoleLevels updateQuackamoleLevel(@PathVariable("id") String id, @RequestBody QuackamoleLevels updatedLevel) throws Exception {
+        return quackamoleLevelsService.updateQuackamoleLevel(id, updatedLevel);
+    }
 
 }
 
