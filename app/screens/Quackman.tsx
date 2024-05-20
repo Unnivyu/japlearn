@@ -1,105 +1,227 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, KeyboardAvoidingView, Image, TouchableOpacity, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, Modal } from 'react-native';
 import { stylesQuackman } from './stylesQuackman';
 import { stylesClass } from './stylesClass';
 import BackIcon from '../../assets/back-icon.svg';
+import CustomButton from '../../components/CustomButton';
 
-const letters = ["ku", "u", "ru", "fu", "ko", "mo", "ne", "re", "ma", "ra", "lo", "li", "la", "ta", "le"];
+// Example list of all romaji
+const allRomaji = ['a', 'i', 'u', 'e', 'o', 'ka', 'ki', 'ku', 'ke', 'ko', 'sa', 'shi', 'su', 'se', 'so', 'ta', 'chi', 'tsu', 'te', 'to', 'na', 'ni', 'nu', 'ne', 'no', 'ha', 'hi', 'fu', 'he', 'ho', 'ma', 'mi', 'mu', 'me', 'mo', 'ya', 'yu', 'yo', 'ra', 'ri', 'ru', 're', 'ro', 'wa', 'wo', 'n'];
+
+const staticData = [
+    { word: ["ku", "ru", "ma"], hint: "A vehicle with 4 wheels used for transport." },
+    { word: ["mi", "zu"], hint: "The clear liquid essential for life, found in rivers and lakes." },
+    { word: ["hi", "to", "ri"], hint: "A single unit or individual, one." },
+    { word: ["ta", "be", "mo", "no"], hint: "Something you eat to sustain life." },
+    { word: ["ne", "ko"], hint: "A small domesticated carnivorous mammal with soft fur." }
+];
 
 const Quackman = () => {
-    const [boxTexts, setBoxTexts] = useState(['', '', '']); // State to manage inputs
-    const [currentBoxIndex, setCurrentBoxIndex] = useState(0); // Track the current text box index
+    const [romajiGrid, setRomajiGrid] = useState([]);
+    const [inputRomaji, setInputRomaji] = useState([]);
+    const [currentHint, setCurrentHint] = useState('');
+    const [wordLength, setWordLength] = useState(0);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [currentWordIndex, setCurrentWordIndex] = useState(0);
+    const [progress, setProgress] = useState(0);
+    const [score, setScore] = useState(0);
+    const [attempts, setAttempts] = useState([null, null, null]); // null means no attempt, true means correct, false means incorrect
+    const [gameOver, setGameOver] = useState(false);
 
-    // Function to update text in a specific box
-    const updateBoxText = (index, text) => {
-        const updatedTexts = [...boxTexts];
-        updatedTexts[index] = text;
-        setBoxTexts(updatedTexts);
+    useEffect(() => {
+        loadWord();
+    }, [currentWordIndex]);
+
+    const loadWord = () => {
+        const selectedData = staticData[currentWordIndex];
+        const { hint, word } = selectedData;
+
+        setCurrentHint(hint);
+        setWordLength(word.length);
+        const grid = fillGrid(word, allRomaji, 12); // 4x3 grid needs 12 characters
+        setRomajiGrid(grid);
+        setInputRomaji([]);
+        setAttempts([null, null, null]); // Reset attempts for the new word
     };
 
-    // Function to insert text into the next empty box or reset boxes if full
-    const insertTextToNextBoxOrReset = (text) => {
-        if (currentBoxIndex < boxTexts.length) {
-            updateBoxText(currentBoxIndex, text);
-            setCurrentBoxIndex(currentBoxIndex + 1);
+    const fillGrid = (syllables, allSyllables, gridSize) => {
+        const filledGrid = [...syllables];
+
+        while (filledGrid.length < gridSize) {
+            const randomIndex = Math.floor(Math.random() * allSyllables.length);
+            const randomRomaji = allSyllables[randomIndex];
+            if (!filledGrid.includes(randomRomaji)) {
+                filledGrid.push(randomRomaji);
+            }
+        }
+
+        // Shuffle the grid
+        for (let i = filledGrid.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [filledGrid[i], filledGrid[j]] = [filledGrid[j], filledGrid[i]];
+        }
+
+        return filledGrid;
+    };
+
+    const toggleRomaji = (char) => {
+        setInputRomaji((prevInput) => {
+            let newInput;
+            if (prevInput.includes(char)) {
+                newInput = prevInput.filter((c) => c !== char);
+            } else {
+                newInput = prevInput.length < wordLength ? [...prevInput, char] : prevInput;
+            }
+
+            if (newInput.length === wordLength) {
+                setModalVisible(true);
+            }
+
+            return newInput;
+        });
+    };
+
+    const handleConfirm = () => {
+        const selectedData = staticData[currentWordIndex];
+        const { word } = selectedData;
+
+        if (inputRomaji.join('') === word.join('')) {
+            // Correct attempt
+            setScore(score + 1);
+            setProgress(progress + 1);
+            moveToNextWord();
         } else {
-            // All boxes are full, reset boxes and start with the new option
-            setBoxTexts([text, '', '']); // Insert the clicked option into the first box
-            setCurrentBoxIndex(1); // Move index to the second box
+            // Incorrect attempt
+            setAttempts((prevAttempts) => {
+                const updatedAttempts = [...prevAttempts];
+                updatedAttempts[prevAttempts.findIndex((attempt) => attempt === null)] = false;
+                if (updatedAttempts.filter(attempt => attempt === false).length === 3) {
+                    moveToNextWord();
+                }
+                return updatedAttempts;
+            });
+        }
+
+        setModalVisible(false);
+        setInputRomaji([]);
+    };
+
+    const moveToNextWord = () => {
+        if (currentWordIndex + 1 === staticData.length) {
+            setGameOver(true);
+        } else {
+            setCurrentWordIndex(currentWordIndex + 1);
         }
     };
 
-    return (
-        <KeyboardAvoidingView behavior='padding' style={{ flex: 1 }}>
-            <View style={{ flex: 1 }}>
-                {/* Header with Left-Aligned Back Button */}
-                <View style={[stylesClass.header, Platform.OS === 'web' ? { alignItems: 'flex-start' } : {}]}>
-                    <TouchableOpacity onPress={() => console.log('Back button pressed')}>
-                        <View style={stylesClass.backButtonContainer}>
-                            <BackIcon width={20} height={20} fill={'white'} />
+    const handleCancel = () => {
+        setModalVisible(false);
+    };
+
+    const handleBackPress = () => {
+        setGameOver(false);
+        // Handle navigation back or any other logic
+    };
+
+    const handleRetry = () => {
+        setGameOver(false);
+        setProgress(0);
+        setScore(0);
+        setCurrentWordIndex(0);
+        setAttempts([null, null, null]);
+    };
+
+    if (gameOver) {
+        return (
+            <Modal
+                visible={gameOver}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setGameOver(false)}
+            >
+                <View style={stylesQuackman.modalContainer}>
+                    <View style={stylesQuackman.modalContent}>
+                        <Text style={stylesQuackman.gameOverText}>Game Over!</Text>
+                        <Text style={stylesQuackman.scoreText}>Your final score: {score}</Text>
+                        <View style={stylesQuackman.buttonRow}>
+                            <CustomButton title="OK" onPress={handleBackPress} style={stylesQuackman.endButton} textStyle={stylesQuackman.endButtonText} />
+                            <CustomButton title="Retry" onPress={handleRetry} style={stylesQuackman.retryButton} textStyle={stylesQuackman.retryButtonText} />
                         </View>
-                    </TouchableOpacity>
+                    </View>
                 </View>
+            </Modal>
+        );
+    }
+
+    return (
+        <View style={{ flex: 1 }}>
+            <View style={stylesClass.header}>
+                <TouchableOpacity onPress={() => console.log('Back button pressed')}>
+                    <View style={stylesClass.backButtonContainer}>
+                        <BackIcon width={20} height={20} fill={'white'} />
+                    </View>
+                </TouchableOpacity>
             </View>
 
-            <View
-                style={[
-                    stylesQuackman.MenuAll,
-                    Platform.OS === 'web' ? { maxWidth: 350, marginHorizontal: 'auto' } : {} // Narrower width for web
-                ]}
-            >
-                {/* Logo and Text */}
-                <View style={[stylesQuackman.menuContainer]}>
-                    <Image source={require('../../assets/quacklogo.png')} style={[stylesQuackman.Quacklogo]} />
-                    <Text style={[stylesQuackman.textStyle]}>Quackman</Text>
+            <View style={stylesQuackman.progressContainer}>
+                <View style={stylesQuackman.progress}>
+                    <Text style={stylesQuackman.progressText}>{currentWordIndex + 1}/{staticData.length}</Text>
                 </View>
+            </View>
+            
+            <View style={stylesQuackman.menuContainer}>
+                <Image source={require('../../assets/quacklogo.png')} style={stylesQuackman.Quacklogo} />
+                <Text style={stylesQuackman.textStyle}>Quackman</Text>
+            </View>
 
-                {/* QuackChance images displayed below the text */}
-                <View style={[stylesQuackman.quackChanceContainer]}>
-                    {Array.from(Array(3)).map((_, index) => (
-                        <Image key={index} source={require('../../assets/QuackProgress.png')} style={[stylesQuackman.QuackChance]} />
-                    ))}
-                </View>
+            <View style={stylesQuackman.attemptsContainer}>
+                {attempts.map((attempt, index) => (
+                    <View key={index} style={[stylesQuackman.attempt, attempt === false && stylesQuackman.attemptWrong, attempt === true && stylesQuackman.attemptCorrect]}></View>
+                ))}
+            </View>
 
-                {/* 5x3 Button Grid */}
-                <View style={stylesQuackman.gridContainer}>
-                    {letters.map((letter, index) => (
-                        <TouchableOpacity key={index} style={stylesQuackman.button} onPress={() => insertTextToNextBoxOrReset(letter)}>
-                            <Image source={require('../../assets/QuackmanOptions.png')} style={stylesQuackman.buttonImage} />
-                            <Text style={stylesQuackman.buttonText}>{letter}</Text>
+            <View style={stylesQuackman.charGridContainer}>
+                <View style={stylesQuackman.charGrid}>
+                    {romajiGrid.map((char, index) => (
+                        <TouchableOpacity key={index} style={[stylesQuackman.charCell, inputRomaji.includes(char) && stylesQuackman.charCellSelected]} onPress={() => toggleRomaji(char)}>
+                            <Text style={stylesQuackman.charText}>{char}</Text>
                         </TouchableOpacity>
                     ))}
                 </View>
+            </View>
 
-                {/* Game Back Button */}
-                <TouchableOpacity style={[stylesQuackman.BackButton]} onPress={() => console.log('GameBack Button pressed')}>
-                    <Image source={require('../../assets/GameBack.png')} style={[stylesQuackman.upperLeftButtonImage]} />
-                </TouchableOpacity>
-
-                {/* Game Progress Rect */}
-                <View style={[stylesQuackman.Progress]}>
-                    <Image source={require('../../assets/GameRect.png')} style={{ width: '100%', height: '100%' }} />
-                    <Text style={{ position: 'absolute', color: 'black', fontSize: 20 }}>9/10</Text>
+            <View style={stylesQuackman.hintInputContainer}>
+                <View style={stylesQuackman.hintContainer}>
+                    <Text style={stylesQuackman.hintText}>
+                        {currentHint}
+                    </Text>
                 </View>
-
-                {/* QuackmanBG Image Section */}
-                <Image source={require('../../assets/QuackmanBG.png')} style={[stylesQuackman.QuackmanBGImage, { aspectRatio: 1 }]} />
-                <Text style={[stylesQuackman.QuackmanBGText]}>A vehicle with 4 wheels used for transport.</Text>
-
-                {/* Text Boxes (Non-Editable) */}
-                <View style={stylesQuackman.purpleBoxContainer}>
-                    {boxTexts.map((value, index) => (
-                        <View key={index} style={stylesQuackman.purpleBox}>
-                            <TextInput
-                                style={stylesQuackman.textInputStyle}
-                                value={value}
-                                editable={false} // Make the TextInput non-editable
-                            />
+                <View style={stylesQuackman.inputContainer}>
+                    {Array.from({ length: wordLength }, (_, index) => (
+                        <View key={index} style={[stylesQuackman.inputCell]}>
+                            <Text style={stylesQuackman.inputText}>{inputRomaji[index]}</Text>
                         </View>
                     ))}
                 </View>
             </View>
-        </KeyboardAvoidingView>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={stylesQuackman.modalContainer}>
+                    <View style={stylesQuackman.modalContent}>
+                        <Text style={stylesQuackman.modalText}>Are you sure you want to submit?</Text>
+                        <View style={stylesQuackman.modalButtons}>
+                            <CustomButton style={stylesQuackman.modButton} title="Cancel" onPress={handleCancel} />
+                            <CustomButton style={stylesQuackman.modButton} title="Confirm" onPress={handleConfirm} />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+        </View>
     );
 };
 

@@ -1,131 +1,177 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
+const cellSize = Math.min(width / 5, (height - 400) / 5) - 10; // Adjusting the cell size for a 5-column grid with padding
 
 export const stylesQuackman = StyleSheet.create({
+    progressContainer: {
+        alignItems: 'flex-end'
+    },
+    progress: {
+        backgroundColor: '#FDFCFE',
+        width: 100,
+        height: 50,
+        borderRadius: 50,
+        margin: 20,
+        justifyContent: 'center'
+    },
+    progressText: {
+        textAlign: 'center',
+    },
     menuContainer: {
-        flexDirection: 'row',  // Align children horizontally
-        alignItems: 'flex-end',  // Align items to the bottom
-        justifyContent: 'center',  // Center the contents within the container horizontally
-    },
-    MenuAll: {
-        flex: 1,
+        flexDirection: 'row', 
+        alignItems: 'center',  
         justifyContent: 'center',
-        alignItems: 'center'
-    },
-    Progress: {
-        position: 'absolute', 
-        top: -270, 
-        left: 240, 
-        width: 105, 
-        height: 45, 
-        justifyContent: 'center', 
-        alignItems: 'center' 
-    },
-    BackButton: {
-        position: 'absolute', 
-        top: -185, 
-        left: 20
-    },
-    upperLeftButtonImage: {
-        width: 70,
-        height: 40,
-        top: -80
+        marginBottom: 10,
     },
     Quacklogo: {
         width: 100,
         height: 100,
-        marginRight: 20,  // Space between the logo and the text
-        marginTop: -300, 
-        marginBottom: 100 // Move the logo up relative to the text
     },
     textStyle: {
-        fontWeight: 'bold', 
+        fontFamily: 'jua',
         fontSize: 30,
-        marginTop: -300,
-        marginBottom: 135
     },
-    QuackChance: {
-        width: 50,
-        height: 40,
-        borderRadius: 10,
-        marginRight: 10,  // Right margin for spacing between images
-        marginLeft: 10,  // Left margin if needed for spacing
-    },
-    quackChanceContainer: {
+    attemptsContainer: {
+        height: 50,
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center',
+        gap: 10,
+        marginBottom: 20,
+    },
+    attempt: {
+        height: 40,
+        width: 40,
+        borderRadius: 20,
+        backgroundColor: '#C7C5C5',
+        margin: 5,
+    },
+    attemptWrong: {
+        backgroundColor: '#FF6347', // Red color for incorrect attempt
+    },
+    attemptCorrect: {
+        backgroundColor: '#8ED94D', // Green color for correct attempt
+    },
+    charGridContainer: {
         flex: 1,
-        marginTop: -200,
-        marginBottom: -180
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingBottom: 20, // Ensure some padding at the bottom
     },
-    QuackmanOptions: {
-        width: 50,  // Example width, adjust as needed
-        height: 50,  // Example height, adjust as needed
-        marginTop: 30,  // Space above the button to separate it from the images
-        alignSelf: 'center'  // Center the button horizontally
-    },
-    QuackmanBGImage: {
-        marginBottom: -200
-    },
-    QuackmanBGText: {
-        position: 'absolute',
-        top: '55%',
-        left: '10%',
-        fontSize: 20,
-        color: 'black',
-        
-    },
-    gridContainer: {
+    charGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-around',  // This will space out the buttons evenly
-        width: '100%',  // Ensure the container takes full width of the screen
-        marginTop: 80,
-        marginBottom: 50,
-        paddingHorizontal: 10,  // Add horizontal padding if needed
-    },
-    button: {
-        width: 60,  // Adjust size based on your preference and screen size
-        height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        marginVertical: 5,  // Vertical spacing between rows
     },
-    buttonText: {
-        fontSize: 12,  // Make sure text is readable
-        color: 'white',  // Ensure contrast against button background
+    charCell: {
+        width: cellSize,
+        height: cellSize, // Ensure the cell is square
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 5,
+        backgroundColor: '#8423D9', // Adjusted to match the provided image color
+        borderRadius: 10,
+    },
+    charCellSelected: {
+        backgroundColor: '#6C3A99', // Change color when selected
+    },
+    charText: {
+        fontSize: 24,
         fontWeight: 'bold',
-        position: 'absolute',  // Overlay text on the image
+        color: 'white', // Text color to match the provided image
     },
-    buttonImage: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        borderRadius: 5,  // Optional: adds rounded corners to the button image
+    hintInputContainer: {
+        padding: 10,
+        backgroundColor: '#A883C8', // Set background color for the entire container
+        alignItems: 'center',
     },
-    purpleBoxContainer: {
+    hintContainer: {
+        marginBottom: 10, // Add margin to separate hint text from input cells
+    },
+    hintText: {
+        fontSize: 16,
+        color: '#333',
+    },
+    inputContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-around',  // Space boxes horizontally
-        marginTop: 10,
-                          // Adjust vertical spacing
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
     },
-    purpleBox: {
-        width: 50,                       // Square width
-        height: 50,                      // Square height
-        backgroundColor: 'white',        // White background for text input
-        borderColor: 'purple',           // Purple border color
-        borderWidth: 2,                  // Thickness of the border
-        justifyContent: 'center',        // Center text vertically
-        alignItems: 'center',            // Center text horizontally
-        borderRadius: 4,                 // Rounded corners (optional)
-        marginHorizontal: 10,            // Horizontal spacing between boxes
-        marginVertical: 5,    
-        marginBottom: 30           // Vertical spacing between rows
+    inputCell: {
+        width: 40,
+        height: 40, // Ensure the cell is square
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 5,
+        backgroundColor: '#FFFFFF',
+        borderWidth: 2,
+        borderColor: '#8423D9',
+        borderRadius: 10,
     },
-    textInputStyle: {
+    inputText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#8423D9',
+    },
+    modalContainer: {
         flex: 1,
-        color: 'purple',                 // Text color for visibility
-        textAlign: 'center',             // Center text horizontally
-        fontWeight: 'bold',              // Bold text
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
     },
+    modalContent: {
+        width: 300,
+        padding: 20,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 20,
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '80%',
+    },
+    gameOverText: {
+        fontSize: 36,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        color: '#8ED94D',
+    },
+    scoreText: {
+        fontSize: 24,
+        marginBottom: 40,
+    },
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',  // This will ensure that buttons are evenly spaced
+        width: '75%',  // Takes full width to spread out buttons
+    },
+    endButton: {
+        backgroundColor: '#8423D9',
+        height: 50,
+        width: 80,
+    },
+    endButtonText: {
+        fontSize: 20,
+        color: '#fff'
+    },
+    retryButton: {
+        backgroundColor: '#8423D9',
+        height: 50,
+        width: 80,
+    },
+    retryButtonText: {
+        fontSize: 20,
+        color: '#fff'
+    },
+    modButton: {
+        height: 40,
+        backgroundColor: '#8ED94D'
+    }
 });
