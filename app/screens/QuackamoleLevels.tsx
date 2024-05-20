@@ -8,10 +8,12 @@ import CustomButton from '../../components/CustomButton';
 const QuackamoleLevels = ({ navigation, route }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
     const { classCode } = route.params;
     const [newTitle, setNewTitle] = useState('');
     const [levels, setLevels] = useState([]);
-    const [selectedLevelId, setSelectedLevelId] = useState('');
+    const [selectedLevel, setSelectedLevel] = useState(null);
+    const [updatedTitle, setUpdatedTitle] = useState('');
 
     const fetchLevels = async () => {
         const url = `http://localhost:8080/api/quackamolelevels/getLevels/${classCode}`;
@@ -80,19 +82,19 @@ const QuackamoleLevels = ({ navigation, route }) => {
     };
 
     const handleRemoveLevel = async () => {
-        if (!selectedLevelId) {
+        if (!selectedLevel) {
             Alert.alert('Error', 'Please select a level to remove.');
             return;
         }
 
-        const url = `http://localhost:8080/api/quackamolelevels/deleteLevel/${selectedLevelId}`;
+        const url = `http://localhost:8080/api/quackamolelevels/deleteLevel/${selectedLevel.levelId}`;
         console.log(`Sending DELETE request to: ${url}`);
         try {
             const response = await fetch(url, { method: 'DELETE' });
             console.log(`Response status: ${response.status}`);
             if (response.ok) {
                 console.log('Level removed successfully');
-                setSelectedLevelId('');
+                setSelectedLevel(null);
                 setRemoveModalVisible(false);
                 fetchLevels();
             } else {
@@ -100,6 +102,43 @@ const QuackamoleLevels = ({ navigation, route }) => {
             }
         } catch (error) {
             console.error('Error removing level:', error);
+        }
+    };
+
+    const handleEditPress = (level) => {
+        setSelectedLevel(level);
+        setUpdatedTitle(level.title);
+        setEditModalVisible(true);
+    };
+
+    const handleSaveLevel = async () => {
+        if (!selectedLevel) return;
+
+        const url = `http://localhost:8080/api/quackamolelevels/updateLevel/${selectedLevel.levelId}`;
+        const levelData = {
+            ...selectedLevel,
+            title: updatedTitle
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(levelData)
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                console.log('Level updated successfully:', data);
+                setEditModalVisible(false);
+                fetchLevels();
+            } else {
+                throw new Error(`Failed to update level: ${data.message} (Status code: ${response.status})`);
+            }
+        } catch (error) {
+            console.error('Error updating level:', error);
         }
     };
 
@@ -121,7 +160,11 @@ const QuackamoleLevels = ({ navigation, route }) => {
             </View>
             <ScrollView contentContainerStyle={stylesLevels.levelContainer} style={{ flex: 1 }}>
                 {levels.map((level) => (
-                    <TouchableOpacity key={level.levelId} onPress={() => handleLevelNavigatePress(level)}>
+                    <TouchableOpacity
+                        key={level.levelId}
+                        onPress={() => handleLevelNavigatePress(level)}
+                        onLongPress={() => handleEditPress(level)}
+                    >
                         <View style={stylesLevels.level}>
                             <Text style={stylesLevels.levelText}>{level.title}</Text>
                         </View>
@@ -172,14 +215,41 @@ const QuackamoleLevels = ({ navigation, route }) => {
                             <Text style={styles.text}>Select a level to remove:</Text>
                             <ScrollView>
                                 {levels.map((level) => (
-                                    <TouchableOpacity key={level.levelId} onPress={() => setSelectedLevelId(level.levelId)}>
-                                        <View style={selectedLevelId === level.levelId ? stylesLevels.selectedLevel : stylesLevels.level}>
+                                    <TouchableOpacity key={level.levelId} onPress={() => setSelectedLevel(level)}>
+                                        <View style={selectedLevel && selectedLevel.levelId === level.levelId ? stylesLevels.selectedLevel : stylesLevels.level}>
                                             <Text style={stylesLevels.levelText}>{level.title}</Text>
                                         </View>
                                     </TouchableOpacity>
                                 ))}
                             </ScrollView>
                             <CustomButton title="Remove" onPress={handleRemoveLevel} style={styles.button} textStyle={styles.buttonText} />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={editModalVisible}
+                onRequestClose={() => setEditModalVisible(false)}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <View style={styles.closeButtonContainer}>
+                            <TouchableOpacity onPress={() => setEditModalVisible(false)} style={styles.closeButton}>
+                                <Text style={styles.closeButtonText}>X</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.text}>Edit level name:</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={updatedTitle}
+                                onChangeText={setUpdatedTitle}
+                                placeholder="Level Name"
+                            />
+                            <CustomButton title="Save" onPress={handleSaveLevel} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
                 </View>

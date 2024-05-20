@@ -45,15 +45,18 @@ const QuackmanEdit = ({ navigation, route }) => {
 
     const handleAddContent = async () => {
         try {
-            const encodedWord = encodeURIComponent(word);
-            const encodedHint = encodeURIComponent(hint);
-            const response = await fetch(`http://localhost:8080/api/quackmancontent/addContentToLevel?levelId=${levelId}&word=${encodedWord}&hint=${encodedHint}`, {
+            const response = await fetch('http://localhost:8080/api/quackmancontent/addContentToLevel', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({
+                    levelId: levelId,
+                    word: word,
+                    hint: hint,
+                }),
             });
-            console.log(response);
+
             if (response.ok) {
                 Alert.alert('Success', 'Content added successfully!');
                 fetchContent(); // Refresh the list
@@ -93,7 +96,7 @@ const QuackmanEdit = ({ navigation, route }) => {
     };
 
     const handleBackPress = () => {
-        navigation.navigate('QuackamoleLevels', { classCode, levelId });
+        navigation.navigate('QuackmanLevels', { classCode, levelId });
     };
 
     const handleCloseModal = () => {
@@ -129,10 +132,10 @@ const QuackmanEdit = ({ navigation, route }) => {
             </View>
             <ScrollView contentContainerStyle={stylesEdit.scrollViewContent}>
                 {content.map((item, index) => (
-                    <TouchableOpacity key={index} onPress={() => handleOpenRemoveModal(item.contentId)}>
+                    <TouchableOpacity key={index} onPress={() => handleOpenRemoveModal(item.levelId)}>
                         <View style={stylesEdit.quackmaneditContent}>
-                            <Text style={stylesEdit.contentText}>{item.word.join(', ')}</Text>
-                            <Text style={stylesEdit.contentText}>{item.hint.join(', ')}</Text>
+                            <Text style={stylesEdit.contentText}>{item.word}</Text>
+                            <Text style={stylesEdit.contentText}>{item.hint}</Text>
                         </View>
                     </TouchableOpacity>
                 ))}
