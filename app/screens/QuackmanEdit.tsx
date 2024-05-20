@@ -1,38 +1,114 @@
-import React, { useState } from 'react';
-import { Text, View, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View, ScrollView, TouchableOpacity, Modal, TextInput, Alert } from 'react-native';
 import { stylesEdit } from './stylesEdit';
+import { styles } from './stylesModal';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
-import { styles } from './stylesModal';
 
-const QuackmanEdit = ({ navigation }) => {
-    const [addModalVisible, setAddModalVisible] = useState(false);
+const QuackmanEdit = ({ navigation, route }) => {
+    const [modalVisible, setModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
-    const [newWord, setNewWord] = useState('');
-    const [newJapaneseChar, setNewJapaneseChar] = useState('');
+    const [word, setWord] = useState('');
+    const [hint, setHint] = useState('');
+    const [content, setContent] = useState([]);
+    const [selectedContentId, setSelectedContentId] = useState(null);
+    const { classCode, levelId } = route.params;
+
+    useEffect(() => {
+        fetchContent();
+    }, []);
+
+    const fetchContent = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/quackmancontent/getContentByLevelId/${levelId}`);
+            const responseText = await response.text();
+            console.log("Response text:", responseText); // Log the raw response text
+
+            if (response.ok) {
+                if (responseText) {
+                    const data = JSON.parse(responseText);
+                    setContent(data);
+                    console.log("Fetched data:", data);
+                } else {
+                    console.warn("Response was empty");
+                    setContent([]); // Handle empty response
+                }
+            } else {
+                console.error('Failed to fetch content:', responseText);
+                Alert.alert('Error', 'Failed to fetch content');
+            }
+        } catch (error) {
+            console.error('Error fetching content:', error);
+            Alert.alert('Error', 'Failed to fetch content');
+        }
+    };
+
+    const handleAddContent = async () => {
+        try {
+            const encodedWord = encodeURIComponent(word);
+            const encodedHint = encodeURIComponent(hint);
+            const response = await fetch(`http://localhost:8080/api/quackmancontent/addContentToLevel?levelId=${levelId}&word=${encodedWord}&hint=${encodedHint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            console.log(response);
+            if (response.ok) {
+                Alert.alert('Success', 'Content added successfully!');
+                fetchContent(); // Refresh the list
+                setModalVisible(false);
+                setWord('');
+                setHint('');
+            } else {
+                const errorData = await response.text();
+                console.error('Failed to add content:', errorData);
+                Alert.alert('Error', 'Failed to add content');
+            }
+        } catch (error) {
+            console.error('Error adding content:', error);
+            Alert.alert('Error', 'Failed to add content');
+        }
+    };
+
+    const handleRemoveContent = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/quackmancontent/deleteContent/${selectedContentId}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                Alert.alert('Success', 'Content removed successfully!');
+                fetchContent(); // Refresh the list
+                setRemoveModalVisible(false);
+            } else {
+                const errorData = await response.text();
+                console.error('Failed to remove content:', errorData);
+                Alert.alert('Error', 'Failed to remove content');
+            }
+        } catch (error) {
+            console.error('Error removing content:', error);
+            Alert.alert('Error', 'Failed to remove content');
+        }
+    };
 
     const handleBackPress = () => {
-        navigation.navigate('QuackmanLevels');
+        navigation.navigate('QuackamoleLevels', { classCode, levelId });
     };
 
-    const handleAddPress = () => {
-        setAddModalVisible(true);
+    const handleCloseModal = () => {
+        setModalVisible(false);
+        setWord('');
+        setHint('');
     };
 
-    const handleRemovePress = () => {
+    const handleOpenRemoveModal = (contentId) => {
+        setSelectedContentId(contentId);
         setRemoveModalVisible(true);
     };
 
-    const handleAddWord = () => {
-        setAddModalVisible(false);
-        // Add logic here to handle adding the new word
-        setNewWord('');
-        setNewJapaneseChar('');
-    };
-
-    const handleRemoveWord = () => {
+    const handleCloseRemoveModal = () => {
         setRemoveModalVisible(false);
-        // Add logic here to handle removing the selected word
     };
 
     return (
@@ -48,56 +124,46 @@ const QuackmanEdit = ({ navigation }) => {
                 <Text style={stylesEdit.titleText}>Classname: Quackman</Text>
             </View>
             <View style={stylesEdit.buttonContainer}>
-                <CustomButton title="Add" onPress={handleAddPress} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
-                <CustomButton title="Remove" onPress={handleRemovePress} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
+                <CustomButton title="Add" onPress={() => setModalVisible(true)} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
+                <CustomButton title="Remove" onPress={() => setRemoveModalVisible(true)} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
             </View>
-            <ScrollView>
-                <View style={stylesEdit.editContainer}>
-                    <View style={stylesEdit.quackmaneditContent}>
-                        <TextInput
-                            style={stylesEdit.input}
-                            value={newWord}
-                            onChangeText={setNewWord}
-                            placeholder='Enter Word'
-                        />
-                        <TextInput
-                            style={stylesEdit.input}
-                            value={newJapaneseChar}
-                            onChangeText={setNewJapaneseChar}
-                            placeholder='Enter Japanese Character'
-                        />
-                    </View>
-                </View>
+            <ScrollView contentContainerStyle={stylesEdit.scrollViewContent}>
+                {content.map((item, index) => (
+                    <TouchableOpacity key={index} onPress={() => handleOpenRemoveModal(item.contentId)}>
+                        <View style={stylesEdit.quackmaneditContent}>
+                            <Text style={stylesEdit.contentText}>{item.word.join(', ')}</Text>
+                            <Text style={stylesEdit.contentText}>{item.hint.join(', ')}</Text>
+                        </View>
+                    </TouchableOpacity>
+                ))}
             </ScrollView>
 
             <Modal
                 animationType="slide"
                 transparent={true}
-                visible={addModalVisible}
-                onRequestClose={() => setAddModalVisible(false)}
+                visible={modalVisible}
+                onRequestClose={handleCloseModal}
             >
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <View style={styles.closeButtonContainer}>
-                            <TouchableOpacity onPress={() => setAddModalVisible(false)} style={styles.closeButton}>
-                                <Text style={styles.closeButtonText}>X</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
+                            <Text style={styles.closeButtonText}>X</Text>
+                        </TouchableOpacity>
                         <View style={styles.modalContent}>
                             <Text style={styles.text}>Enter new content:</Text>
                             <TextInput
                                 style={styles.input}
-                                value={newWord}
-                                onChangeText={setNewWord}
-                                placeholder='Word'
+                                value={word}
+                                onChangeText={setWord}
+                                placeholder="Enter word"
                             />
                             <TextInput
                                 style={styles.input}
-                                value={newJapaneseChar}
-                                onChangeText={setNewJapaneseChar}
-                                placeholder='Japanese Character'
+                                value={hint}
+                                onChangeText={setHint}
+                                placeholder="Enter hint"
                             />
-                            <CustomButton title="Add" onPress={handleAddWord} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Add" onPress={handleAddContent} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
                 </View>
@@ -107,18 +173,16 @@ const QuackmanEdit = ({ navigation }) => {
                 animationType="slide"
                 transparent={true}
                 visible={removeModalVisible}
-                onRequestClose={() => setRemoveModalVisible(false)}
+                onRequestClose={handleCloseRemoveModal}
             >
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <View style={styles.closeButtonContainer}>
-                            <TouchableOpacity onPress={() => setRemoveModalVisible(false)} style={styles.closeButton}>
-                                <Text style={styles.closeButtonText}>X</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <TouchableOpacity onPress={handleCloseRemoveModal} style={styles.closeButton}>
+                            <Text style={styles.closeButtonText}>X</Text>
+                        </TouchableOpacity>
                         <View style={styles.modalContent}>
-                            <Text style={styles.text}>Are you sure you want to remove this?</Text>
-                            <CustomButton title="Remove" onPress={handleRemoveWord} style={styles.button} textStyle={styles.buttonText} />
+                            <Text style={styles.text}>Are you sure you want to remove this content?</Text>
+                            <CustomButton title="Remove" onPress={handleRemoveContent} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
                 </View>

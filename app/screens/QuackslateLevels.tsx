@@ -11,7 +11,7 @@ const QuackslateLevels = ({ navigation, route }) => {
     const [newLevelName, setNewLevelName] = useState('');
     const [levels, setLevels] = useState([]);
     const [selectedLevelID, setSelectedLevelID] = useState(null);
-    const { classCode } = route.params; // Extract classCode from route params
+    const { classCode } = route.params; 
 
     useEffect(() => {
         fetchLevels();
@@ -102,7 +102,7 @@ const QuackslateLevels = ({ navigation, route }) => {
     };
 
     return (
-        <View>
+        <View style={{ flex: 1 }}>
             <View style={stylesLevels.header}>
                 <TouchableOpacity onPress={handleBackPress}>
                     <View style={stylesLevels.backButtonContainer}>
@@ -117,15 +117,13 @@ const QuackslateLevels = ({ navigation, route }) => {
                 <CustomButton title="Add" onPress={handleAddPress} style={stylesLevels.button} textStyle={stylesLevels.buttonText} />
                 <CustomButton title="Remove" onPress={handleRemovePress} style={stylesLevels.button} textStyle={stylesLevels.buttonText} />
             </View>
-            <ScrollView>
+            <ScrollView contentContainerStyle={stylesLevels.levelContainer} style={{ flex: 1 }}>
                 {levels.map((level) => (
-                    <View key={level.levelID} style={stylesLevels.levelContainer}>
-                        <TouchableOpacity onPress={() => handleLevelNavigate(level.levelID, level.title)}>
-                            <View style={stylesLevels.level}>
-                                <Text style={stylesLevels.levelText}>{level.title}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity key={level.levelID} onPress={() => handleLevelNavigate(level.levelID, level.title)}>
+                        <View style={stylesLevels.level}>
+                            <Text style={stylesLevels.levelText}>{level.title}</Text>
+                        </View>
+                    </TouchableOpacity>
                 ))}
             </ScrollView>
 
@@ -135,7 +133,7 @@ const QuackslateLevels = ({ navigation, route }) => {
                 visible={addModalVisible}
                 onRequestClose={() => setAddModalVisible(false)}
             >
-                <View style={styles.centeredView}>
+                <ScrollView contentContainerStyle={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity onPress={() => setAddModalVisible(false)} style={styles.closeButton}>
@@ -153,7 +151,7 @@ const QuackslateLevels = ({ navigation, route }) => {
                             <CustomButton title="Add" onPress={handleAddLevel} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
-                </View>
+                </ScrollView>
             </Modal>
 
             <Modal
@@ -162,7 +160,7 @@ const QuackslateLevels = ({ navigation, route }) => {
                 visible={removeModalVisible}
                 onRequestClose={() => setRemoveModalVisible(false)}
             >
-                <View style={styles.centeredView}>
+                <ScrollView contentContainerStyle={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity onPress={() => setRemoveModalVisible(false)} style={styles.closeButton}>
@@ -183,7 +181,7 @@ const QuackslateLevels = ({ navigation, route }) => {
                             <CustomButton title="Remove" onPress={handleRemoveLevel} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
-                </View>
+                </ScrollView>
             </Modal>
         </View>
     );

@@ -1,115 +1,108 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, ScrollView, TouchableOpacity, Modal, TextInput } from 'react-native';
+import { Text, View, TouchableOpacity, Modal, TextInput, ScrollView, Alert } from 'react-native';
 import { stylesLevels } from './stylesLevels';
-import { styles } from './stylesModal';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
+import { styles } from './stylesModal';
 
 const QuackmanLevels = ({ navigation, route }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
     const [newLevelName, setNewLevelName] = useState('');
-    const [newTitle, setNewTitle] = useState('');
-    const { classCode } = route.params;
     const [levels, setLevels] = useState([]);
-    const [selectedLevelId, setSelectedLevelId] = useState('');
+    const [selectedLevelID, setSelectedLevelID] = useState(null);
+    const { classCode } = route.params; 
+
+    useEffect(() => {
+        fetchLevels();
+    }, []);
 
     const fetchLevels = async () => {
-        const url = `http://localhost:8080/api/quackmanlevels/getLevels/${classCode}`;
         try {
-            const response = await fetch(url);
-            const data = await response.json();
+            const response = await fetch(`http://localhost:8080/api/quackmanlevels/getLevels/${classCode}`);
             if (response.ok) {
-                setLevels(data);  // Assuming the response is an array of levels
-                console.log('Fetched levels:', data);
+                const data = await response.json();
+                console.log(data);
+                setLevels(data);
             } else {
-                throw new Error(`Failed to fetch levels: ${data.message} (Status code: ${response.status})`);
+                throw new Error('Failed to fetch levels');
             }
         } catch (error) {
             console.error('Error fetching levels:', error);
+            Alert.alert('Error', 'Failed to fetch levels');
         }
     };
 
-    useEffect(() => {
-        fetchLevels();  // Fetch levels when the component mounts
-    }, [classCode]);  // Refetch levels whenever classCode changes
-
     const handleBackPress = () => {
-        navigation.navigate('ClassDashboard', { classCode: classCode });
-    };
-
-
-    const handleLevelNavigatePress = (level) => {
-        navigation.navigate('QuackmanEdit', { classCode, levelId: level.levelId });
+        navigation.navigate('ClassDashboard', { classCode });
     };
 
     const handleAddPress = () => {
         setAddModalVisible(true);
-    }
+    };
 
     const handleRemovePress = () => {
-        if (selectedLevelId) {
-            setRemoveModalVisible(true);
-        } else {
-            alert('Please select a level to remove.');
-        }
+        setRemoveModalVisible(true);
     };
 
     const handleAddLevel = async () => {
-        const url = 'http://localhost:8080/api/quackmanlevels/addLevel';
-        const levelData = {
-            title: newTitle,
-            classId: classCode
-        };
-
         try {
-            const response = await fetch(url, {
+            const response = await fetch('http://localhost:8080/api/quackmanlevels/addLevel', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(levelData)
+                body: JSON.stringify({
+                    title: newLevelName,
+                    classId: classCode,
+                }),
             });
 
-            const data = await response.json();
             if (response.ok) {
-                console.log('Level added successfully:', data);
+                Alert.alert('Success', 'Level added successfully!');
                 setAddModalVisible(false);
-                setNewTitle('');
-                fetchLevels();  // Refetch levels to update the list after adding a new level
+                setNewLevelName('');
+                fetchLevels(); // Refresh the list of levels
             } else {
-                throw new Error(`Failed to add level: ${data.message} (Status code: ${response.status})`);
+                throw new Error('Failed to add level');
             }
         } catch (error) {
             console.error('Error adding level:', error);
+            Alert.alert('Error', 'Failed to add level');
         }
-    };
-
-    const toggleLevelSelection = (levelId) => {
-        setSelectedLevelId(levelId === selectedLevelId ? '' : levelId);
     };
 
     const handleRemoveLevel = async () => {
-        const url = `http://localhost:8080/api/quackmanlevels/deleteLevel/${selectedLevelId}`;
-        console.log(`Sending DELETE request to: ${url}`);
+        if (!selectedLevelID) {
+            Alert.alert('Error', 'Please select a level to remove.');
+            return;
+        }
+
         try {
-            const response = await fetch(url, { method: 'DELETE' });
-            console.log(`Response status: ${response.status}`);
+            const response = await fetch(`http://localhost:8080/api/quackmanlevels/deleteLevel/${selectedLevelID}`, {
+                method: 'DELETE',
+            });
+
             if (response.ok) {
-                console.log('Level removed successfully');
-                setSelectedLevelId('');  // Clear the selected level ID
+                Alert.alert('Success', 'Level removed successfully!');
                 setRemoveModalVisible(false);
-                fetchLevels();  // Refetch levels to update the list after deletion
+                setSelectedLevelID(null);
+                fetchLevels(); // Refresh the list of levels
             } else {
-                throw new Error(`Failed to remove level: ${response.statusText} (Status code: ${response.status})`);
+                throw new Error('Failed to remove level');
             }
         } catch (error) {
             console.error('Error removing level:', error);
+            Alert.alert('Error', 'Failed to remove level');
         }
     };
 
+    const handleLevelNavigate = (levelId, title) => {
+        navigation.navigate('QuackmanEdit', { classCode, levelId});
+    };
+
     return (
-        <View>
+        <View style={{ flex: 1 }}>
             <View style={stylesLevels.header}>
                 <TouchableOpacity onPress={handleBackPress}>
                     <View style={stylesLevels.backButtonContainer}>
@@ -124,22 +117,23 @@ const QuackmanLevels = ({ navigation, route }) => {
                 <CustomButton title="Add" onPress={handleAddPress} style={stylesLevels.button} textStyle={stylesLevels.buttonText} />
                 <CustomButton title="Remove" onPress={handleRemovePress} style={stylesLevels.button} textStyle={stylesLevels.buttonText} />
             </View>
-            <ScrollView contentContainerStyle={stylesLevels.levelContainer}>
+            <ScrollView contentContainerStyle={stylesLevels.levelContainer} style={{ flex: 1 }}>
                 {levels.map((level) => (
-                    <TouchableOpacity key={level.levelId} onPress={() => handleLevelNavigatePress(level)}>
-                        <View style={[stylesLevels.level, selectedLevelId === level.levelId && stylesLevels.selectedLevel]}>
+                    <TouchableOpacity key={level.levelId} onPress={() => handleLevelNavigate(level.levelId, level.title)}>
+                        <View style={stylesLevels.level}>
                             <Text style={stylesLevels.levelText}>{level.title}</Text>
                         </View>
                     </TouchableOpacity>
                 ))}
             </ScrollView>
+
             <Modal
                 animationType="slide"
                 transparent={true}
                 visible={addModalVisible}
                 onRequestClose={() => setAddModalVisible(false)}
             >
-                <View style={styles.centeredView}>
+                <ScrollView contentContainerStyle={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity onPress={() => setAddModalVisible(false)} style={styles.closeButton}>
@@ -150,14 +144,14 @@ const QuackmanLevels = ({ navigation, route }) => {
                             <Text style={styles.text}>Enter new level name:</Text>
                             <TextInput
                                 style={styles.input}
-                                value={newTitle}
-                                onChangeText={setNewTitle}
+                                value={newLevelName}
+                                onChangeText={setNewLevelName}
                                 placeholder="Level Name"
                             />
                             <CustomButton title="Add" onPress={handleAddLevel} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
-                </View>
+                </ScrollView>
             </Modal>
 
             <Modal
@@ -166,7 +160,7 @@ const QuackmanLevels = ({ navigation, route }) => {
                 visible={removeModalVisible}
                 onRequestClose={() => setRemoveModalVisible(false)}
             >
-                <View style={styles.centeredView}>
+                <ScrollView contentContainerStyle={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity onPress={() => setRemoveModalVisible(false)} style={styles.closeButton}>
@@ -174,14 +168,23 @@ const QuackmanLevels = ({ navigation, route }) => {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.modalContent}>
-                            <Text style={styles.text}>Are you sure you want to remove this level?</Text>
+                            <Text style={styles.text}>Select a level to remove:</Text>
+                            <ScrollView>
+                                {levels.map((level) => (
+                                    <TouchableOpacity key={level.levelId} onPress={() => setSelectedLevelID(level.levelId)}>
+                                        <View style={selectedLevelID === level.levelId ? stylesLevels.selectedLevel : stylesLevels.level}>
+                                            <Text style={stylesLevels.levelText}>{level.title}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
                             <CustomButton title="Remove" onPress={handleRemoveLevel} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
-                </View>
+                </ScrollView>
             </Modal>
         </View>
     );
-}
+};
 
 export default QuackmanLevels;

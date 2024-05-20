@@ -130,6 +130,7 @@ export const stylesQuackman = StyleSheet.create({
     },
     modalText: {
         fontSize: 18,
+        textAlign: 'center',
         marginBottom: 20,
     },
     modalButtons: {

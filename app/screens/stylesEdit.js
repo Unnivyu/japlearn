@@ -40,6 +40,7 @@ export const stylesEdit = StyleSheet.create({
         justifyContent: 'center',
     },
     buttonText: {
+        color: 'white',
         fontSize: 20,
     },
     editContainer: {
@@ -101,5 +102,10 @@ export const stylesEdit = StyleSheet.create({
     },
     selectedCharacter: {
         backgroundColor: '#C1FF8B',
+    },
+    contentText: {
+        fontFamily: 'jua',
+        fontSize: 20,
+        color: 'white',
     }
 });

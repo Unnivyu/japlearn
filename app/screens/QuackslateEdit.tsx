@@ -91,7 +91,7 @@ const QuackslateEdit = ({ navigation, route }) => {
     };
 
     return (
-        <View>
+        <View style={{ flex: 1 }}>
             <View style={stylesEdit.header}>
                 <TouchableOpacity onPress={handleBackPress}>
                     <View style={stylesEdit.backButtonContainer}>
@@ -106,7 +106,7 @@ const QuackslateEdit = ({ navigation, route }) => {
                 <CustomButton title="Add" onPress={handleAddPress} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
                 <CustomButton title="Remove" onPress={handleRemovePress} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
             </View>
-            <ScrollView contentContainerStyle={stylesEdit.scrollViewContent}>
+            <ScrollView style={{ flex: 1 }}>
                 {content.map((item) => (
                     <View key={item.id} style={stylesEdit.quackmaneditContent}>
                         <Text style={stylesEdit.contentText}>{item.word}</Text>
