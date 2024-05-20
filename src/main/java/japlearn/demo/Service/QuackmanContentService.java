@@ -30,5 +30,7 @@ public class QuackmanContentService {
 		return "failed to delete";
 	}
 	
-	
+	public QuackmanContent getContentByLevelId(String levelId) {
+		return quackmanServiceRepository.findByLevelId(levelId).orElse(null);
+	}
 }
