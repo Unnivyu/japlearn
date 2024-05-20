@@ -56,6 +56,17 @@ public class QuackmanContent {
 		this.word = word;
 	}
 	
+	public void addWord(String newWord) {
+		String[] newArray = new String[word.length + 1];
+		System.arraycopy(word, 0, newArray, 0, word.length);
+		newArray[word.length] = newWord;
+		word = newArray;
+	}
 	
-	
+	public void addHint(String newHint) {
+		String[] newArray = new String[hint.length + 1];
+		System.arraycopy(hint, 0, newArray, 0, hint.length);
+		newArray[hint.length] = newHint;
+		hint = newArray;
+	}
 }

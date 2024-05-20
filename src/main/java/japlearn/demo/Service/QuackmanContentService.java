@@ -33,4 +33,17 @@ public class QuackmanContentService {
 	public QuackmanContent getContentByLevelId(String levelId) {
 		return quackmanServiceRepository.findByLevelId(levelId).orElse(null);
 	}
+	
+	public QuackmanContent addContentToLevel(String levelId, String newWord, String newHint) {
+		Optional<QuackmanContent> quackmanContent = quackmanServiceRepository.findByLevelId(levelId);
+	
+		if(quackmanContent.isPresent()) {
+			QuackmanContent quackman = quackmanContent.get();
+			quackman.addWord(newWord);
+			quackman.addHint(newHint);
+			return quackmanServiceRepository.save(quackman);
+		}
+		
+		return null;
+	}
 }
