@@ -77,7 +77,10 @@ const QuackmanEdit = ({ navigation, route }) => {
 
     const handleAddContent = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/quackmancontent/addContentToLevel', {
+            const encodedWord = encodeURIComponent(word);
+            const encodedHint = encodeURIComponent(hint);
+            const encodedLevelId = encodeURIComponent(levelId);
+            const response = await fetch(`http://localhost:8080/api/quackmancontent/addContentToLevel?levelId=${encodedLevelId}&word=${encodedWord}&hint=${encodedHint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
