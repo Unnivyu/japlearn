@@ -26,13 +26,11 @@ const QuackmanEdit = ({ navigation, route }) => {
         try {
             const response = await fetch(`http://localhost:8080/api/quackmancontent/getContentByLevelId/${levelId}`);
             const responseText = await response.text();
-            console.log("Response text:", responseText); // Log the raw response text
 
             if (response.ok) {
                 if (responseText) {
                     const data = JSON.parse(responseText);
                     setContent([data]);
-                    console.log("Fetched data:", data);
                 } else {
                     console.warn("Response was empty, creating a content");
                     await createNewContent();
@@ -66,7 +64,6 @@ const QuackmanEdit = ({ navigation, route }) => {
             if (response.ok) {
                 const createdContent = await response.json();
                 setContent([createdContent]);
-                console.log("Created new content:", createdContent);
             } else {
                 const errorData = await response.text();
                 console.error('Failed to create new content:', errorData);
@@ -109,49 +106,57 @@ const QuackmanEdit = ({ navigation, route }) => {
 
     const handleEditContent = async () => {
         try {
+            // Prepare the updated content
             const updatedContent = {
                 word: [...content[0].word],
                 hint: [...content[0].hint]
             };
     
+            // Update the word and hint at the selected index
             updatedContent.word[selectedWordIndex] = editWord;
             updatedContent.hint[selectedWordIndex] = editHint;
     
+            console.log('Sending update request with content ID:', selectedContentId);
+            console.log('Updated content:', updatedContent);
+    
+            // Send the update request to the backend
             const response = await fetch(`http://localhost:8080/api/quackmancontent/updateContent/${selectedContentId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    contentId: selectedContentId,
-                    levelId: content[0].levelId,
                     word: updatedContent.word,
                     hint: updatedContent.hint
                 })
             });
     
+            const responseText = await response.text();
+            console.log('Edit response:', responseText);
+    
             if (response.ok) {
+                // Update the local state with the new content
+                setContent([{ ...content[0], word: updatedContent.word, hint: updatedContent.hint }]);
                 Alert.alert('Success', 'Content updated successfully!');
-                fetchContent();
                 setEditModalVisible(false);
                 setEditWord('');
                 setEditHint('');
             } else {
-                const errorData = await response.text();
-                console.error('Failed to update content:', errorData);
-                Alert.alert('Error', 'Failed to update content');
+                console.error('Failed to update content:', responseText);
+                Alert.alert('Error', responseText);
             }
         } catch (error) {
             console.error('Error updating content:', error);
             Alert.alert('Error', 'Failed to update content');
         }
     };
+    
 
     const handleRemoveContent = async () => {
         try {
             const wordToRemove = content[0].word[selectedWordIndex];
             const hintToRemove = content[0].hint[selectedWordIndex];
-    
+            
             const response = await fetch(`http://localhost:8080/api/quackmancontent/deleteContent/${selectedContentId}`, {
                 method: 'DELETE',
                 headers: {
@@ -162,16 +167,21 @@ const QuackmanEdit = ({ navigation, route }) => {
                     hint: hintToRemove,
                 })
             });
-            console.log(response);
+    
+            const responseText = await response.text();
     
             if (response.ok) {
+                // Optimistically update the local state
+                const updatedContent = [...content];
+                updatedContent[0].word.splice(selectedWordIndex, 1);
+                updatedContent[0].hint.splice(selectedWordIndex, 1);
+                setContent(updatedContent);
+    
                 Alert.alert('Success', 'Content removed successfully!');
-                fetchContent(); // Refresh the list
                 setRemoveModalVisible(false);
             } else {
-                const errorData = await response.text();
-                console.error('Failed to remove content:', errorData);
-                Alert.alert('Error', 'Failed to remove content');
+                console.error('Failed to remove content:', responseText);
+                Alert.alert('Error', responseText);
             }
         } catch (error) {
             console.error('Error removing content:', error);
@@ -179,7 +189,7 @@ const QuackmanEdit = ({ navigation, route }) => {
         }
     };
     
-
+    
     const handleBackPress = () => {
         navigation.navigate('QuackmanLevels', { classCode, levelId });
     };
@@ -239,7 +249,7 @@ const QuackmanEdit = ({ navigation, route }) => {
                     item.word.map((wordItem, wordIndex) => (
                         <TouchableOpacity
                             key={`${index}-${wordIndex}`}
-                            onLongPress={() => handleOpenEditModal(item.levelId, wordIndex, wordItem, item.hint[wordIndex])}
+                            onLongPress={() => handleOpenEditModal(item.contentId, wordIndex, wordItem, item.hint[wordIndex])}
                         >
                             <View style={stylesEdit.quackmaneditContent}>
                                 <Text style={stylesEdit.contentText}>{`Hint: ${item.hint[wordIndex]}`}</Text>
@@ -332,11 +342,11 @@ const QuackmanEdit = ({ navigation, route }) => {
                                     item.word.map((wordItem, wordIndex) => (
                                         <TouchableOpacity
                                             key={`${index}-${wordIndex}`}
-                                            onPress={() => handleSelectContentForRemoval(item.levelId, wordIndex)}
+                                            onPress={() => handleSelectContentForRemoval(item.contentId, wordIndex)}
                                         >
-                                            <View style={selectedContentId === item.levelId && selectedWordIndex === wordIndex ? stylesEdit.selectedContent : stylesEdit.quackmaneditContent}>
-                                                <Text style={stylesEdit.contentText}>{item.hint[wordIndex]}</Text>
-                                                <Text style={stylesEdit.contentText}>{wordItem}</Text>
+                                            <View style={selectedContentId === item.contentId && selectedWordIndex === wordIndex ? styles.selected : styles.contentModalContainer}>
+                                                <Text style={styles.contentText}>{`Hint: ${item.hint[wordIndex]}`}</Text>
+                                                <Text style={styles.contentText}>{`Word: ${wordItem}`}</Text>
                                             </View>
                                         </TouchableOpacity>
                                     ))
