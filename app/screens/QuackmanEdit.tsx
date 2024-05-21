@@ -27,11 +27,11 @@ const QuackmanEdit = ({ navigation, route }) => {
             if (response.ok) {
                 if (responseText) {
                     const data = JSON.parse(responseText);
-                    setContent(data);
+                    setContent([data]);
                     console.log("Fetched data:", data);
                 } else {
-                    console.warn("Response was empty");
-                    setContent([]); // Handle empty response
+                    console.warn("Response was empty, creating a content");
+                    await createNewContent();
                 }
             } else {
                 console.error('Failed to fetch content:', responseText);
@@ -42,6 +42,38 @@ const QuackmanEdit = ({ navigation, route }) => {
             Alert.alert('Error', 'Failed to fetch content');
         }
     };
+
+    const createNewContent = async () => {
+        try {
+            const newContent = {
+                word: [],
+                hint: [],
+                levelId: levelId
+            };
+    
+            const response = await fetch(`http://localhost:8080/api/quackmancontent/addContent`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newContent)
+            });
+    
+            if (response.ok) {
+                const createdContent = await response.json();
+                setContent([createdContent]);
+                console.log("Created new content:", createdContent);
+            } else {
+                const errorData = await response.text();
+                console.error('Failed to create new content:', errorData);
+                Alert.alert('Error', 'Failed to create new content');
+            }
+        } catch (error) {
+            console.error('Error creating new content:', error);
+            Alert.alert('Error', 'Failed to create new content');
+        }
+    };
+
 
     const handleAddContent = async () => {
         try {
