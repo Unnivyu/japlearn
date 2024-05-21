@@ -17,7 +17,6 @@ import StartMenu from './app/screens/StartMenu';
 import QuackmanOption from './app/screens/QuackmanOption';
 import QuackslateOption from './app/screens/QuackslateOption';
 import QuackamoleOption from './app/screens/QuackamoleOption';
-import QuackamoleOption2 from './app/screens/QuackamoleOption2';
 import Quackslate from './app/screens/Quackslate';
 import QuackamoleLevels from './app/screens/QuackamoleLevels';
 import QuackmanLevels from './app/screens/QuackmanLevels';
@@ -27,10 +26,6 @@ import QuackslateEdit from './app/screens/QuackslateEdit';
 import QuackamoleEdit from './app/screens/QuackamoleEdit';
 import Quackamole from './app/screens/Quackamole';
 import Quackman from './app/screens/Quackman';
-import QuackslateEdit2 from './app/screens/QuackslateEdit2';
-import QuackslateEdit3 from './app/screens/QuackslateEdit3';
-import Quackslate2 from './app/screens/Quackslate2';
-import Quackslate3 from './app/screens/Quackslate3';
 
 const getFonts = () => Font.loadAsync({
   'jua': require('./assets/fonts/Jua-Regular.ttf')
@@ -72,18 +67,13 @@ export default function App({}) {
             <Stack.Screen name="QuackslateLevels" component={QuackslateLevels} options={{headerShown: false}}/>
             <Stack.Screen name="QuackmanEdit" component={QuackmanEdit} options={{ headerShown: false }} />
             <Stack.Screen name="QuackslateEdit" component={QuackslateEdit} options={{ headerShown: false }} />
-            <Stack.Screen name="QuackslateEdit2" component={QuackslateEdit2} options={{ headerShown: false }} />
-            <Stack.Screen name="QuackslateEdit3" component={QuackslateEdit3} options={{ headerShown: false }} />
             <Stack.Screen name="QuackamoleEdit" component={QuackamoleEdit} options={{ headerShown: false }} />
             <Stack.Screen name="QuackmanOption" component={QuackmanOption} options={{ headerShown: false }} />
             <Stack.Screen name="QuackslateOption" component={QuackslateOption} options={{ headerShown: false }} />
             <Stack.Screen name="QuackamoleOption" component={QuackamoleOption} options={{ headerShown: false }} />
-            <Stack.Screen name="QuackamoleOption2" component={QuackamoleOption2} options={{ headerShown: false }} />
             <Stack.Screen name="Quackslate" component={Quackslate} options={{ headerShown: false }} />
             <Stack.Screen name="Quackamole" component={Quackamole} options={{ headerShown: false }} />
             <Stack.Screen name="Quackman" component={Quackman} options={{ headerShown: false }} />
-            <Stack.Screen name="Quackslate2" component={Quackslate2} options={{ headerShown: false }} />
-            <Stack.Screen name="Quackslate3" component={Quackslate3} options={{ headerShown: false }} />
 
           </Stack.Navigator>
         </NavigationContainer>

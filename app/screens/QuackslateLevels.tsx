@@ -3,12 +3,17 @@ import { Text, View, TouchableOpacity, Modal, TextInput, ScrollView, Alert } fro
 import { stylesLevels } from './stylesLevels';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
+import ConfirmationModal from '../../components/ConfirmationModal';
 import { styles } from './stylesModal';
 
 const QuackslateLevels = ({ navigation, route }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
+    const [confirmationVisible, setConfirmationVisible] = useState(false);
+    const [confirmationMessage, setConfirmationMessage] = useState('');
+    const [confirmationAction, setConfirmationAction] = useState(() => () => {});
+    
     const [newLevelName, setNewLevelName] = useState('');
     const [updatedLevelName, setUpdatedLevelName] = useState('');
     const [levels, setLevels] = useState([]);
@@ -50,6 +55,12 @@ const QuackslateLevels = ({ navigation, route }) => {
         setSelectedLevelID(level.levelID);
         setUpdatedLevelName(level.title);
         setEditModalVisible(true);
+    };
+
+    const confirmAction = (message, action) => {
+        setConfirmationMessage(message);
+        setConfirmationAction(() => action);
+        setConfirmationVisible(true);
     };
 
     const handleAddLevel = async () => {
@@ -174,7 +185,7 @@ const QuackslateLevels = ({ navigation, route }) => {
                 visible={addModalVisible}
                 onRequestClose={() => setAddModalVisible(false)}
             >
-                <ScrollView contentContainerStyle={styles.centeredView}>
+                <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity onPress={() => setAddModalVisible(false)} style={styles.closeButton}>
@@ -189,10 +200,10 @@ const QuackslateLevels = ({ navigation, route }) => {
                                 onChangeText={setNewLevelName}
                                 placeholder="Level Name"
                             />
-                            <CustomButton title="Add" onPress={handleAddLevel} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Add" onPress={() => confirmAction('Would you like to add this level?', handleAddLevel)} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
-                </ScrollView>
+                </View>
             </Modal>
 
             <Modal
@@ -201,7 +212,7 @@ const QuackslateLevels = ({ navigation, route }) => {
                 visible={removeModalVisible}
                 onRequestClose={() => setRemoveModalVisible(false)}
             >
-                <ScrollView contentContainerStyle={styles.centeredView}>
+                <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity onPress={() => setRemoveModalVisible(false)} style={styles.closeButton}>
@@ -210,19 +221,19 @@ const QuackslateLevels = ({ navigation, route }) => {
                         </View>
                         <View style={styles.modalContent}>
                             <Text style={styles.text}>Select a level to remove:</Text>
-                            <ScrollView>
+                            <ScrollView style={styles.scrollContainer}>
                                 {levels.map((level) => (
                                     <TouchableOpacity key={level.levelID} onPress={() => setSelectedLevelID(level.levelID)}>
-                                        <View style={selectedLevelID === level.levelID ? stylesLevels.selectedLevel : stylesLevels.level}>
-                                            <Text style={stylesLevels.levelText}>{level.title}</Text>
+                                        <View style={selectedLevelID === level.levelID ? styles.selected : styles.contentModalContainer}>
+                                            <Text style={styles.contentText}>{level.title}</Text>
                                         </View>
                                     </TouchableOpacity>
                                 ))}
                             </ScrollView>
-                            <CustomButton title="Remove" onPress={handleRemoveLevel} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Remove" onPress={() => confirmAction('Would you like to remove this level?', handleRemoveLevel)} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
-                </ScrollView>
+                </View>
             </Modal>
 
             <Modal
@@ -231,7 +242,7 @@ const QuackslateLevels = ({ navigation, route }) => {
                 visible={editModalVisible}
                 onRequestClose={() => setEditModalVisible(false)}
             >
-                <ScrollView contentContainerStyle={styles.centeredView}>
+                <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity onPress={() => setEditModalVisible(false)} style={styles.closeButton}>
@@ -246,11 +257,21 @@ const QuackslateLevels = ({ navigation, route }) => {
                                 onChangeText={setUpdatedLevelName}
                                 placeholder="Level Name"
                             />
-                            <CustomButton title="Save" onPress={handleSaveLevel} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Save" onPress={() => confirmAction('Would you like to save changes to this level?', handleSaveLevel)} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
-                </ScrollView>
+                </View>
             </Modal>
+
+            <ConfirmationModal
+                visible={confirmationVisible}
+                onClose={() => setConfirmationVisible(false)}
+                onConfirm={() => {
+                    setConfirmationVisible(false);
+                    confirmationAction();
+                }}
+                message={confirmationMessage}
+            />
         </View>
     );
 };

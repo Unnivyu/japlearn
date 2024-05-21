@@ -3,17 +3,22 @@ import { Text, View, TouchableOpacity, Modal, TextInput, ScrollView, Alert } fro
 import { stylesLevels } from './stylesLevels';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
+import ConfirmationModal from '../../components/ConfirmationModal';
 import { styles } from './stylesModal';
 
 const QuackmanLevels = ({ navigation, route }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
+    const [confirmationVisible, setConfirmationVisible] = useState(false);
+    const [confirmationMessage, setConfirmationMessage] = useState('');
+    const [confirmationAction, setConfirmationAction] = useState(() => () => {});
+    
     const [newLevelName, setNewLevelName] = useState('');
     const [updatedLevelName, setUpdatedLevelName] = useState('');
     const [levels, setLevels] = useState([]);
     const [selectedLevelID, setSelectedLevelID] = useState(null);
-    const { classCode } = route.params; 
+    const { classCode } = route.params;
 
     useEffect(() => {
         fetchLevels();
@@ -47,6 +52,12 @@ const QuackmanLevels = ({ navigation, route }) => {
         setRemoveModalVisible(true);
     };
 
+    const confirmAction = (message, action) => {
+        setConfirmationMessage(message);
+        setConfirmationAction(() => action);
+        setConfirmationVisible(true);
+    };
+
     const handleAddLevel = async () => {
         try {
             const response = await fetch('http://localhost:8080/api/quackmanlevels/addLevel', {
@@ -64,7 +75,7 @@ const QuackmanLevels = ({ navigation, route }) => {
                 Alert.alert('Success', 'Level added successfully!');
                 setAddModalVisible(false);
                 setNewLevelName('');
-                fetchLevels(); // Refresh the list of levels
+                fetchLevels();
             } else {
                 throw new Error('Failed to add level');
             }
@@ -89,7 +100,7 @@ const QuackmanLevels = ({ navigation, route }) => {
                 Alert.alert('Success', 'Level removed successfully!');
                 setRemoveModalVisible(false);
                 setSelectedLevelID(null);
-                fetchLevels(); // Refresh the list of levels
+                fetchLevels();
             } else {
                 throw new Error('Failed to remove level');
             }
@@ -122,7 +133,7 @@ const QuackmanLevels = ({ navigation, route }) => {
             if (response.ok) {
                 Alert.alert('Success', 'Level updated successfully!');
                 setEditModalVisible(false);
-                fetchLevels(); // Refresh the list of levels
+                fetchLevels();
             } else {
                 throw new Error('Failed to update level');
             }
@@ -133,7 +144,7 @@ const QuackmanLevels = ({ navigation, route }) => {
     };
 
     const handleLevelNavigate = (levelId, title) => {
-        navigation.navigate('QuackmanEdit', { classCode, levelId});
+        navigation.navigate('QuackmanEdit', { classCode, levelId });
     };
 
     return (
@@ -168,7 +179,7 @@ const QuackmanLevels = ({ navigation, route }) => {
                 visible={addModalVisible}
                 onRequestClose={() => setAddModalVisible(false)}
             >
-                <ScrollView contentContainerStyle={styles.centeredView}>
+                <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity onPress={() => setAddModalVisible(false)} style={styles.closeButton}>
@@ -183,10 +194,10 @@ const QuackmanLevels = ({ navigation, route }) => {
                                 onChangeText={setNewLevelName}
                                 placeholder="Level Name"
                             />
-                            <CustomButton title="Add" onPress={handleAddLevel} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Add" onPress={() => confirmAction('Would you like to add this level?', handleAddLevel)} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
-                </ScrollView>
+                </View>
             </Modal>
 
             <Modal
@@ -195,7 +206,7 @@ const QuackmanLevels = ({ navigation, route }) => {
                 visible={removeModalVisible}
                 onRequestClose={() => setRemoveModalVisible(false)}
             >
-                <ScrollView contentContainerStyle={styles.centeredView}>
+                <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity onPress={() => setRemoveModalVisible(false)} style={styles.closeButton}>
@@ -204,19 +215,19 @@ const QuackmanLevels = ({ navigation, route }) => {
                         </View>
                         <View style={styles.modalContent}>
                             <Text style={styles.text}>Select a level to remove:</Text>
-                            <ScrollView>
+                            <ScrollView style={styles.scrollContainer}>
                                 {levels.map((level) => (
                                     <TouchableOpacity key={level.levelId} onPress={() => setSelectedLevelID(level.levelId)}>
-                                        <View style={selectedLevelID === level.levelId ? stylesLevels.selectedLevel : stylesLevels.level}>
-                                            <Text style={stylesLevels.levelText}>{level.title}</Text>
+                                        <View style={selectedLevelID === level.levelId ? styles.selected : styles.contentModalContainer}>
+                                            <Text style={styles.contentText}>{level.title}</Text>
                                         </View>
                                     </TouchableOpacity>
                                 ))}
                             </ScrollView>
-                            <CustomButton title="Remove" onPress={handleRemoveLevel} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Remove" onPress={() => confirmAction('Would you like to remove this level?', handleRemoveLevel)} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
-                </ScrollView>
+                </View>
             </Modal>
 
             <Modal
@@ -225,7 +236,7 @@ const QuackmanLevels = ({ navigation, route }) => {
                 visible={editModalVisible}
                 onRequestClose={() => setEditModalVisible(false)}
             >
-                <ScrollView contentContainerStyle={styles.centeredView}>
+                <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity onPress={() => setEditModalVisible(false)} style={styles.closeButton}>
@@ -240,11 +251,21 @@ const QuackmanLevels = ({ navigation, route }) => {
                                 onChangeText={setUpdatedLevelName}
                                 placeholder="Level Name"
                             />
-                            <CustomButton title="Save" onPress={handleSaveLevel} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Save" onPress={() => confirmAction('Would you like to save changes to this level?', handleSaveLevel)} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
-                </ScrollView>
+                </View>
             </Modal>
+
+            <ConfirmationModal
+                visible={confirmationVisible}
+                onClose={() => setConfirmationVisible(false)}
+                onConfirm={() => {
+                    setConfirmationVisible(false);
+                    confirmationAction();
+                }}
+                message={confirmationMessage}
+            />
         </View>
     );
 };

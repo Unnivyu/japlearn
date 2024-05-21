@@ -56,7 +56,7 @@ export const stylesEdit = StyleSheet.create({
         marginVertical: 5,
         borderBottomColor: '#83C449',
         borderBottomWidth: 5,
-        alignSelf: 'center', // Center the content
+        alignSelf: 'center', 
         alignItems: 'center',
     },
     picker: {
@@ -107,5 +107,25 @@ export const stylesEdit = StyleSheet.create({
         fontFamily: 'jua',
         fontSize: 20,
         color: 'white',
-    }
+    },
+    selectedContent: {
+        height: 100,
+        backgroundColor: '#FF5733',
+        borderRadius: 10,
+        justifyContent: 'center',
+        marginVertical: 5,
+        borderBottomColor: '#E74C3C',
+        borderBottomWidth: 5,
+        alignItems: 'center',
+    },
+    editContent: {
+        padding: 20,
+        backgroundColor: '#8ED94D',
+        height: 100,
+        borderRadius: 10,
+        borderBottomWidth: 8,
+        borderBottomColor: '#81AF59',
+        marginBottom: 10,
+        alignItems: 'center',
+    },
 });

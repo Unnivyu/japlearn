@@ -4,11 +4,16 @@ import { stylesLevels } from './stylesLevels';
 import { styles } from './stylesModal';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
+import ConfirmationModal from '../../components/ConfirmationModal'; // Import the new component
 
 const QuackamoleLevels = ({ navigation, route }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
+    const [confirmationVisible, setConfirmationVisible] = useState(false);
+    const [confirmationMessage, setConfirmationMessage] = useState('');
+    const [confirmationAction, setConfirmationAction] = useState(() => () => {});
+
     const { classCode } = route.params;
     const [newTitle, setNewTitle] = useState('');
     const [levels, setLevels] = useState([]);
@@ -49,6 +54,12 @@ const QuackamoleLevels = ({ navigation, route }) => {
 
     const handleRemovePress = () => {
         setRemoveModalVisible(true);
+    };
+
+    const confirmAction = (message, action) => {
+        setConfirmationMessage(message);
+        setConfirmationAction(() => action);
+        setConfirmationVisible(true);
     };
 
     const handleAddLevel = async () => {
@@ -192,7 +203,7 @@ const QuackamoleLevels = ({ navigation, route }) => {
                                 onChangeText={setNewTitle}
                                 placeholder="Level Name"
                             />
-                            <CustomButton title="Add" onPress={handleAddLevel} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Add" onPress={() => confirmAction('Would you like to add this level?', handleAddLevel)} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
                 </View>
@@ -213,16 +224,16 @@ const QuackamoleLevels = ({ navigation, route }) => {
                         </View>
                         <View style={styles.modalContent}>
                             <Text style={styles.text}>Select a level to remove:</Text>
-                            <ScrollView>
+                            <ScrollView style={styles.scrollContainer}>
                                 {levels.map((level) => (
                                     <TouchableOpacity key={level.levelId} onPress={() => setSelectedLevel(level)}>
-                                        <View style={selectedLevel && selectedLevel.levelId === level.levelId ? stylesLevels.selectedLevel : stylesLevels.level}>
-                                            <Text style={stylesLevels.levelText}>{level.title}</Text>
+                                        <View style={selectedLevel && selectedLevel.levelId === level.levelId ? styles.selected : styles.contentModalContainer}>
+                                            <Text style={styles.contentText}>{level.title}</Text>
                                         </View>
                                     </TouchableOpacity>
                                 ))}
                             </ScrollView>
-                            <CustomButton title="Remove" onPress={handleRemoveLevel} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Remove" onPress={() => confirmAction('Would you like to remove this level?', handleRemoveLevel)} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
                 </View>
@@ -249,11 +260,21 @@ const QuackamoleLevels = ({ navigation, route }) => {
                                 onChangeText={setUpdatedTitle}
                                 placeholder="Level Name"
                             />
-                            <CustomButton title="Save" onPress={handleSaveLevel} style={styles.button} textStyle={styles.buttonText} />
+                            <CustomButton title="Save" onPress={() => confirmAction('Would you like to save changes to this level?', handleSaveLevel)} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
                 </View>
             </Modal>
+
+            <ConfirmationModal
+                visible={confirmationVisible}
+                onClose={() => setConfirmationVisible(false)}
+                onConfirm={() => {
+                    setConfirmationVisible(false);
+                    confirmationAction();
+                }}
+                message={confirmationMessage}
+            />
         </View>
     );
 }
