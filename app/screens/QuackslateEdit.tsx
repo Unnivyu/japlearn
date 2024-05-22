@@ -10,8 +10,12 @@ const QuackslateEdit = ({ navigation, route }) => {
     const { classCode, levelID, title } = route.params;
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
     const [wordToTranslate, setWordToTranslate] = useState('');
     const [japaneseCharacter, setJapaneseCharacter] = useState('');
+    const [updatedWord, setUpdatedWord] = useState('');
+    const [updatedTranslatedWord, setUpdatedTranslatedWord] = useState('');
+    const [selectedContentID, setSelectedContentID] = useState(null);
     const [content, setContent] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
 
@@ -64,29 +68,45 @@ const QuackslateEdit = ({ navigation, route }) => {
         }
     };
 
-    const handleDelete = async (id) => {
+    const updateContentInDatabase = async () => {
+        if (!selectedContentID) return;
+
         try {
-            let response = await fetch(`${expoconfig.API_URL}/api/quackslateContent/deleteQuackslateContent/${id}`, {
-                method: 'DELETE',
+            let response = await fetch(`http://localhost:8080/api/quackslateContent/updateQuackslateContent/${selectedContentID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: selectedContentID,
+                    word: updatedWord,
+                    translatedWord: updatedTranslatedWord,
+                    level: title,
+                }),
             });
 
             if (response.ok) {
-                setContent(content.filter(item => item.id !== id)); // Ensure you're filtering correctly
-                Alert.alert('Success', 'Content removed successfully!');
-                setRemoveModalVisible(false);
+                Alert.alert('Success', 'Content updated successfully!');
+                fetchContent(); // Refresh the list of content
+                setEditModalVisible(false);
+                setUpdatedWord('');
+                setUpdatedTranslatedWord('');
             } else {
-                throw new Error('Failed to remove content');
+                throw new Error('Failed to update content');
             }
         } catch (error) {
-            console.error('Error removing content:', error);
-            Alert.alert('Error', 'Failed to remove content');
+            console.error('Error updating content:', error);
+            Alert.alert('Error', 'Failed to update content');
         }
     };
 
     const handleCloseModal = () => {
         setAddModalVisible(false);
+        setEditModalVisible(false);
         setWordToTranslate('');
         setJapaneseCharacter('');
+        setUpdatedWord('');
+        setUpdatedTranslatedWord('');
     };
 
     const handleBackPress = () => {
@@ -102,6 +122,13 @@ const QuackslateEdit = ({ navigation, route }) => {
         setRemoveModalVisible(true);
     };
 
+    const handleEditPress = (item) => {
+        setSelectedContentID(item.id);
+        setUpdatedWord(item.word);
+        setUpdatedTranslatedWord(item.translatedWord);
+        setEditModalVisible(true);
+    };
+
     const handleRemoveTranslation = () => {
         if (selectedItem) {
             handleDelete(selectedItem.id);
@@ -109,7 +136,7 @@ const QuackslateEdit = ({ navigation, route }) => {
     };
 
     return (
-        <View>
+        <View style={{ flex: 1 }}>
             <View style={stylesEdit.header}>
                 <TouchableOpacity onPress={handleBackPress}>
                     <View style={stylesEdit.backButtonContainer}>
@@ -123,9 +150,9 @@ const QuackslateEdit = ({ navigation, route }) => {
             <View style={stylesEdit.buttonContainer}>
                 <CustomButton title="Add" onPress={handleAddPress} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
             </View>
-            <ScrollView contentContainerStyle={stylesEdit.scrollViewContent}>
+            <ScrollView style={{ flex: 1 }}>
                 {content.map((item) => (
-                    <TouchableOpacity key={item.id} onPress={() => handleRemovePress(item)}>
+                    <TouchableOpacity key={item.id} onLongPress={() => handleEditPress(item)}>
                         <View style={stylesEdit.quackmaneditContent}>
                             <Text style={stylesEdit.contentText}>{item.word}</Text>
                             <Text style={stylesEdit.contentText}>{item.translatedWord}</Text>
@@ -160,6 +187,37 @@ const QuackslateEdit = ({ navigation, route }) => {
                                 placeholder="Enter Japanese character"
                             />
                             <CustomButton title="Add" onPress={addTranslationToDatabase} style={styles.button} textStyle={styles.buttonText} />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={editModalVisible}
+                onRequestClose={() => setEditModalVisible(false)}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
+                            <Text style={styles.closeButtonText}>X</Text>
+                        </TouchableOpacity>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.text}>Edit content:</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={updatedWord}
+                                onChangeText={setUpdatedWord}
+                                placeholder="Enter word"
+                            />
+                            <TextInput
+                                style={styles.input}
+                                value={updatedTranslatedWord}
+                                onChangeText={setUpdatedTranslatedWord}
+                                placeholder="Enter translated word"
+                            />
+                            <CustomButton title="Save" onPress={updateContentInDatabase} style={styles.button} textStyle={styles.buttonText} />
                         </View>
                     </View>
                 </View>

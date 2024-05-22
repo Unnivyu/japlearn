@@ -1,7 +1,8 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
-const cellSize = Math.min(width / 5, (height - 400) / 5) - 10; // Adjusting the cell size for a 5-column grid with padding
+const cellSize = Math.min(width, height - 400) / 5 - 10;
+
 
 export const stylesQuackman = StyleSheet.create({
     progressContainer: {
@@ -77,7 +78,7 @@ export const stylesQuackman = StyleSheet.create({
         backgroundColor: '#6C3A99', // Change color when selected
     },
     charText: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         color: 'white', // Text color to match the provided image
     },
@@ -130,6 +131,7 @@ export const stylesQuackman = StyleSheet.create({
     },
     modalText: {
         fontSize: 18,
+        textAlign: 'center',
         marginBottom: 20,
     },
     modalButtons: {

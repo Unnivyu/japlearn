@@ -34,7 +34,7 @@ const QuackamoleOption = ({ navigation }) => {
         };
 
         fetchLevels();
-    }, [classCode]); // Add classCode as a dependency
+    }, [classCode]); 
 
     const handleBackPress = () => {
         navigation.navigate('Menu');

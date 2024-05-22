@@ -1,12 +1,12 @@
 import { StyleSheet } from 'react-native';
 
-export const styles =StyleSheet.create({
+export const styles = StyleSheet.create({
     centeredView: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 50,
-        backgroundColor: 'transparent', 
+        backgroundColor: 'transparent',
     },
     modalView: {
         margin: 20,
@@ -21,8 +21,8 @@ export const styles =StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
-        width: 300, 
-        position: 'relative' 
+        width: 300,
+        position: 'relative'
     },
     modalContent: {
         alignItems: 'center',
@@ -52,12 +52,11 @@ export const styles =StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 20,
-    },    
+    },
     closeButtonText: {
         fontSize: 20,
         color: 'grey',
         fontFamily: 'jua',
-        textAlign: 'center',
         textAlign: 'center'
     },
     stack: {
@@ -65,6 +64,7 @@ export const styles =StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 10,
+        columnGap: 10,
         flexWrap: 'wrap'
     },
     stackText: {
@@ -80,16 +80,43 @@ export const styles =StyleSheet.create({
         paddingVertical: 3,
     },
     button: {
-        backgroundColor:'#8ED94D',
-        padding: 5,
+        backgroundColor: '#8ED94D',
+        padding: 15,
         height: 60,
-        width: 100,
         borderRadius: 5,
         justifyContent: 'center',
+        marginTop: 10
     },
     buttonText: {
+        color: 'white',
+        fontFamily: 'jua',
         fontSize: 15,
         textAlign: 'center'
     },
-    
+    removeModalContainer: {
+        
+    },
+    contentText: {
+        fontSize: 16,
+        fontFamily: 'jua',
+        color: 'white',
+    },
+    selected: {
+        padding: 15,
+        backgroundColor: '#ff5c5c',
+        borderRadius: 5,
+        marginBottom: 15,
+        justifyContent: 'center',
+    },
+    contentModalContainer: {
+        backgroundColor: '#8ED94D',
+        marginBottom: 15,
+        padding: 15,
+        borderRadius: 5,
+        justifyContent: 'center',
+        
+    },
+    scrollContainer: {
+        maxHeight: 200, 
+    }
 });

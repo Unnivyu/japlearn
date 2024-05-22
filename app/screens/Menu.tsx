@@ -20,6 +20,10 @@ const Menu = ({navigation}) => {
     const handleNavigateToQuackamoleOption = () => {
         navigation.navigate('QuackamoleOption');
     }
+
+    const handleNavigateToQuackmanOption = () => {
+        navigation.navigate('QuackmanOption');
+    }
     
     const handleNavigateToQuackslateOption = () => {
         navigation.navigate('QuackslateOption');
@@ -50,7 +54,7 @@ const Menu = ({navigation}) => {
                         <MenuButton
                             imageSource={require('../../assets/button2.png')}
                             buttonText="VOCAB"
-                            onPress={() => console.log('Button pressed')}
+                            onPress={handleNavigateToQuackmanOption}
                         />
                         <MenuButton
                             imageSource={require('../../assets/button3.png')}

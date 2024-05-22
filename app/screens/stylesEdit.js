@@ -40,23 +40,22 @@ export const stylesEdit = StyleSheet.create({
         justifyContent: 'center',
     },
     buttonText: {
+        color: 'white',
         fontSize: 20,
     },
     editContainer: {
         padding: 20,
     },
     quackmaneditContent: {
-        height: 80,
         width: '30%',
         backgroundColor: '#8ED94D',
-        borderRadius: 50,
+        borderRadius: 10,
         justifyContent: 'center',
-        padding: 10,
+        padding: 20,
         marginVertical: 5,
         borderBottomColor: '#83C449',
         borderBottomWidth: 5,
-        alignSelf: 'center', // Center the content
-        alignItems: 'center',
+        alignSelf: 'center', 
     },
     picker: {
         fontSize: 10,
@@ -101,5 +100,30 @@ export const stylesEdit = StyleSheet.create({
     },
     selectedCharacter: {
         backgroundColor: '#C1FF8B',
-    }
+    },
+    contentText: {
+        fontFamily: 'jua',
+        fontSize: 20,
+        color: 'white',
+    },
+    selectedContent: {
+        height: 100,
+        backgroundColor: '#FF5733',
+        borderRadius: 10,
+        justifyContent: 'center',
+        marginVertical: 5,
+        borderBottomColor: '#E74C3C',
+        borderBottomWidth: 5,
+        alignItems: 'center',
+    },
+    editContent: {
+        padding: 20,
+        backgroundColor: '#8ED94D',
+        height: 100,
+        borderRadius: 10,
+        borderBottomWidth: 8,
+        borderBottomColor: '#81AF59',
+        marginBottom: 10,
+        alignItems: 'center',
+    },
 });
