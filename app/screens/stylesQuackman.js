@@ -1,7 +1,8 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
-const cellSize = Math.min(width / 5, (height - 400) / 5) - 10; // Adjusting the cell size for a 5-column grid with padding
+const cellSize = Math.min(width, height - 400) / 5 - 10;
+
 
 export const stylesQuackman = StyleSheet.create({
     progressContainer: {
