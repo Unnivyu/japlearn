@@ -1,12 +1,13 @@
 package japlearn.demo.Service;
 
-import japlearn.demo.Entity.QuackamoleLevels;
-import japlearn.demo.Repository.QuackamoleLevelsRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import japlearn.demo.Entity.QuackamoleLevels;
+import japlearn.demo.Repository.QuackamoleLevelsRepository;
 
 @Service
 public class QuackamoleLevelsService {
@@ -38,5 +39,14 @@ public class QuackamoleLevelsService {
 
     public List<QuackamoleLevels> findLevelsByClassId(String classId) {
         return quackamoleLevelsRepository.findByClassId(classId);
+    }
+
+    public String getTitleById(String id) throws Exception {
+        Optional<QuackamoleLevels> quackamoleLevel = quackamoleLevelsRepository.findById(id);
+        if (quackamoleLevel.isPresent()) {
+            return quackamoleLevel.get().getTitle();
+        } else {
+            throw new Exception("Level " + id + " not found");
+        }
     }
 }
