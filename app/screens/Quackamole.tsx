@@ -5,6 +5,7 @@ import { stylesClass } from './stylesClass';
 import BackIcon from '../../assets/back-icon.svg';
 import Mole from '../../assets/mole.svg';
 import CustomButton from '../../components/CustomButton';
+import { useClassCode } from '../../context/ClassCodeContext';
 
 const Quackamole = ({ navigation, route }) => {
     const { levelId } = route.params;
@@ -101,7 +102,7 @@ const Quackamole = ({ navigation, route }) => {
     };
 
     const handleBackPress = () => {
-        navigation.goBack();
+        navigation.navigate('QuackamoleOption');
     };
 
     const handleWhack = (index) => {

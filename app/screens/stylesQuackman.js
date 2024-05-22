@@ -77,7 +77,7 @@ export const stylesQuackman = StyleSheet.create({
         backgroundColor: '#6C3A99', // Change color when selected
     },
     charText: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         color: 'white', // Text color to match the provided image
     },

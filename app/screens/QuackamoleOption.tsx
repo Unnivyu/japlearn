@@ -26,10 +26,10 @@ const QuackamoleOption = ({ navigation }) => {
         };
 
         fetchLevels();
-    }, [classCode]); // Add classCode as a dependency
+    }, [classCode]); 
 
     const handleBackPress = () => {
-        console.log('Back button pressed');
+        navigation.navigate('Menu');
     };
 
     return (

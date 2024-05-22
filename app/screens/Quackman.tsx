@@ -5,21 +5,12 @@ import { stylesClass } from './stylesClass';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
 
-// Example list of all romaji
 const allRomaji = [
     'a', 'i', 'u', 'e', 'o', 'ka', 'ki', 'ku', 'ke', 'ko', 'sa', 'shi', 'su', 'se', 'so', 'ta', 'chi', 'tsu', 'te', 'to', 'na', 'ni', 'nu', 'ne', 'no', 'ha', 'hi', 'fu', 'he', 'ho', 'ma', 'mi', 'mu', 'me', 'mo', 'ya', 'yu', 'yo', 'ra', 'ri', 'ru', 're', 'ro', 'wa', 'wo', 'n', 'ga', 'gi', 'gu', 'ge', 'go', 'za', 'ji', 'zu', 'ze', 'zo', 'da', 'ji', 'zu', 'de', 'do', 'ba', 'bi', 'bu', 'be', 'bo', 'pa', 'pi', 'pu', 'pe', 'po'
 ];
-
-
-const staticData = [
-    { word: ["ku", "ru", "ma"], hint: "A vehicle with 4 wheels used for transport." },
-    { word: ["mi", "zu"], hint: "The clear liquid essential for life, found in rivers and lakes." },
-    { word: ["hi", "to", "ri"], hint: "A single unit or individual, one." },
-    { word: ["ta", "be", "mo", "no"], hint: "Something you eat to sustain life." },
-    { word: ["ne", "ko"], hint: "A small domesticated carnivorous mammal with soft fur." }
-];
-
-const Quackman = () => {
+const Quackman = ({navigation, route}) => {
+    const { levelId } = route.params;
+    const [data, setData] = useState([]);
     const [romajiGrid, setRomajiGrid] = useState([]);
     const [inputRomaji, setInputRomaji] = useState([]);
     const [currentHint, setCurrentHint] = useState('');
@@ -28,23 +19,75 @@ const Quackman = () => {
     const [currentWordIndex, setCurrentWordIndex] = useState(0);
     const [progress, setProgress] = useState(0);
     const [score, setScore] = useState(0);
-    const [attempts, setAttempts] = useState([null, null, null]); // null means no attempt, true means correct, false means incorrect
+    const [attempts, setAttempts] = useState([null, null, null]); 
     const [gameOver, setGameOver] = useState(false);
 
     useEffect(() => {
-        loadWord();
-    }, [currentWordIndex]);
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/api/quackmancontent/getContentByLevelId/${levelId}`);
+                const json = await response.json();
+                if (json.hint && json.word) {
+                    const transformedData = json.hint.map((hint, index) => ({
+                        hint: hint,
+                        word: syllabifyWord(json.word[index]) 
+                    }));
+                    setData(transformedData);
+                    if (transformedData.length > 0) {
+                        loadWord(0); 
+                    }
+                } else {
+                    console.error("Invalid data format:", json);
+                }
+            } catch (error) {
+                console.error("Failed to fetch data:", error);
+            }
+        };
+    
+        fetchData();
+    }, [levelId]);
+    
+    const syllabifyWord = (word) => {
+        let syllables = [];
+        let i = 0;
+        while (i < word.length) {
+            let found = false;
+            for (let len = 2; len > 0; len--) {
+                let sub = word.slice(i, i + len);
+                if (allRomaji.includes(sub)) {
+                    syllables.push(sub);
+                    i += len;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                console.error(`Invalid syllable in word '${word}' at position ${i}`);
+                return [];
+            }
+        }
+        return syllables;
+    }
+    
+    
+    useEffect(() => {
+        if (data.length > 0) {
+            loadWord(currentWordIndex); 
+        }
+    }, [currentWordIndex, data]);
 
-    const loadWord = () => {
-        const selectedData = staticData[currentWordIndex];
-        const { hint, word } = selectedData;
+    const loadWord = (index) => {
+        if (index < data.length) {
+            const selectedData = data[index];
+            const { hint, word } = selectedData;
 
-        setCurrentHint(hint);
-        setWordLength(word.length);
-        const grid = fillGrid(word, allRomaji, 12); // 4x3 grid needs 12 characters
-        setRomajiGrid(grid);
-        setInputRomaji([]);
-        setAttempts([null, null, null]); // Reset attempts for the new word
+            setCurrentHint(hint);
+            setWordLength(word.length);
+            const grid = fillGrid(word, allRomaji, 12);
+            setRomajiGrid(grid);
+            setInputRomaji([]);
+            setAttempts([null, null, null]);
+        }
     };
 
     const fillGrid = (syllables, allSyllables, gridSize) => {
@@ -58,7 +101,6 @@ const Quackman = () => {
             }
         }
 
-        // Shuffle the grid
         for (let i = filledGrid.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [filledGrid[i], filledGrid[j]] = [filledGrid[j], filledGrid[i]];
@@ -85,16 +127,14 @@ const Quackman = () => {
     };
 
     const handleConfirm = () => {
-        const selectedData = staticData[currentWordIndex];
+        const selectedData = data[currentWordIndex];
         const { word } = selectedData;
 
         if (inputRomaji.join('') === word.join('')) {
-            // Correct attempt
             setScore(score + 1);
             setProgress(progress + 1);
             moveToNextWord();
         } else {
-            // Incorrect attempt
             setAttempts((prevAttempts) => {
                 const updatedAttempts = [...prevAttempts];
                 updatedAttempts[prevAttempts.findIndex((attempt) => attempt === null)] = false;
@@ -110,7 +150,7 @@ const Quackman = () => {
     };
 
     const moveToNextWord = () => {
-        if (currentWordIndex + 1 === staticData.length) {
+        if (currentWordIndex + 1 === data.length) {
             setGameOver(true);
         } else {
             setCurrentWordIndex(currentWordIndex + 1);
@@ -123,7 +163,7 @@ const Quackman = () => {
 
     const handleBackPress = () => {
         setGameOver(false);
-        // Handle navigation back or any other logic
+        navigation.navigate('QuackmanOption')
     };
 
     const handleRetry = () => {
@@ -159,7 +199,7 @@ const Quackman = () => {
     return (
         <View style={{ flex: 1 }}>
             <View style={stylesClass.header}>
-                <TouchableOpacity onPress={() => console.log('Back button pressed')}>
+                <TouchableOpacity onPress={handleBackPress}>
                     <View style={stylesClass.backButtonContainer}>
                         <BackIcon width={20} height={20} fill={'white'} />
                     </View>
@@ -168,7 +208,7 @@ const Quackman = () => {
 
             <View style={stylesQuackman.progressContainer}>
                 <View style={stylesQuackman.progress}>
-                    <Text style={stylesQuackman.progressText}>{currentWordIndex + 1}/{staticData.length}</Text>
+                    <Text style={stylesQuackman.progressText}>{currentWordIndex + 1}/{data.length}</Text>
                 </View>
             </View>
             
