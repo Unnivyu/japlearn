@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { View, Text, TouchableOpacity, Animated, Easing, Alert, Modal } from 'react-native';
 import { styles } from './stylesMole';
 import { stylesClass } from './stylesClass';
@@ -6,9 +6,12 @@ import BackIcon from '../../assets/back-icon.svg';
 import Mole from '../../assets/mole.svg';
 import CustomButton from '../../components/CustomButton';
 import expoconfig from '../../expoconfig';
+import { AuthContext } from '../../context/AuthContext';
+import { useClassCode } from '../../context/ClassCodeContext';
 
 const Quackamole = ({ navigation, route }) => {
     const { levelId } = route.params;
+    const { title } = route.params;
     const [currentIndex, setCurrentIndex] = useState(0);
     const [secondCounter, setSecondCounter] = useState(0);
     const [holes, setHoles] = useState(new Array(9).fill(null));
@@ -20,6 +23,9 @@ const Quackamole = ({ navigation, route }) => {
     const [kanaCharacters, setKanaCharacters] = useState([]);
     const [romajiCharacters, setRomajiCharacters] = useState([]);
     const scaleYAnimations = useRef(holes.map(() => new Animated.Value(0))).current;
+
+    const { user } = useContext(AuthContext);
+    const { classCode } = useClassCode();
 
     useEffect(() => {
         const fetchContent = async () => {
@@ -36,6 +42,44 @@ const Quackamole = ({ navigation, route }) => {
 
         fetchContent();
     }, [levelId]);
+
+    useEffect(() => {
+        if (gameOver) {
+            sendScoreToBackend(score);
+        }
+    }, [gameOver]);
+
+    const sendScoreToBackend = async (finalScore) => {
+        const scoreData = {
+            fname: user.fname,
+            lname: user.lname,
+            score: finalScore,
+            classcode: classCode,
+            level: title
+        };
+    
+        try {
+            const response = await fetch(`${expoconfig.API_URL}/api/quackamoleScores/addquackamoleScore`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(scoreData)
+            });
+    
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorMessage}`);
+            }
+    
+            const result = await response.json();
+            console.log('Score saved successfully:', result);
+        } catch (error) {
+            console.error('Error saving score:', error);
+            alert(`Error saving score: ${error.message}`);
+        }
+    };
+
 
     useEffect(() => {
         if (isGameStarted) {
@@ -67,6 +111,7 @@ const Quackamole = ({ navigation, route }) => {
                 setSecondCounter(0); // Reset the timer for the next character
             } else {
                 setGameOver(true); // End the game if all characters have been attempted
+                
                 return; // Exit the function to stop further execution
             }
         }
@@ -116,6 +161,7 @@ const Quackamole = ({ navigation, route }) => {
                 setAttempts(0);
             } else {
                 setGameOver(true);
+                
             }
             Alert.alert('Hit!');
         } else {
@@ -129,6 +175,7 @@ const Quackamole = ({ navigation, route }) => {
                     setAttempts(0);
                 } else {
                     setGameOver(true);
+                    
                 }
             }
         }

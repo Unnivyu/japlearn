@@ -20,6 +20,7 @@ const ClassDashboard = ({ navigation, route }) => {
     const [selectedGame, setSelectedGame] = useState(null);
     const [studentToRemove, setStudentToRemove] = useState('');
 
+    
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -40,11 +41,16 @@ const ClassDashboard = ({ navigation, route }) => {
 
     const fetchScoresData = async () => {
         try {
-            const response = await fetch(`${expoconfig.API_URL}/api/quackslateScores/getScoresByClasscode/${classCode}`);
-            if (response.ok) {
-                const data = await response.json();
-                setScoresData(data);
-                setFilteredScoresData(data);
+            const quackslateResponse = await fetch(`${expoconfig.API_URL}/api/quackslateScores/getScoresByClasscode/${classCode}`);
+            const quackamoleResponse = await fetch(`${expoconfig.API_URL}/api/quackamoleScores/getquackamoleScoresByClasscode/${classCode}`);
+
+            if (quackslateResponse.ok && quackamoleResponse.ok) {
+                const quackslateData = await quackslateResponse.json();
+                const quackamoleData = await quackamoleResponse.json();
+
+                const combinedScoresData = [...quackslateData, ...quackamoleData];
+                setScoresData(combinedScoresData);
+                setFilteredScoresData(combinedScoresData);
             } else {
                 console.error('Failed to fetch scores data');
             }
@@ -84,8 +90,6 @@ const ClassDashboard = ({ navigation, route }) => {
         }
     }
 
-    
-
     const handleCategoryPress = (category) => {
         setActiveCategory(category);
     }
@@ -95,8 +99,15 @@ const ClassDashboard = ({ navigation, route }) => {
     }
 
     const getGameName = (level) => {
-        return level.startsWith('Intro') || level.startsWith('Basics') ? `Quackslate ${level}` : level;
-    }
+        if (level.startsWith('Intro') || level.startsWith('Basics')) {
+            return `Quackslate ${level}`;
+        } else if (level.startsWith('Hiragana') || level.startsWith('Katakana')) {
+            return `Quackamole ${level}`;
+        } else {
+            return level;
+        }
+    };
+    
 
     const handleFilterPress = (game) => {
         setSelectedGame(game);

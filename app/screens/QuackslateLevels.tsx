@@ -112,7 +112,7 @@ const QuackslateLevels = ({ navigation, route }) => {
                 </TouchableOpacity>
             </View>
             <View style={stylesLevels.titleTextContainer}>
-                <Text style={stylesLevels.titleText}>Classname: Quackslate</Text>
+                <Text style={stylesLevels.titleText}>Game Name: Quackslate</Text>
             </View>
             <View style={stylesLevels.buttonContainer}>
                 <CustomButton title="Add" onPress={handleAddPress} style={stylesLevels.button} textStyle={stylesLevels.buttonText} />

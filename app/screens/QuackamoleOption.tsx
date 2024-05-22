@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, View, ScrollView, Text } from 'react-native';
+import { TouchableOpacity, View, ScrollView } from 'react-native';
 import OptionButton2 from '../../components/OptionButton2';
 import Banner from '../../assets/moleBanner.svg';
 import BackIcon from '../../assets/back-icon.svg';
@@ -18,9 +18,16 @@ const QuackamoleOption = ({ navigation }) => {
 
             try {
                 const response = await fetch(`${expoconfig.API_URL}/api/quackamolelevels/getLevels/${classCode}`);
-                const data = await response.json();
-                console.log(data);
-                setLevels(data);
+                const levelsData = await response.json();
+                
+                // Fetch titles for each level
+                const levelsWithTitles = await Promise.all(levelsData.map(async (level) => {
+                    const titleResponse = await fetch(`${expoconfig.API_URL}/api/quackamolelevels/getTitle/${level.levelId}`);
+                    const title = await titleResponse.text();
+                    return { ...level, title };
+                }));
+
+                setLevels(levelsWithTitles);
             } catch (error) {
                 console.error('Error fetching levels:', error);
             }
@@ -30,7 +37,7 @@ const QuackamoleOption = ({ navigation }) => {
     }, [classCode]); // Add classCode as a dependency
 
     const handleBackPress = () => {
-        navigation.navigate('Menu')
+        navigation.navigate('Menu');
     };
 
     return (
@@ -51,7 +58,7 @@ const QuackamoleOption = ({ navigation }) => {
                         key={level.levelId}
                         imageSource={require('../../assets/QuackamoleButton.png')}
                         buttonText={level.title}
-                        onPress={() => navigation.navigate('Quackamole', { levelId: level.levelId })}
+                        onPress={() => navigation.navigate('Quackamole', { levelId: level.levelId, title: level.title })}
                     />
                 ))}
             </ScrollView>

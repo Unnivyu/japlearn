@@ -1,11 +1,18 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Image, TextInput, TouchableOpacity, Modal, Alert } from 'react-native';
+import React, { useEffect, useState, useContext, useRef } from 'react';
+import { View, Text, StyleSheet, KeyboardAvoidingView, TextInput, TouchableOpacity, Modal, Alert, Platform, ScrollView, Image, Keyboard, Animated } from 'react-native';
 import { stylesSlate } from './stylesSlate';
 import { stylesClass } from './stylesClass';
 import BackIcon from '../../assets/back-icon.svg';
 import { AuthContext } from '../../context/AuthContext';
 import { useClassCode } from '../../context/ClassCodeContext';
 import expoconfig from '../../expoconfig';
+import SamuraiDuck from '../../assets/SamuraiDuck.png';
+import SamuraiEnemy from '../../assets/SamuraiEnemy.png';
+import { Svg, Line } from 'react-native-svg';
+import Congrats from '../../assets/Congrats.png';
+import Approve from '../../assets/Approve.png';
+import GiveUp from '../../assets/GiveUp.png';
+
 
 type Phrase = {
     japPhrase: string;
@@ -18,17 +25,211 @@ const Quackslate2 = ({ navigation }) => {
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
     const [points, setPoints] = useState(0);
     const [showPrompt, setShowPrompt] = useState(true);
-    const [timer, setTimer] = useState(300); // 5 minutes in seconds
+    const [timer, setTimer] = useState(180); // 3 minutes in seconds
     const [timerInterval, setTimerInterval] = useState(null);
     const [phrases, setPhrases] = useState<Phrase[]>([]);
     const [isQuizComplete, setIsQuizComplete] = useState(false);
+    const [keyboardVisible, setKeyboardVisible] = useState(false);
+    const [streak, setStreak] = useState(0); // To track correct answer streak
+    const [showStreakModal, setShowStreakModal] = useState(false); // To control the streak modal visibility
+    const [showIncorrectModal, setShowIncorrectModal] = useState(false); // To control the incorrect answer modal visibility
+    const [showAmazingModal, setShowAmazingModal] = useState(false); // To control the amazing streak modal visibility
+    const horizontalShakeAnimation = useRef(new Animated.Value(0)).current;
+    const verticalShakeAnimation = useRef(new Animated.Value(0)).current;
+    const enemySlashAnimation = useRef(new Animated.Value(0)).current;
+    const duckSlashAnimation = useRef(new Animated.Value(0)).current;
 
     const { user } = useContext(AuthContext);
     const { classCode } = useClassCode();
 
     useEffect(() => {
         fetchPhrases();
+
+        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+            setKeyboardVisible(true);
+        });
+        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+            setKeyboardVisible(false);
+        });
+
+        return () => {
+            keyboardDidHideListener.remove();
+            keyboardDidShowListener.remove();
+        };
     }, []);
+
+    const triggerEnemyShakeAndSlashAnimation = () => {
+        Animated.parallel([
+            Animated.sequence([
+                Animated.timing(horizontalShakeAnimation, {
+                    toValue: 20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(horizontalShakeAnimation, {
+                    toValue: -20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(horizontalShakeAnimation, {
+                    toValue: 20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(horizontalShakeAnimation, {
+                    toValue: -20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(horizontalShakeAnimation, {
+                    toValue: 0,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+            ]),
+            Animated.sequence([
+                Animated.timing(verticalShakeAnimation, {
+                    toValue: 20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(verticalShakeAnimation, {
+                    toValue: -20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(verticalShakeAnimation, {
+                    toValue: 20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(verticalShakeAnimation, {
+                    toValue: -20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(verticalShakeAnimation, {
+                    toValue: 0,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+            ]),
+            Animated.sequence([
+                Animated.timing(enemySlashAnimation, {
+                    toValue: 1,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(enemySlashAnimation, {
+                    toValue: 0,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+            ]),
+        ]).start();
+    };
+
+    const triggerDuckShakeAndSlashAnimation = () => {
+        Animated.parallel([
+            Animated.sequence([
+                Animated.timing(horizontalShakeAnimation, {
+                    toValue: 20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(horizontalShakeAnimation, {
+                    toValue: -20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(horizontalShakeAnimation, {
+                    toValue: 20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(horizontalShakeAnimation, {
+                    toValue: -20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(horizontalShakeAnimation, {
+                    toValue: 0,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+            ]),
+            Animated.sequence([
+                Animated.timing(verticalShakeAnimation, {
+                    toValue: 20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(verticalShakeAnimation, {
+                    toValue: -20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(verticalShakeAnimation, {
+                    toValue: 20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(verticalShakeAnimation, {
+                    toValue: -20,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(verticalShakeAnimation, {
+                    toValue: 0,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+            ]),
+            Animated.sequence([
+                Animated.timing(duckSlashAnimation, {
+                    toValue: 1,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(duckSlashAnimation, {
+                    toValue: 0,
+                    duration: 50,
+                    useNativeDriver: true,
+                }),
+            ]),
+        ]).start();
+    };
+
+    const shakeStyle = {
+        transform: [
+            {
+                translateX: horizontalShakeAnimation,
+            },
+            {
+                translateY: verticalShakeAnimation,
+            },
+        ],
+    };
+
+    const enemySlashStyle = {
+        opacity: enemySlashAnimation,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1,
+    };
+
+    const duckSlashStyle = {
+        opacity: duckSlashAnimation,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1,
+    };
 
     const fetchPhrases = async () => {
         try {
@@ -46,19 +247,31 @@ const Quackslate2 = ({ navigation }) => {
             console.error('Error fetching phrases:', error);
         }
     };
-
+    
+    
     const handleBackPress = () => {
-        navigation.navigate('QuackslateOption')
+        navigation.navigate('QuackslateOption');
     };
 
     const handleNextButtonPress = () => {
         const currentPhrase = phrases[currentPhraseIndex];
         const isUserCorrect = engtext.trim().toLowerCase() === currentPhrase.engTransl.toLowerCase();
         if (isUserCorrect) {
-            alert('Correct! You translated the phrase correctly.');
             setPoints(points + 1);
+            setStreak(streak + 1); // Increment the streak
+            if (streak + 1 === 2) {
+                setShowStreakModal(true);
+                setTimeout(() => setShowStreakModal(false), 1300); // Hide modal after 1.3 seconds
+            }
+            if (streak + 1 === 5) {
+                setShowAmazingModal(true);
+                setTimeout(() => setShowAmazingModal(false), 1300); // Hide modal after 1.3 seconds
+            }
+            triggerEnemyShakeAndSlashAnimation();
         } else {
-            alert('Incorrect. Your translation is incorrect. Try again.');
+            setStreak(0); // Reset the streak
+            setShowIncorrectModal(true);
+            setTimeout(() => setShowIncorrectModal(false), 1300); // Hide modal after 1.3 seconds
         }
 
         setIsCorrect(isUserCorrect);
@@ -110,6 +323,7 @@ const Quackslate2 = ({ navigation }) => {
             alert(`Error saving score: ${error.message}`);
         }
     };
+    
 
     const handleStartQuiz = () => {
         setShowPrompt(false);
@@ -143,19 +357,37 @@ const Quackslate2 = ({ navigation }) => {
         return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
     };
 
+    const renderQuizCompleteModalContent = () => {
+        const scorePercentage = (points / phrases.length) * 100;
+        let resultImage;
+
+        if (scorePercentage >= 85) {
+            resultImage = Congrats;
+        } else if (scorePercentage >= 50) {
+            resultImage = Approve;
+        } else {
+            resultImage = GiveUp;
+        }
+
+        return (
+            <View style={stylesSlate.resultContainer}>
+                <Image source={resultImage} style={stylesSlate.resultImage} />
+                <Text style={stylesSlate.promptText}>Quiz Complete! Your final score is: {points}/{phrases.length}</Text>
+                <TouchableOpacity onPress={() => { setIsQuizComplete(false); setShowPrompt(true); setPoints(0); setTimer(180); }} style={stylesSlate.startButton}>
+                    <Text style={stylesSlate.startButtonText}>Restart Quiz</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('QuackslateOption')} style={stylesSlate.startButton}>
+                    <Text style={stylesSlate.startButtonText}>Back to Menu</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    };
+
     return (
-        <KeyboardAvoidingView behavior='padding' style={{ flex: 1 }}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
             {isQuizComplete ? (
                 <View style={stylesSlate.promptContainer}>
-                    <View style={stylesSlate.promptBox}>
-                        <Text style={stylesSlate.promptText}>Quiz Complete! Your final score is: {points}/{phrases.length}</Text>
-                        <TouchableOpacity onPress={() => { setIsQuizComplete(false); setShowPrompt(true); setPoints(0); setTimer(300); }} style={stylesSlate.startButton}>
-                            <Text style={stylesSlate.startButtonText}>Restart Quiz</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate('QuackslateOption')} style={stylesSlate.startButton}>
-                            <Text style={stylesSlate.startButtonText}>Back to Menu</Text>
-                        </TouchableOpacity>
-                    </View>
+                    {renderQuizCompleteModalContent()}
                 </View>
             ) : (
                 <>
@@ -169,10 +401,53 @@ const Quackslate2 = ({ navigation }) => {
                     >
                         <View style={stylesSlate.promptContainer}>
                             <View style={stylesSlate.promptBox}>
-                                <Text style={stylesSlate.promptText}>Welcome to the Quackslate Quiz! Translate the following Japanese phrases to English. Good luck!</Text>
+                                <Text style={stylesSlate.promptText}>Welcome to the Quackslate! Defeat the Monster by translating the
+                                Japanese phrases to English successfully. Good luck!</Text>
                                 <TouchableOpacity onPress={handleStartQuiz} style={stylesSlate.startButton}>
                                     <Text style={stylesSlate.startButtonText}>Start Quiz</Text>
                                 </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
+                    <Modal
+                        animationType="fade"
+                        transparent={true}
+                        visible={showStreakModal}
+                        onRequestClose={() => {
+                            setShowStreakModal(false);
+                        }}
+                    >
+                        <View style={stylesSlate.streakModalContainer}>
+                            <View style={stylesSlate.streakModalBox}>
+                                <Text style={stylesSlate.streakModalText}>You're doing great!</Text>
+                            </View>
+                        </View>
+                    </Modal>
+                    <Modal
+                        animationType="fade"
+                        transparent={true}
+                        visible={showAmazingModal}
+                        onRequestClose={() => {
+                            setShowAmazingModal(false);
+                        }}
+                    >
+                        <View style={stylesSlate.streakModalContainer}>
+                            <View style={stylesSlate.streakModalBox}>
+                                <Text style={stylesSlate.streakModalText}>Amazing!</Text>
+                            </View>
+                        </View>
+                    </Modal>
+                    <Modal
+                        animationType="fade"
+                        transparent={true}
+                        visible={showIncorrectModal}
+                        onRequestClose={() => {
+                            setShowIncorrectModal(false);
+                        }}
+                    >
+                        <View style={stylesSlate.streakModalContainer}>
+                            <View style={stylesSlate.streakModalBox}>
+                                <Text style={stylesSlate.streakModalText}>Incorrect</Text>
                             </View>
                         </View>
                     </Modal>
@@ -185,41 +460,57 @@ const Quackslate2 = ({ navigation }) => {
                                 </View>
                             </TouchableOpacity>
                         </View>
-                    </View>
-                    <View style={[stylesSlate.MenuAll]}>
-                        <View style={[stylesSlate.menuContainer]}>
-                            <Text style={[stylesSlate.textStyle]}>Translate it to English.</Text>
-                        </View>
-                        <Image source={require('../../assets/QuackslateDisplay.png')} style={[stylesSlate.imageStyle]} />
-                        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 400, justifyContent: 'center', alignItems: 'center' }}>
-                            {phrases.length > 0 && (
-                                <Text style={{ fontSize: 24, color: 'black', textAlign: 'center' }}>
-                                    {phrases[currentPhraseIndex].japPhrase}
-                                </Text>
-                            )}
-                        </View>
-                        <TouchableOpacity style={[stylesSlate.BackButton]} onPress={() => console.log('GameBack Button pressed')}>
-                            <Image source={require('../../assets/GameBack.png')} style={[stylesSlate.upperLeftButtonImage]} />
-                        </TouchableOpacity>
-                        <View style={[stylesSlate.Progress]}>
-                            <Image source={require('../../assets/GameRect.png')} style={{ width: '100%', height: '100%' }} />
-                            <Text style={{ position: 'absolute', color: 'black', fontSize: 20 }}>{currentPhraseIndex + 1}/{phrases.length}</Text>
-                        </View>
-                        <View style={stylesSlate.topBarContainer}>
-                            <View style={stylesSlate.timerContainer}>
-                                <Text style={stylesSlate.timerText}>{formatTime(timer)}</Text>
-                            </View>
-                        </View>
-                        <TouchableOpacity style={[stylesSlate.NextButton]} onPress={handleNextButtonPress}>
-                            <Image source={require('../../assets/NextButton.png')} style={[stylesSlate.NextButtonS]} />
-                        </TouchableOpacity>
-                        <TextInput
-                            style={stylesSlate.textInput}
-                            placeholder="Answer Here"
-                            placeholderTextColor="#888"
-                            value={engtext}
-                            onChangeText={setEngText}
-                        />
+                        <Animated.View style={shakeStyle}>
+                            <ScrollView contentContainerStyle={stylesSlate.MenuAll}>
+                                <View style={stylesSlate.Progress}>
+                                    <Image source={require('../../assets/GameRect.png')} style={{ width: '100%', height: '100%' }} />
+                                    <Text style={{ position: 'absolute', color: 'black', fontSize: 20 }}>{currentPhraseIndex + 1}/{phrases.length}</Text>
+                                </View>
+                                <View style={stylesSlate.timerContainer}>
+                                    <Text style={stylesSlate.timerText}>{formatTime(timer)}</Text>
+                                </View>
+                                <Text style={[stylesSlate.textStyle, { marginTop: 120 }]}>Translate it to English.</Text>
+                                <View style={stylesSlate.phraseContainer}>
+                                    {phrases.length > 0 && (
+                                        <Text style={stylesSlate.phraseText}>
+                                            {phrases[currentPhraseIndex].japPhrase}
+                                        </Text>
+                                    )}
+                                </View>
+                                <View style={stylesSlate.imageContainer}>
+                                    <View style={{ position: 'relative' }}>
+                                        <Image source={SamuraiDuck} style={stylesSlate.samuraiImage} />
+                                        <Animated.View style={[duckSlashStyle, { zIndex: 2, top: 100, left: 10 }]}>
+                                            <Svg height="100" width="100">
+                                                <Line x1="0" y1="100" x2="100" y2="0" stroke="black" strokeWidth="5" />
+                                            </Svg>
+                                        </Animated.View>
+                                    </View>
+                                    {!isQuizComplete && (
+                                    <View style={{ position: 'relative' }}>
+                                        <Image source={SamuraiEnemy} style={{ width: 100, height: 100, top: -20 }} />
+                                        <Animated.View style={[enemySlashStyle, { zIndex: 2 }]}>
+                                            <Svg height="100" width="100">
+                                                <Line x1="0" y1="70" x2="70" y2="0" stroke="red" strokeWidth="2" />
+                                            </Svg>
+                                        </Animated.View>
+                                    </View>
+                                    )}
+                                </View>
+                                <TextInput
+                                    style={[stylesSlate.textInput, { marginBottom: keyboardVisible ? 150 : 20 }]}
+                                    placeholder="Answer Here"
+                                    placeholderTextColor="#888"
+                                    value={engtext}
+                                    onChangeText={setEngText}
+                                />
+                            </ScrollView>
+                        </Animated.View>
+                        {!keyboardVisible && (
+                            <TouchableOpacity style={stylesSlate.NextButton} onPress={handleNextButtonPress}>
+                                <Image source={require('../../assets/NextButton.png')} style={stylesSlate.NextButtonS} />
+                            </TouchableOpacity>
+                        )}
                     </View>
                 </>
             )}

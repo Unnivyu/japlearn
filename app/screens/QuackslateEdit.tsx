@@ -13,6 +13,7 @@ const QuackslateEdit = ({ navigation, route }) => {
     const [wordToTranslate, setWordToTranslate] = useState('');
     const [japaneseCharacter, setJapaneseCharacter] = useState('');
     const [content, setContent] = useState([]);
+    const [selectedItem, setSelectedItem] = useState(null);
 
     useEffect(() => {
         fetchContent();
@@ -63,6 +64,25 @@ const QuackslateEdit = ({ navigation, route }) => {
         }
     };
 
+    const handleDelete = async (id) => {
+        try {
+            let response = await fetch(`${expoconfig.API_URL}/api/quackslateContent/deleteQuackslateContent/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                setContent(content.filter(item => item.id !== id)); // Ensure you're filtering correctly
+                Alert.alert('Success', 'Content removed successfully!');
+                setRemoveModalVisible(false);
+            } else {
+                throw new Error('Failed to remove content');
+            }
+        } catch (error) {
+            console.error('Error removing content:', error);
+            Alert.alert('Error', 'Failed to remove content');
+        }
+    };
+
     const handleCloseModal = () => {
         setAddModalVisible(false);
         setWordToTranslate('');
@@ -77,18 +97,15 @@ const QuackslateEdit = ({ navigation, route }) => {
         setAddModalVisible(true);
     };
 
-    const handleRemovePress = () => {
+    const handleRemovePress = (item) => {
+        setSelectedItem(item);
         setRemoveModalVisible(true);
     };
 
-    const handleAddTranslation = () => {
-        setAddModalVisible(false);
-        setWordToTranslate('');
-        setJapaneseCharacter('');
-    };
-
     const handleRemoveTranslation = () => {
-        setRemoveModalVisible(false);
+        if (selectedItem) {
+            handleDelete(selectedItem.id);
+        }
     };
 
     return (
@@ -101,18 +118,19 @@ const QuackslateEdit = ({ navigation, route }) => {
                 </TouchableOpacity>
             </View>
             <View style={stylesEdit.titleTextContainer}>
-                <Text style={stylesEdit.titleText}>Classname: Quackslate</Text>
+                <Text style={stylesEdit.titleText}>Game Name: Quackslate</Text>
             </View>
             <View style={stylesEdit.buttonContainer}>
                 <CustomButton title="Add" onPress={handleAddPress} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
-                <CustomButton title="Remove" onPress={handleRemovePress} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
             </View>
             <ScrollView contentContainerStyle={stylesEdit.scrollViewContent}>
                 {content.map((item) => (
-                    <View key={item.id} style={stylesEdit.quackmaneditContent}>
-                        <Text style={stylesEdit.contentText}>{item.word}</Text>
-                        <Text style={stylesEdit.contentText}>{item.translatedWord}</Text>
-                    </View>
+                    <TouchableOpacity key={item.id} onPress={() => handleRemovePress(item)}>
+                        <View style={stylesEdit.quackmaneditContent}>
+                            <Text style={stylesEdit.contentText}>{item.word}</Text>
+                            <Text style={stylesEdit.contentText}>{item.translatedWord}</Text>
+                        </View>
+                    </TouchableOpacity>
                 ))}
             </ScrollView>
 
