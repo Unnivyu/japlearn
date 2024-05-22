@@ -45,9 +45,8 @@ public class QuackslateLevelController {
     }
 
     @PutMapping("/updatequackslatelevel/{levelID}")
-    public QuackslateLevel updateQuackslateLevel(@PathVariable int levelID, @RequestBody QuackslateLevel quackslateLevel) {
-        quackslateLevel.setLevelID(levelID);
-        return quackslateLevelService.updateQuackslateLevel(quackslateLevel);
+    public QuackslateLevel updateQuackslateLevel(@PathVariable int levelID, @RequestBody QuackslateLevel quackslateLevel) throws Exception {
+        return quackslateLevelService.updateQuackslateLevel(levelID, quackslateLevel);
     }
 
     @DeleteMapping("/deletequackslatelevel/{levelID}")

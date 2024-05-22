@@ -31,10 +31,17 @@ public class QuackslateLevelService {
         return quackslateLevelRepository.findById(levelID);
     }
 
-    public QuackslateLevel updateQuackslateLevel(QuackslateLevel quackslateLevel) {
-        return quackslateLevelRepository.save(quackslateLevel);
+    
+    public QuackslateLevel updateQuackslateLevel(int levelID, QuackslateLevel quackslateLevel) throws Exception {
+        Optional<QuackslateLevel> existingLevel = quackslateLevelRepository.findById(levelID);
+        if (existingLevel.isPresent()) {
+            QuackslateLevel level = existingLevel.get();
+            level.setTitle(quackslateLevel.getTitle());
+            return quackslateLevelRepository.save(level);
+        } else {
+            throw new Exception("Level " + levelID + " not found");
+        }
     }
-
     public void deleteQuackslateLevel(int levelID) {
         quackslateLevelRepository.deleteById(levelID);
     }

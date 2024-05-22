@@ -40,11 +40,12 @@ public class QuackamoleLevelsService {
     public List<QuackamoleLevels> findLevelsByClassId(String classId) {
         return quackamoleLevelsRepository.findByClassId(classId);
     }
-
-    public String getTitleById(String id) throws Exception {
-        Optional<QuackamoleLevels> quackamoleLevel = quackamoleLevelsRepository.findById(id);
-        if (quackamoleLevel.isPresent()) {
-            return quackamoleLevel.get().getTitle();
+    public QuackamoleLevels updateQuackamoleLevel(String id, QuackamoleLevels updatedLevel) throws Exception {
+        Optional<QuackamoleLevels> existingLevel = quackamoleLevelsRepository.findById(id);
+        if (existingLevel.isPresent()) {
+            QuackamoleLevels level = existingLevel.get();
+            level.setTitle(updatedLevel.getTitle());
+            return quackamoleLevelsRepository.save(level);
         } else {
             throw new Exception("Level " + id + " not found");
         }

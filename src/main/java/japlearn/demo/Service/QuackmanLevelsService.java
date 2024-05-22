@@ -31,6 +31,7 @@ public class QuackmanLevelsService {
 		}
 	}
 	
+	
 	public String removeQuackmanLevelbyId(String Id) {
 		
 		Optional<QuackmanLevels> quackmanlevel = quackmanLevelsRepository.findById(Id);
@@ -45,5 +46,15 @@ public class QuackmanLevelsService {
 	
     public List<QuackmanLevels> findLevelsByClassId(String classId) {
         return quackmanLevelsRepository.findByClassId(classId);
+    }
+	public QuackmanLevels updateQuackmanLevel(String id, QuackmanLevels updatedLevel) throws Exception {
+        Optional<QuackmanLevels> existingLevel = quackmanLevelsRepository.findById(id);
+        if (existingLevel.isPresent()) {
+            QuackmanLevels level = existingLevel.get();
+            level.setTitle(updatedLevel.getTitle());
+            return quackmanLevelsRepository.save(level);
+        } else {
+            throw new Exception("Level " + id + " not found");
+        }
     }
 }
