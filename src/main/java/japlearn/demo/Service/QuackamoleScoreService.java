@@ -56,4 +56,8 @@ public class QuackamoleScoreService {
     public void deleteScore(String id) {
         quackamoleScoreRepository.deleteById(id);
     }
+
+    public List<QuackamoleScore> getScoreByFnameAndLname(String fname, String lname) {
+        return quackamoleScoreRepository.findByFnameAndLname(fname, lname);
+    }
 }

@@ -13,4 +13,5 @@ public interface QuackamoleScoreRepository extends MongoRepository<QuackamoleSco
     Optional<QuackamoleScore> findByFnameAndLnameAndLevel(String fname, String lname, String level);
     List<QuackamoleScore> findByClasscode(String classcode);
     List<QuackamoleScore> findByLevel(String level);
+    List<QuackamoleScore> findByFnameAndLname(String fname, String lname);
 }

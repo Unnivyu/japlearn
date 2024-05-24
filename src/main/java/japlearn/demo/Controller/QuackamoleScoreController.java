@@ -1,5 +1,6 @@
 package japlearn.demo.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,5 +63,11 @@ public class QuackamoleScoreController {
     @DeleteMapping("/deletequackamoleScore/{id}")
     public void deleteScore(@PathVariable String id) {
         quackamoleScoreService.deleteScore(id);
+    }
+
+    @GetMapping("/getquackamoleScoreByFnameAndLname/{fname}/{lname}")
+    public List<QuackamoleScore> getScoreByFnameAndLname(@PathVariable String fname, @PathVariable String lname) {
+        List<QuackamoleScore> scores = quackamoleScoreService.getScoreByFnameAndLname(fname, lname);
+        return scores != null ? scores : new ArrayList<>();
     }
 }

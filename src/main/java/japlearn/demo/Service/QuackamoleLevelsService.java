@@ -50,4 +50,13 @@ public class QuackamoleLevelsService {
             throw new Exception("Level " + id + " not found");
         }
     }
+
+    public String getTitleById(String id) throws Exception {
+        Optional<QuackamoleLevels> quackamoleLevel = quackamoleLevelsRepository.findById(id);
+        if (quackamoleLevel.isPresent()) {
+            return quackamoleLevel.get().getTitle();
+        } else {
+            throw new Exception("Level " + id + " not found");
+        }
+    }
 }

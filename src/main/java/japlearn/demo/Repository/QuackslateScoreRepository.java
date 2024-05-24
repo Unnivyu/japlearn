@@ -13,4 +13,5 @@ public interface QuackslateScoreRepository extends MongoRepository<QuackslateSco
     Optional<QuackslateScore> findByFnameAndLnameAndLevel(String fname, String lname, String level);
     List<QuackslateScore> findByClasscode(String classcode);
     List<QuackslateScore> findByLevel(String level);
+    List<QuackslateScore> findByFnameAndLname(String fname, String lname);
 }

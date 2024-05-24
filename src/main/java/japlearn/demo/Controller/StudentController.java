@@ -73,7 +73,7 @@ public class StudentController {
         String fname = payload.get("name").split(" ")[0];
         String lname = payload.get("name").split(" ")[1];
         boolean success = studentService.removeStudentByFullName(classCode, fname, lname);
- 
+    
         if (success) {
             return ResponseEntity.ok("Successfully removed the student.");
         } else {

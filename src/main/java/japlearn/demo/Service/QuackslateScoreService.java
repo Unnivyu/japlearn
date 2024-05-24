@@ -56,4 +56,8 @@ public class QuackslateScoreService {
     public void deleteScore(String id) {
         quackslateScoreRepository.deleteById(id);
     }
+
+    public List<QuackslateScore> getScoreByFnameAndLname(String fname, String lname) {
+        return quackslateScoreRepository.findByFnameAndLname(fname, lname); // Changed to return List
+    }
 }
