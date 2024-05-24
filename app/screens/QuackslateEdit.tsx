@@ -5,11 +5,12 @@ import { styles } from './stylesModal';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
 import expoconfig from '../../expoconfig';
-
+ 
 const QuackslateEdit = ({ navigation, route }) => {
     const { classCode, levelID, title } = route.params;
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
+    const [confirmModalVisible, setConfirmModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [wordToTranslate, setWordToTranslate] = useState('');
     const [japaneseCharacter, setJapaneseCharacter] = useState('');
@@ -18,11 +19,11 @@ const QuackslateEdit = ({ navigation, route }) => {
     const [selectedContentID, setSelectedContentID] = useState(null);
     const [content, setContent] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
-
+ 
     useEffect(() => {
         fetchContent();
     }, []);
-
+ 
     const fetchContent = async () => {
         try {
             const response = await fetch(`${expoconfig.API_URL}/api/quackslateContent/getByLevel/${title}`);
@@ -37,7 +38,7 @@ const QuackslateEdit = ({ navigation, route }) => {
             Alert.alert('Error', 'Failed to fetch content');
         }
     };
-
+ 
     const addTranslationToDatabase = async () => {
         try {
             let response = await fetch(`${expoconfig.API_URL}/api/quackslateContent/addQuackslateContent`, {
@@ -52,7 +53,7 @@ const QuackslateEdit = ({ navigation, route }) => {
                     level: title,
                 }),
             });
-
+ 
             if (response.ok) {
                 Alert.alert('Success', 'Content added successfully!');
                 fetchContent(); // Refresh the list of content
@@ -67,12 +68,12 @@ const QuackslateEdit = ({ navigation, route }) => {
             Alert.alert('Error', 'Failed to add content');
         }
     };
-
+ 
     const updateContentInDatabase = async () => {
         if (!selectedContentID) return;
-
+ 
         try {
-            let response = await fetch(`http://localhost:8080/api/quackslateContent/updateQuackslateContent/${selectedContentID}`, {
+            let response = await fetch(`${expoconfig.API_URL}/api/quackslateContent/updateQuackslateContent/${selectedContentID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -84,7 +85,7 @@ const QuackslateEdit = ({ navigation, route }) => {
                     level: title,
                 }),
             });
-
+ 
             if (response.ok) {
                 Alert.alert('Success', 'Content updated successfully!');
                 fetchContent(); // Refresh the list of content
@@ -99,42 +100,68 @@ const QuackslateEdit = ({ navigation, route }) => {
             Alert.alert('Error', 'Failed to update content');
         }
     };
-
+ 
+    const deleteContentFromDatabase = async (id) => {
+        try {
+            let response = await fetch(`${expoconfig.API_URL}/api/quackslateContent/deleteQuackslateContent/${id}`, {
+                method: 'DELETE',
+            });
+ 
+            if (response.ok) {
+                Alert.alert('Success', 'Content removed successfully!');
+                fetchContent(); // Refresh the list of content
+                setConfirmModalVisible(false);
+                setRemoveModalVisible(false);
+            } else {
+                throw new Error('Failed to remove content');
+            }
+        } catch (error) {
+            console.error('Error removing content:', error);
+            Alert.alert('Error', 'Failed to remove content');
+        }
+    };
+ 
     const handleCloseModal = () => {
         setAddModalVisible(false);
         setEditModalVisible(false);
+        setRemoveModalVisible(false);
+        setConfirmModalVisible(false);
         setWordToTranslate('');
         setJapaneseCharacter('');
         setUpdatedWord('');
         setUpdatedTranslatedWord('');
     };
-
+ 
     const handleBackPress = () => {
         navigation.navigate('QuackslateLevels', { classCode });
     };
-
+ 
     const handleAddPress = () => {
         setAddModalVisible(true);
     };
-
+ 
     const handleRemovePress = (item) => {
         setSelectedItem(item);
-        setRemoveModalVisible(true);
+        setConfirmModalVisible(true);
     };
-
+ 
     const handleEditPress = (item) => {
         setSelectedContentID(item.id);
         setUpdatedWord(item.word);
         setUpdatedTranslatedWord(item.translatedWord);
         setEditModalVisible(true);
     };
-
-    const handleRemoveTranslation = () => {
+ 
+    const handleConfirmRemove = () => {
         if (selectedItem) {
-            handleDelete(selectedItem.id);
+            deleteContentFromDatabase(selectedItem.id);
         }
     };
-
+ 
+    const handleRemoveButtonPress = () => {
+        setRemoveModalVisible(true);
+    };
+ 
     return (
         <View style={{ flex: 1 }}>
             <View style={stylesEdit.header}>
@@ -149,6 +176,7 @@ const QuackslateEdit = ({ navigation, route }) => {
             </View>
             <View style={stylesEdit.buttonContainer}>
                 <CustomButton title="Add" onPress={handleAddPress} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
+                <CustomButton title="Remove" onPress={handleRemoveButtonPress} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
             </View>
             <ScrollView style={{ flex: 1 }}>
                 {content.map((item) => (
@@ -160,7 +188,7 @@ const QuackslateEdit = ({ navigation, route }) => {
                     </TouchableOpacity>
                 ))}
             </ScrollView>
-
+ 
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -191,7 +219,7 @@ const QuackslateEdit = ({ navigation, route }) => {
                     </View>
                 </View>
             </Modal>
-
+ 
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -222,7 +250,7 @@ const QuackslateEdit = ({ navigation, route }) => {
                     </View>
                 </View>
             </Modal>
-
+ 
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -231,12 +259,39 @@ const QuackslateEdit = ({ navigation, route }) => {
             >
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <TouchableOpacity onPress={() => setRemoveModalVisible(false)} style={styles.closeButton}>
+                        <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
+                            <Text style={styles.closeButtonText}>X</Text>
+                        </TouchableOpacity>
+                        <ScrollView style={styles.scrollContainer}>
+                            {content.map((item) => (
+                                <TouchableOpacity key={item.id} onPress={() => handleRemovePress(item)}>
+                                    <View style={selectedItem && selectedItem.id === item.id ? styles.selected : styles.contentModalContainer}>
+                                        <Text style={styles.contentText}>{`${item.word} - ${item.translatedWord}`}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    </View>
+                </View>
+            </Modal>
+ 
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={confirmModalVisible}
+                onRequestClose={() => setConfirmModalVisible(false)}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
                             <Text style={styles.closeButtonText}>X</Text>
                         </TouchableOpacity>
                         <View style={styles.modalContent}>
-                            <Text style={styles.text}>Are you sure you want to remove this?</Text>
-                            <CustomButton title="Remove" onPress={handleRemoveTranslation} style={styles.button} textStyle={styles.buttonText} />
+                            <Text style={styles.text}>Would you like to remove this level?</Text>
+                            <View style={styles.buttonRow}>
+                                <CustomButton title="Yes" onPress={handleConfirmRemove} style={styles.button} textStyle={styles.buttonText} />
+                                <CustomButton title="No" onPress={() => setConfirmModalVisible(false)} style={styles.button} textStyle={styles.buttonText} />
+                            </View>
                         </View>
                     </View>
                 </View>
@@ -244,5 +299,5 @@ const QuackslateEdit = ({ navigation, route }) => {
         </View>
     );
 };
-
+ 
 export default QuackslateEdit;

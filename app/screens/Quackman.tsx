@@ -1,15 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, Modal } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, Image, TouchableOpacity, Modal, Alert } from 'react-native';
 import { stylesQuackman } from './stylesQuackman';
 import { stylesClass } from './stylesClass';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
+import { useClassCode } from '../../context/ClassCodeContext';
+import { AuthContext } from '../../context/AuthContext';
+import expoconfig from '../../expoconfig';
 
 const allRomaji = [
-    'a', 'i', 'u', 'e', 'o', 'ka', 'ki', 'ku', 'ke', 'ko', 'sa', 'shi', 'su', 'se', 'so', 'ta', 'chi', 'tsu', 'te', 'to', 'na', 'ni', 'nu', 'ne', 'no', 'ha', 'hi', 'fu', 'he', 'ho', 'ma', 'mi', 'mu', 'me', 'mo', 'ya', 'yu', 'yo', 'ra', 'ri', 'ru', 're', 'ro', 'wa', 'wo', 'n', 'ga', 'gi', 'gu', 'ge', 'go', 'za', 'ji', 'zu', 'ze', 'zo', 'da', 'ji', 'zu', 'de', 'do', 'ba', 'bi', 'bu', 'be', 'bo', 'pa', 'pi', 'pu', 'pe', 'po'
+    'a', 'i', 'u', 'e', 'o', 'ka', 'ki', 'ku', 'ke', 'ko', 'sa', 'shi', 'su', 'se', 'so', 'ta', 'chi', 'tsu', 'te', 'to', 
+    'na', 'ni', 'nu', 'ne', 'no', 'ha', 'hi', 'fu', 'he', 'ho', 'ma', 'mi', 'mu', 'me', 'mo', 'ya', 'yu', 'yo', 'ra', 'ri', 
+    'ru', 're', 'ro', 'wa', 'wo', 'n', 'ga', 'gi', 'gu', 'ge', 'go', 'za', 'ji', 'zu', 'ze', 'zo', 'da', 'ji', 'zu', 'de', 
+    'do', 'ba', 'bi', 'bu', 'be', 'bo', 'pa', 'pi', 'pu', 'pe', 'po'
 ];
-const Quackman = ({navigation, route}) => {
+
+const Quackman = ({ navigation, route }) => {
     const { levelId } = route.params;
+    const { title } = route.params;
     const [data, setData] = useState([]);
     const [romajiGrid, setRomajiGrid] = useState([]);
     const [inputRomaji, setInputRomaji] = useState([]);
@@ -22,19 +30,22 @@ const Quackman = ({navigation, route}) => {
     const [attempts, setAttempts] = useState([null, null, null]); 
     const [gameOver, setGameOver] = useState(false);
 
+    const { user } = useContext(AuthContext);
+    const { classCode } = useClassCode();
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/quackmancontent/getContentByLevelId/${levelId}`);
+                const response = await fetch(`${expoconfig.API_URL}/api/quackmancontent/getContentByLevelId/${levelId}`);
                 const json = await response.json();
                 if (json.hint && json.word) {
                     const transformedData = json.hint.map((hint, index) => ({
                         hint: hint,
-                        word: syllabifyWord(json.word[index]) 
+                        word: syllabifyWord(json.word[index])
                     }));
                     setData(transformedData);
                     if (transformedData.length > 0) {
-                        loadWord(0); 
+                        loadWord(0);
                     }
                 } else {
                     console.error("Invalid data format:", json);
@@ -43,10 +54,10 @@ const Quackman = ({navigation, route}) => {
                 console.error("Failed to fetch data:", error);
             }
         };
-    
+
         fetchData();
     }, [levelId]);
-    
+
     const syllabifyWord = (word) => {
         let syllables = [];
         let i = 0;
@@ -68,11 +79,10 @@ const Quackman = ({navigation, route}) => {
         }
         return syllables;
     }
-    
-    
+
     useEffect(() => {
         if (data.length > 0) {
-            loadWord(currentWordIndex); 
+            loadWord(currentWordIndex);
         }
     }, [currentWordIndex, data]);
 
@@ -152,6 +162,7 @@ const Quackman = ({navigation, route}) => {
     const moveToNextWord = () => {
         if (currentWordIndex + 1 === data.length) {
             setGameOver(true);
+            sendScoreToBackend(score);
         } else {
             setCurrentWordIndex(currentWordIndex + 1);
         }
@@ -163,7 +174,7 @@ const Quackman = ({navigation, route}) => {
 
     const handleBackPress = () => {
         setGameOver(false);
-        navigation.navigate('QuackmanOption')
+        navigation.navigate('QuackmanOption');
     };
 
     const handleRetry = () => {
@@ -172,6 +183,37 @@ const Quackman = ({navigation, route}) => {
         setScore(0);
         setCurrentWordIndex(0);
         setAttempts([null, null, null]);
+    };
+
+    const sendScoreToBackend = async (finalScore) => {
+        const scoreData = {
+            fname: user.fname,
+            lname: user.lname,
+            score: finalScore,
+            classcode: classCode,
+            level: title
+        };
+
+        try {
+            const response = await fetch(`${expoconfig.API_URL}/api/quackmanScores/addquackmanScore`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(scoreData)
+            });
+
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorMessage}`);
+            }
+
+            const result = await response.json();
+            console.log('Score saved successfully:', result);
+        } catch (error) {
+            console.error('Error saving score:', error);
+            alert(`Error saving score: ${error.message}`);
+        }
     };
 
     if (gameOver) {

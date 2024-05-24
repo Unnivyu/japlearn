@@ -4,10 +4,11 @@ import { stylesEdit } from './stylesEdit';
 import { styles } from './stylesModal';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
-
+ 
 const QuackmanEdit = ({ navigation, route }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [removeModalVisible, setRemoveModalVisible] = useState(false);
+    const [confirmModalVisible, setConfirmModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [word, setWord] = useState('');
     const [hint, setHint] = useState('');
@@ -17,16 +18,16 @@ const QuackmanEdit = ({ navigation, route }) => {
     const [selectedContentId, setSelectedContentId] = useState(null);
     const [selectedWordIndex, setSelectedWordIndex] = useState(null);
     const { classCode, levelId } = route.params;
-
+ 
     useEffect(() => {
         fetchContent();
     }, []);
-
+ 
     const fetchContent = async () => {
         try {
             const response = await fetch(`http://localhost:8080/api/quackmancontent/getContentByLevelId/${levelId}`);
             const responseText = await response.text();
-
+ 
             if (response.ok) {
                 if (responseText) {
                     const data = JSON.parse(responseText);
@@ -44,7 +45,7 @@ const QuackmanEdit = ({ navigation, route }) => {
             Alert.alert('Error', 'Failed to fetch content');
         }
     };
-
+ 
     const createNewContent = async () => {
         try {
             const newContent = {
@@ -52,7 +53,7 @@ const QuackmanEdit = ({ navigation, route }) => {
                 hint: [],
                 levelId: levelId
             };
-    
+   
             const response = await fetch(`http://localhost:8080/api/quackmancontent/addContent`, {
                 method: 'POST',
                 headers: {
@@ -60,7 +61,7 @@ const QuackmanEdit = ({ navigation, route }) => {
                 },
                 body: JSON.stringify(newContent)
             });
-    
+   
             if (response.ok) {
                 const createdContent = await response.json();
                 setContent([createdContent]);
@@ -74,7 +75,7 @@ const QuackmanEdit = ({ navigation, route }) => {
             Alert.alert('Error', 'Failed to create new content');
         }
     };
-
+ 
     const handleAddContent = async () => {
         try {
             const encodedWord = encodeURIComponent(word);
@@ -86,7 +87,7 @@ const QuackmanEdit = ({ navigation, route }) => {
                     'Content-Type': 'application/json',
                 }
             });
-
+ 
             if (response.ok) {
                 Alert.alert('Success', 'Content added successfully!');
                 fetchContent(); // Refresh the list
@@ -103,7 +104,7 @@ const QuackmanEdit = ({ navigation, route }) => {
             Alert.alert('Error', 'Failed to add content');
         }
     };
-
+ 
     const handleEditContent = async () => {
         try {
             // Prepare the updated content
@@ -111,14 +112,14 @@ const QuackmanEdit = ({ navigation, route }) => {
                 word: [...content[0].word],
                 hint: [...content[0].hint]
             };
-    
+   
             // Update the word and hint at the selected index
             updatedContent.word[selectedWordIndex] = editWord;
             updatedContent.hint[selectedWordIndex] = editHint;
-    
+   
             console.log('Sending update request with content ID:', selectedContentId);
             console.log('Updated content:', updatedContent);
-    
+   
             // Send the update request to the backend
             const response = await fetch(`http://localhost:8080/api/quackmancontent/updateContent/${selectedContentId}`, {
                 method: 'PUT',
@@ -130,10 +131,10 @@ const QuackmanEdit = ({ navigation, route }) => {
                     hint: updatedContent.hint
                 })
             });
-    
+   
             const responseText = await response.text();
             console.log('Edit response:', responseText);
-    
+   
             if (response.ok) {
                 // Update the local state with the new content
                 setContent([{ ...content[0], word: updatedContent.word, hint: updatedContent.hint }]);
@@ -150,13 +151,13 @@ const QuackmanEdit = ({ navigation, route }) => {
             Alert.alert('Error', 'Failed to update content');
         }
     };
-    
-
+   
+ 
     const handleRemoveContent = async () => {
         try {
             const wordToRemove = content[0].word[selectedWordIndex];
             const hintToRemove = content[0].hint[selectedWordIndex];
-            
+           
             const response = await fetch(`http://localhost:8080/api/quackmancontent/deleteContent/${selectedContentId}`, {
                 method: 'DELETE',
                 headers: {
@@ -167,17 +168,18 @@ const QuackmanEdit = ({ navigation, route }) => {
                     hint: hintToRemove,
                 })
             });
-    
+   
             const responseText = await response.text();
-    
+   
             if (response.ok) {
                 // Optimistically update the local state
                 const updatedContent = [...content];
                 updatedContent[0].word.splice(selectedWordIndex, 1);
                 updatedContent[0].hint.splice(selectedWordIndex, 1);
                 setContent(updatedContent);
-    
+   
                 Alert.alert('Success', 'Content removed successfully!');
+                setConfirmModalVisible(false);
                 setRemoveModalVisible(false);
             } else {
                 console.error('Failed to remove content:', responseText);
@@ -188,18 +190,18 @@ const QuackmanEdit = ({ navigation, route }) => {
             Alert.alert('Error', 'Failed to remove content');
         }
     };
-    
-    
+   
+   
     const handleBackPress = () => {
         navigation.navigate('QuackmanLevels', { classCode, levelId });
     };
-
+ 
     const handleCloseModal = () => {
         setModalVisible(false);
         setWord('');
         setHint('');
     };
-
+ 
     const handleOpenEditModal = (contentId, wordIndex, word, hint) => {
         setSelectedContentId(contentId);
         setSelectedWordIndex(wordIndex);
@@ -207,26 +209,31 @@ const QuackmanEdit = ({ navigation, route }) => {
         setEditHint(hint);
         setEditModalVisible(true);
     };
-
+ 
     const handleCloseEditModal = () => {
         setEditModalVisible(false);
         setEditWord('');
         setEditHint('');
     };
-
+ 
     const handleOpenRemoveModal = () => {
         setRemoveModalVisible(true);
     };
-
+ 
     const handleCloseRemoveModal = () => {
         setRemoveModalVisible(false);
     };
-
+ 
     const handleSelectContentForRemoval = (contentId, wordIndex) => {
         setSelectedContentId(contentId);
         setSelectedWordIndex(wordIndex);
+        setConfirmModalVisible(true);
     };
-
+ 
+    const handleConfirmRemove = () => {
+        handleRemoveContent();
+    };
+ 
     return (
         <View style={{ flex: 1 }}>
             <View style={stylesEdit.header}>
@@ -237,13 +244,13 @@ const QuackmanEdit = ({ navigation, route }) => {
                 </TouchableOpacity>
             </View>
             <View style={stylesEdit.titleTextContainer}>
-                <Text style={stylesEdit.titleText}>Classname: Quackman</Text>
+                <Text style={stylesEdit.titleText}>Game Name: Quackman</Text>
             </View>
             <View style={stylesEdit.buttonContainer}>
                 <CustomButton title="Add" onPress={() => setModalVisible(true)} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
                 <CustomButton title="Remove" onPress={handleOpenRemoveModal} style={stylesEdit.button} textStyle={stylesEdit.buttonText} />
             </View>
-
+ 
             <ScrollView style={{ flex: 1 }}>
                 {content.map((item, index) =>
                     item.word.map((wordItem, wordIndex) => (
@@ -259,7 +266,7 @@ const QuackmanEdit = ({ navigation, route }) => {
                     ))
                 )}
             </ScrollView>
-
+ 
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -290,7 +297,7 @@ const QuackmanEdit = ({ navigation, route }) => {
                     </View>
                 </View>
             </Modal>
-
+ 
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -321,7 +328,7 @@ const QuackmanEdit = ({ navigation, route }) => {
                     </View>
                 </View>
             </Modal>
-
+ 
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -337,7 +344,7 @@ const QuackmanEdit = ({ navigation, route }) => {
                         </View>
                         <View style={styles.modalContent}>
                             <Text style={styles.text}>Select content to remove:</Text>
-                            <ScrollView style={{flex: 1}}>
+                            <ScrollView style={styles.scrollContainer}>
                                 {content.map((item, index) =>
                                     item.word.map((wordItem, wordIndex) => (
                                         <TouchableOpacity
@@ -352,13 +359,36 @@ const QuackmanEdit = ({ navigation, route }) => {
                                     ))
                                 )}
                             </ScrollView>
-                            <CustomButton title="Remove" onPress={handleRemoveContent} style={styles.button} textStyle={styles.buttonText} />
+                           
                         </View>
                     </View>
                 </ScrollView>
             </Modal>
+ 
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={confirmModalVisible}
+                onRequestClose={() => setConfirmModalVisible(false)}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <TouchableOpacity onPress={() => setConfirmModalVisible(false)} style={styles.closeButton}>
+                            <Text style={styles.closeButtonText}>X</Text>
+                        </TouchableOpacity>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.text}>Would you like to remove this level?</Text>
+                            <View style={styles.buttonRow}>
+                                <CustomButton title="Yes" onPress={handleConfirmRemove} style={styles.button} textStyle={styles.buttonText} />
+                                <CustomButton title="No" onPress={() => setConfirmModalVisible(false)} style={styles.button} textStyle={styles.buttonText} />
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
-
+ 
 export default QuackmanEdit;
+ 

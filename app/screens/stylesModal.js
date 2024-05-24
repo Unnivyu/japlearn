@@ -18,6 +18,7 @@ export const styles = StyleSheet.create({
             width: 0,
             height: 2
         },
+        
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
@@ -43,6 +44,16 @@ export const styles = StyleSheet.create({
     },
     closeButtonContainer: {
         alignItems: 'flex-end'
+    },
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 10,
+        gap: 15,
+    },
+    button: {
+        width: 50, // Adjust the width to your preference
+        marginHorizontal: 10, // Adds space between the buttons
     },
     closeButton: {
         height: 40,

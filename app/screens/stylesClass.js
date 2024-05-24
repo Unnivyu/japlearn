@@ -13,6 +13,9 @@ export const stylesClass = StyleSheet.create({
         padding: 10,
         paddingTop: 40,
     },
+    selectedScore: {
+        backgroundColor: '#8ed94d',
+    },
     backButtonContainer: {
         height: 50,
         width: 50,

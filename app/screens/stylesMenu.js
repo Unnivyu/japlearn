@@ -10,6 +10,11 @@ export const stylesMenu = StyleSheet.create({
         marginBottom: 10,
         height: 70,
     },
+    pictureCircle: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+    },
     header: {
         backgroundColor: '#8423D9',
         flexDirection: 'row',

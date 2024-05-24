@@ -14,27 +14,32 @@ export const stylesProfile = StyleSheet.create({
         backgroundColor: '#8423D9',
         height: 180,
     },
-
+    profilePicture: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        borderWidth: 3,
+        borderColor: 'white',
+    },
     profileContainer: {
-        width: 150, 
+        width: 150,
         height: 150,
-        borderRadius: 75, 
-        backgroundColor: 'white', 
+        borderRadius: 75,
+        backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
         top: 110,
         marginLeft: 10,
-        shadowColor: 'light-grey'
-
+        shadowColor: 'light-grey',
     },
     description: {
         padding: 20,
         borderBottomColor: '#E1E1E1',
         borderBottomWidth: 5,
-        borderTopWidth: 0, 
-        borderLeftWidth: 0, 
-        borderRightWidth: 0, 
+        borderTopWidth: 0,
+        borderLeftWidth: 0,
+        borderRightWidth: 0,
     },
     descText: {
         fontFamily: 'jua',
@@ -43,7 +48,6 @@ export const stylesProfile = StyleSheet.create({
     },
     descTextContainer: {
         justifyContent: 'center',
-        
     },
     whiteSpace: {
         height: 75,
@@ -54,9 +58,9 @@ export const stylesProfile = StyleSheet.create({
     },
     buttonContainer: {
         height: 50,
-        backgroundColor: '#D6D6D6', 
-        borderRadius: 40, 
-        overflow: 'hidden', 
+        backgroundColor: '#D6D6D6',
+        borderRadius: 40,
+        overflow: 'hidden',
         justifyContent: 'center',
     },
     buttonText: {
@@ -67,25 +71,56 @@ export const stylesProfile = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
     },
-    scoreArea: {
+    categoryContainer: {
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 60,
+        marginTop: 20,
+        marginBottom: 20,
     },
-    scoreButton: {
+    categoryButton: {
         backgroundColor: '#8ED94D',
-        height: 100,
-        width: '90%', 
-        borderRadius: 40,
-        justifyContent: 'center'
+        paddingVertical: 20,
+        paddingHorizontal: 30,
+        borderRadius: 35,
+        marginHorizontal: 10,
     },
-    scoreButtonText: {
+    categoryButtonText: {
         color: 'white',
         fontFamily: 'jua',
-        fontSize: 40,
-        textAlign: 'center',
-        paddingVertical: 10,
+        fontSize: 16,
+    },
+    contentScrollContainer: {
         paddingHorizontal: 20,
     },
-    
+    contentContainer: {
+        paddingBottom: 20,
+    },
+    scoresContainer: {
+        marginTop: 20,
+    },
+    gameTitle: {
+        fontSize: 22,
+        fontFamily: 'jua',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    scoreCard: {
+        backgroundColor: '#E1E1E1',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 10,
+    },
+    scoreText: {
+        fontSize: 16,
+        fontFamily: 'jua',
+        marginBottom: 5,
+    },
+    noScoresText: {
+        fontSize: 18,
+        fontFamily: 'jua',
+        textAlign: 'center',
+        marginTop: 20,
+        color: 'grey',
+    },
 });

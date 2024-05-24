@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, KeyboardAvoidingView, Text, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
+import { View, KeyboardAvoidingView, Text, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { stylesMenu } from './stylesMenu';
 import EmptyClass from '../../assets/empty.svg'
 import CustomButton from '../../components/CustomButton';
@@ -7,9 +7,27 @@ import MenuButton from '../../components/MenuButton';
 import { AuthContext } from '../../context/AuthContext'; // Import AuthContext
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import expoconfig from '../../expoconfig';
+import studentProfile from '../../assets/studentProfile.png';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Menu = ({navigation}) => {
     const { user, login } = useContext(AuthContext);
+
+    useFocusEffect(
+        useCallback(() => {
+            // Code to refresh the component, e.g., fetching new data from the backend
+            const fetchData = async () => {
+                try {
+                    // Your fetch logic here
+                    console.log('Fetching data...');
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            };
+
+            fetchData();
+        }, [])
+    );
 
     
 
@@ -41,7 +59,7 @@ const Menu = ({navigation}) => {
                         </View>
                         <View style={stylesMenu.rightContainer}>
                             <TouchableOpacity onPress={handleProfilePress}> 
-                                <View style={stylesMenu.pictureCircle}></View>
+                            <Image source={studentProfile} style={stylesMenu.pictureCircle} />
                             </TouchableOpacity>
                         </View>
                     </View>

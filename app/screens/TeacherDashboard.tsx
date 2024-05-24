@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Modal, View, KeyboardAvoidingView, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, StyleSheet } from 'react-native';
+import { Modal, View, KeyboardAvoidingView, Text, TouchableOpacity, SafeAreaView, ScrollView, Image, TextInput, StyleSheet } from 'react-native';
 import CustomButton from '../../components/CustomButton';
 import { stylesDashboard } from './stylesDashboard';
 import { styles } from './stylesModal';
 import { AuthContext } from '../../context/AuthContext';
 import expoconfig from '../../expoconfig';
+import teacherProfile from '../../assets/teacherProfile.png';
 
 const TeacherDashboard = ({ navigation }) => {
     const [classCodes, setClassCodes] = useState([]);
@@ -89,7 +90,7 @@ const TeacherDashboard = ({ navigation }) => {
     };
 
     const handleProfilePress = () => {
-        navigation.navigate('Profile');
+        navigation.navigate('ProfileTeacher');
     };
 
     const handleAddPress = () => {
@@ -121,7 +122,7 @@ const TeacherDashboard = ({ navigation }) => {
                         </View>
                         <View style={stylesDashboard.rightContainer}>
                             <TouchableOpacity onPress={handleProfilePress}>
-                                <View style={stylesDashboard.pictureCircle}></View>
+                            <Image source={teacherProfile} style={stylesDashboard.pictureCircle} />
                             </TouchableOpacity>
                         </View>
                     </View>

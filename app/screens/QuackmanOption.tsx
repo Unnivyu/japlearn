@@ -6,6 +6,7 @@ import BackIcon from '../../assets/back-icon.svg';
 import Banner from '../../assets/qkmanBanner.svg';
 import { stylesClass } from './stylesClass';
 import { useClassCode } from '../../context/ClassCodeContext';
+import expoconfig from '../../expoconfig';
 
 const QuackmanOption = ({ navigation }) => {
     const { classCode } = useClassCode();
@@ -16,7 +17,7 @@ const QuackmanOption = ({ navigation }) => {
             if (!classCode) return; // Exit if classCode is not available
 
             try {
-                const response = await fetch(`http://localhost:8080/api/quackmanlevels/getLevels/${classCode}`);
+                const response = await fetch(`${expoconfig.API_URL}/api/quackmanlevels/getLevels/${classCode}`);
                 const data = await response.json();
                 console.log(data);
                 setLevels(data);
@@ -50,7 +51,7 @@ const QuackmanOption = ({ navigation }) => {
                         key={level.levelId}
                         imageSource={require('../../assets/QuackmanButton.png')}
                         buttonText={level.title}
-                        onPress={() => navigation.navigate('Quackman', { levelId: level.levelId })}
+                        onPress={() => navigation.navigate('Quackman', { levelId: level.levelId, title: level.title })}
                     />
                 ))}
             </ScrollView>

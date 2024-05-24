@@ -5,6 +5,7 @@ import { styles } from './stylesModal';
 import BackIcon from '../../assets/back-icon.svg';
 import CustomButton from '../../components/CustomButton';
 import ConfirmationModal from '../../components/ConfirmationModal'; // Import the new component
+import expoconfig from '../../expoconfig';
 
 const QuackamoleLevels = ({ navigation, route }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
@@ -98,7 +99,7 @@ const QuackamoleLevels = ({ navigation, route }) => {
             return;
         }
 
-        const url = `http://localhost:8080/api/quackamolelevels/deleteLevel/${selectedLevel.levelId}`;
+        const url =  `${expoconfig.API_URL}/api/quackamolelevels/deleteLevel/${selectedLevel.levelId}`;
         console.log(`Sending DELETE request to: ${url}`);
         try {
             const response = await fetch(url, { method: 'DELETE' });
@@ -125,7 +126,7 @@ const QuackamoleLevels = ({ navigation, route }) => {
     const handleSaveLevel = async () => {
         if (!selectedLevel) return;
 
-        const url = `http://localhost:8080/api/quackamolelevels/updateLevel/${selectedLevel.levelId}`;
+        const url =  `${expoconfig.API_URL}/api/quackamolelevels/updateLevel/${selectedLevel.levelId}`;
         const levelData = {
             ...selectedLevel,
             title: updatedTitle

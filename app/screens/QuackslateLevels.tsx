@@ -121,7 +121,7 @@ const QuackslateLevels = ({ navigation, route }) => {
         if (!selectedLevelID) return;
 
         try {
-            const response = await fetch(`http://localhost:8080/api/quackslateLevels/updatequackslatelevel/${selectedLevelID}`, {
+            const response = await fetch( `${expoconfig.API_URL}/api/quackslateLevels/updatequackslatelevel/${selectedLevelID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

@@ -26,6 +26,7 @@ import QuackslateEdit from './app/screens/QuackslateEdit';
 import QuackamoleEdit from './app/screens/QuackamoleEdit';
 import Quackamole from './app/screens/Quackamole';
 import Quackman from './app/screens/Quackman';
+import ProfileTeacher from './app/screens/ProfileTeacher';
 
 const getFonts = () => Font.loadAsync({
   'jua': require('./assets/fonts/Jua-Regular.ttf')
@@ -58,6 +59,7 @@ export default function App({}) {
             <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
             <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
             <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+            <Stack.Screen name="ProfileTeacher" component={ProfileTeacher} options={{ headerShown: false }} />
             <Stack.Screen name="Score" component={Score} options={{ headerShown: false }} />
             <Stack.Screen name="TeacherDashboard" component={TeacherDashboard} options={{ headerShown: false }} />
             <Stack.Screen name="ClassDashboard" component={ClassDashboard} options={{ headerShown: false }} />
