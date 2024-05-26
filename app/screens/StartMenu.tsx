@@ -33,7 +33,7 @@ const StartMenu = ({navigation}) => {
     
         try {
           // Prepare the URL search parameters for the backend request
-          const params = new URLSearchParams({ fname: user.fname, classCode: classcode });
+          const params = new URLSearchParams({ email: user.email, classCode: classcode });
     
           // Send the POST request to the backend
           const response = await fetch(`${expoconfig.API_URL}/api/students/joinClass?` + params.toString(), {
