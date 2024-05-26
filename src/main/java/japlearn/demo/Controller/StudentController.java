@@ -38,15 +38,15 @@ public class StudentController {
 
 
     @PostMapping("/joinClass")
-    public ResponseEntity<String> joinClass(@RequestParam String fname, @RequestParam String classCode) {
-        boolean success = studentService.joinClassCodeByFname(fname, classCode);
+    public ResponseEntity<String> joinClass(@RequestParam String email, @RequestParam String classCode) {
+    boolean success = studentService.joinClassCodeByEmail(email, classCode);
 
-        if (success) {
-            return ResponseEntity.ok("Successfully joined the class.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Class code or student with the given name not found.");
-        }
+    if (success) {
+        return ResponseEntity.ok("Successfully joined the class.");
+    } else {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Class code or student with the given email not found.");
     }
+}
 
     @GetMapping("/getByClassCode")
     public ResponseEntity<List<Student>> getStudentsByClassCode(@RequestParam String classCode) {

@@ -38,15 +38,13 @@ public class StudentService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
  
-    public boolean joinClassCodeByFname(String fname, String classCode) {
+    public boolean joinClassCodeByEmail(String email, String classCode) {
         Optional<Classes> existingClass = classesRepository.findByClassCodes(classCode);
-        List<User> users = userRepository.findByFname(fname);
- 
-        if (existingClass.isPresent() && !users.isEmpty()) {
-            for (User user : users) {
-                  Student student = new Student(user, classCode); // Using the new constructor
-                studentRepository.save(student);
-            }
+        User user = userRepository.findByEmail(email);
+    
+        if (existingClass.isPresent() && user != null) {
+            Student student = new Student(user, classCode); // Using the new constructor
+            studentRepository.save(student);
             return true;
         }
         return false;
