@@ -22,7 +22,6 @@ const TeacherDashboard = () => {
             const response = await fetch(`${expoconfig.API_URL}/api/classes/getAllClasses`);
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
                 setClassCodes(data.map(item => item.classCodes));
             } else {
                 const errorData = await response.json();
@@ -133,8 +132,8 @@ const TeacherDashboard = () => {
                             <Text style={stylesDashboard.titleText}>Classes</Text>
                         </View>
                         <View style={stylesDashboard.buttonContainer}>
-                            <CustomButton title="Add" onPress={handleAddPress} style={stylesDashboard.button} textStyle={stylesDashboard.buttonText} />
-                            <CustomButton title="Remove" onPress={handleRemovePress} style={stylesDashboard.button} textStyle={stylesDashboard.buttonText} />
+                            <CustomButton title="Add" onPress={handleAddPress} buttonStyle={stylesDashboard.button} textStyle={stylesDashboard.buttonText} />
+                            <CustomButton title="Remove" onPress={handleRemovePress} buttonStyle={stylesDashboard.button} textStyle={stylesDashboard.buttonText} />
                         </View>
                     </View>
                     <ScrollView contentContainerStyle={stylesDashboard.classContainer}>
@@ -166,7 +165,7 @@ const TeacherDashboard = () => {
                                         onChangeText={setNewClassCode}
                                         style={styles.input}
                                     />
-                                    <CustomButton title="Add" onPress={addClass} style={styles.button} textStyle={styles.buttonText} />
+                                    <CustomButton title="Add" onPress={addClass} buttonStyle={styles.button} textStyle={styles.buttonText} />
                                 </View>
                             </View>
                         </View>
@@ -192,7 +191,7 @@ const TeacherDashboard = () => {
                                         onChangeText={setDeleteClassCode}
                                         style={styles.input}
                                     />
-                                    <CustomButton title="Delete" onPress={handleRemoveClass} style={styles.button} textStyle={styles.buttonText} />
+                                    <CustomButton title="Delete" onPress={handleRemoveClass} buttonStyle={styles.button} textStyle={styles.buttonText} />
                                 </View>
                             </View>
                         </View>

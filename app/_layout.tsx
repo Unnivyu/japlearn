@@ -9,8 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const getFonts = () => Font.loadAsync({ 'Jua': require('../assets/fonts/Jua.ttf') });
 
 const routeAccessConfig = {
-  student: ['Menu', 'StartMenu', 'ScenePrompter'],
-  teacher: ['TeacherDashboard', 'ScenePrompter'],
+  student: ['Menu', 'StartMenu', 'ScenePrompter', 'Profile'],
+  teacher: ['TeacherDashboard', 'ScenePrompter', 'ProfileTeacher'],
 };
 
 const defaultRouteByRole = {
@@ -81,11 +81,13 @@ const RootLayout = () => {
           <Stack.Screen name="Menu" />
           <Stack.Screen name="StartMenu" />
           <Stack.Screen name="ScenePrompter" />
+          <Stack.Screen name="Profile" />
         </>
       )}
       {user?.role === 'teacher' && (
         <>
           <Stack.Screen name="TeacherDashboard" />
+          <Stack.Screen name="ProfileTeacher" />
         </>
       )}
     </Stack>

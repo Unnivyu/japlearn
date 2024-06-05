@@ -1,9 +1,11 @@
 import { SafeAreaView, StyleSheet, Text, View, Pressable, FlatList } from 'react-native';
-import React from 'react';
+import React, { useContext }  from 'react';
+import { useRouter } from 'expo-router';
 import styles from '../styles/stylesMenu';
 import Profile from '../assets/svg/user_pf.svg';
 import Complete from '../assets/svg/completed_level.svg';
 import Locked from '../assets/svg/locked_level.svg';
+import { AuthContext } from '../context/AuthContext';
 
 const levels = [
     { id: '1', title: 'Kana Intro', completed: true },
@@ -28,6 +30,9 @@ const LevelButton = ({ title, completed }) => {
 };
 
 const Menu = () => {
+    const { user } = useContext(AuthContext);
+    const router = useRouter();
+
     const renderItem = ({ item }) => (
         <View style={styles.levelContainer}>
             <LevelButton title={item.title} completed={item.completed} />
@@ -40,10 +45,10 @@ const Menu = () => {
                 <View style={[styles.header, { padding: 20 }]}>
                     <View style={styles.leftContainer}>
                         <Text style={styles.hText}>Welcome Back</Text>
-                        {/*<Text style={styles.hText}>{user?.fname}</Text>*/}
+                        <Text style={styles.hText}>{user?.fname}</Text>
                     </View>
                     <View style={styles.rightContainer}>
-                        <Pressable onPress={undefined}>
+                        <Pressable onPress={() => router.push('/Profile')}>
                             <Profile width={65} height={65} />
                         </Pressable>
                     </View>
