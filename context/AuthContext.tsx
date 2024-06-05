@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { Slot } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface User {
@@ -12,12 +11,14 @@ interface User {
 
 interface AuthContextProps {
   user: User | null;
+  setUser: (user: User | null) => void;  // Expose setUser for direct manipulation
   login: (user: User) => Promise<void>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextProps>({
   user: null,
+  setUser: () => {},  // Default implementation
   login: async () => {},
   logout: () => {},
 });
@@ -51,7 +52,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

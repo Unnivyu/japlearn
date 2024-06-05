@@ -7,54 +7,65 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../context/AuthContext';
 import expoconfig from '../expoconfig';
 import { styles }  from '../styles/stylesStartMenu';
+import CustomModal from '../components/CustomModal';
 
 
 const StartMenu = () => {
     const [classcode, setClasscode] = useState('');
     const { user} = useContext(AuthContext);
     const router = useRouter();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+
+    useEffect(() => {
+        const checkClassCode = async () => {
+            const storedClassCode = await AsyncStorage.getItem('classCode');
+            if (storedClassCode) {
+                // Redirect to another component if classCode exists
+                router.push('/Menu'); // Update with correct path if needed
+            }
+        };
+
+        checkClassCode();
+    }, [router]);
 
     const joinClass = async () => {
-        console.log
         if (!classcode.trim()) {
-          Alert.alert('Error', 'Please enter a class code.');
-          return;
+            setModalMessage('Please enter a class code.');
+            setModalVisible(true);
+            return;
         }
-    
-        if (!user || !user.fname) {
-          Alert.alert('Error', 'Unable to identify the user.');
-          return;
+
+        if (!user || !user.email) {
+            setModalMessage('Unable to identify the user or email is missing.');
+            setModalVisible(true);
+            return;
         }
-    
+
         try {
-          // Prepare the URL search parameters for the backend request
-          const params = new URLSearchParams({ fname: user.fname, classCode: classcode });
-    
-          // Send the POST request to the backend
-          const response = await fetch(`${expoconfig.API_URL}/api/students/joinClass?` + params.toString(), {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
+            const params = new URLSearchParams({ email: user.email, classCode: classcode });
+            const response = await fetch(`${expoconfig.API_URL}/api/students/joinClass`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString()
+            });
+
+            if (response.ok) {
+                const message = await response.text();
+                Alert.alert('Success', message);
+                await AsyncStorage.setItem('classCode', classcode);
+                router.push('/Menu');
+            } else {
+                const errorMessage = await response.text();
+                setModalMessage(`Error joining class: ${errorMessage}`);
+                setModalVisible(true);
             }
-          });
-    
-          // Handle the response appropriately
-          if (response.ok) {
-            const message = await response.text();
-            Alert.alert('Success', message);
-            await AsyncStorage.setItem('classCode', classcode);
-            router.push('/Menu');
-            
-          } else {
-            // Display the error message from the server response
-            const errorMessage = await response.text();
-            Alert.alert('Error', `Error joining class: ${errorMessage}`);
-          }
         } catch (error) {
-          console.error('Error joining class:', error.message);
-          Alert.alert('Error', 'Error joining class. Please try again later.');
+            console.error('Error joining class:', error.message);
+            setModalMessage(`Error joining class. Please try again later.`);
+            setModalVisible(true);
         }
-      };
+    };
 
     return (    
         <KeyboardAvoidingView behavior='padding'>
@@ -89,6 +100,11 @@ const StartMenu = () => {
                     <EmptyClass width={300} height={300} />
 
                 </View>
+                <CustomModal
+                    visible={modalVisible}
+                    message={modalMessage}
+                    onClose={() => setModalVisible(false)}
+                />
             </View>
         </KeyboardAvoidingView>
     );
