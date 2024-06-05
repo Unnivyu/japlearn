@@ -8,10 +8,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const getFonts = () => Font.loadAsync({ 'Jua': require('../assets/fonts/Jua.ttf') });
 
-// Define route access based on user roles
 const routeAccessConfig = {
   student: ['Menu', 'StartMenu', 'ScenePrompter'],
   teacher: ['TeacherDashboard', 'ScenePrompter'],
+};
+
+const defaultRouteByRole = {
+  student: 'Menu',
+  teacher: 'TeacherDashboard',
 };
 
 const RootLayout = () => {
@@ -29,7 +33,7 @@ const RootLayout = () => {
         console.error('Error loading resources', error);
       } finally {
         setFontsLoaded(true);
-        setIsMounted(true); // Ensure this is set after resources are loaded
+        setIsMounted(true);
       }
     };
 
@@ -44,15 +48,26 @@ const RootLayout = () => {
   }, []);
 
   useEffect(() => {
-    if (isMounted && fontLoaded) { // Check if the component is mounted and fonts are loaded before navigating
-      if (!user && (segments.some(seg => routeAccessConfig.student.includes(seg) || routeAccessConfig.teacher.includes(seg)))) {
+    if (isMounted && fontLoaded) {
+      const currentSegment = segments.length > 0 ? segments[0] : '';
+      console.log("Current segment:", currentSegment, "User:", user);
+  
+      // Check if user is authenticated
+      if (!user && (routeAccessConfig.student.includes(currentSegment) || routeAccessConfig.teacher.includes(currentSegment))) {
         router.replace('/Login');
-      } else if (user && !routeAccessConfig[user.role].some(seg => segments.includes(seg))) {
-        router.replace('/Unauthorized'); // Assume Unauthorized is a valid route
+      } else if (user) {
+        // Check if the current segment is allowed for the user's role
+        if (!routeAccessConfig[user.role].includes(currentSegment)) {
+          // Redirect to the default route only if not already there
+          const defaultRoute = defaultRouteByRole[user.role] || '/Login';
+          if (currentSegment !== defaultRoute.slice(1)) { // Removing leading '/' for comparison
+            router.replace(defaultRoute);
+          }
+        }
       }
     }
   }, [isMounted, fontLoaded, user, segments]);
-
+  
   if (!fontLoaded || !isMounted) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -71,7 +86,6 @@ const RootLayout = () => {
       {user?.role === 'teacher' && (
         <>
           <Stack.Screen name="TeacherDashboard" />
-          <Stack.Screen name="ScenePrompter" />
         </>
       )}
     </Stack>

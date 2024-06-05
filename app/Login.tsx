@@ -43,7 +43,7 @@ const Login = () => {
                 router.push('/StartMenu');
             }
         } else if (role === 'teacher') {
-            router.push('/ScenePrompter');
+            router.push('/TeacherDashboard');
         } else {
             router.push('/StartMenu');
         }
@@ -154,7 +154,7 @@ const Login = () => {
             </KeyboardAvoidingView>
 
             <View style={styles.linkContainer}>
-                <Pressable onPress={() => router.puh('/Signup')}>
+                <Pressable onPress={() => router.push('/Signup')}>
                     <Text style={styles.linkText}>Create account?</Text>
                 </Pressable>
                 <Pressable onPress={undefined}>
