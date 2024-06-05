@@ -1,10 +1,14 @@
+import React, { useContext, useEffect } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link, router } from 'expo-router';
 import CustomButton from '../components/CustomButton';
 import Logo from '../assets/svg/index_logo.svg';
 import styles from '../styles/stylesIndex';
 
+
 const Login = () => {
+
   return (
     <View style={styles.container}>
         <View style={styles.logoContainer}>

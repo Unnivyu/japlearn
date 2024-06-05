@@ -55,6 +55,30 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
         fontSize: 12,
     },
+
+    errorInput: {
+        borderWidth: 1,
+        borderColor: 'red',   
+    },
+
+    errorText: {
+        color: 'white',
+        marginLeft: 5,
+        marginBottom: 18,
+        borderWidth: 1,
+        borderColor: 'red',
+        backgroundColor: 'red',
+        padding: 5, 
+        borderRadius: 5,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
 });
 
 export default styles;

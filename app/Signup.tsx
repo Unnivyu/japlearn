@@ -1,8 +1,11 @@
 import { ActivityIndicator, Button, KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import CustomButton from '../components/CustomButton';
+import CustomModal from '../components/CustomModal';
 import styles from '../styles/stylesSignup';
+import { router } from 'expo-router';
 import React, {useState} from 'react';
-import Logo from '../assets/svg/jpLogo.svg'
+import Logo from '../assets/svg/jpLogo.svg';
+import expoconfig from '../expoconfig';
 
 const Signup = () => {
     const [fname, setFname] = useState('');
@@ -22,6 +25,103 @@ const Signup = () => {
         cpassword: ''
     });
 
+    const signup = async () => {
+        let validationErrors = {
+            fname: '',
+            lname: '',
+            email: '',
+            password: '',
+            cpassword: ''
+        };
+    
+        if (!fname.trim()) {
+            validationErrors.fname = 'Please enter your first name';
+        }
+        if (!lname.trim()) {
+            validationErrors.lname = 'Please enter your last name';
+        }        
+        if (!email.trim()) {
+            validationErrors.email = 'Please enter your email';
+        } else if (!email.endsWith('@gmail.com')) {
+            validationErrors.email = 'Invalid email format';
+        }
+        if (!password) {
+            validationErrors.password = 'Please enter your password';
+        } else {
+            if (password.length < 8) {
+                validationErrors.password = 'Password must be at least 8 characters long';
+            }
+            if (!/[A-Z]/.test(password)) {
+                validationErrors.password = validationErrors.password + ' Include at least one uppercase letter';
+            }
+            if (!/[0-9]/.test(password)) {
+                validationErrors.password = validationErrors.password + ' Include at least one number';
+            }
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                validationErrors.password = validationErrors.password + ' Include at least one special character';
+            }
+        }
+        if (!cpassword) {
+            validationErrors.cpassword = 'Please confirm your password';
+        } else if (password !== cpassword) {
+            validationErrors.cpassword = 'Passwords do not match';
+        }
+    
+        setErrors(validationErrors);
+    
+        if (Object.values(validationErrors).some(error => error !== '')) {
+            // Display validation errors in the modal
+            setModalMessage('Please correct the highlighted fields.');
+            setModalVisible(true);
+            return;
+        }
+    
+        // Perform the signup operation
+        try {
+            setLoading(true);
+            const response = await fetch(`${expoconfig.API_URL}/api/users/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fname,
+                    lname,
+                    email,
+                    password,
+                    role: 'student'
+                })
+            });
+    
+            const data = await response.json();
+            if (response.ok) {
+                setModalMessage('Signup successful!');
+                setModalVisible(true);
+                setFname('');
+                setLname('');
+                setEmail('');
+                setPassword('');
+                setCPassword('');
+    
+                setTimeout(() => {
+                    setModalVisible(false);
+                    router.push('/Login');
+                }, 2000);
+            } else {
+                const errorMessage = await response.text();
+                console.error('Error response:', errorMessage);
+                throw new Error(errorMessage);
+            }
+        } catch (error) {
+            setModalMessage(`Signup failed: ${error}`);
+            setModalVisible(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    
+
     return (
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}> 
@@ -37,6 +137,7 @@ const Signup = () => {
                         autoCapitalize="none"
                         onChangeText={(text) => setFname(text)}
                     />
+
                     {errors.fname && (
                         <Text style={styles.errorText}>{errors.fname}</Text>
                     )}
@@ -48,10 +149,11 @@ const Signup = () => {
                         autoCapitalize="none"
                         onChangeText={(text) => setLname(text)}
                     />
+
                     {errors.lname && (
                         <Text style={styles.errorText}>{errors.lname}</Text>
                     )}
-
+    
                     <TextInput
                         style={[styles.input, errors.email ? styles.errorInput : null]}
                         value={email}
@@ -59,10 +161,11 @@ const Signup = () => {
                         autoCapitalize="none"
                         onChangeText={(text) => setEmail(text)}
                     />
+
                     {errors.email && (
                         <Text style={styles.errorText}>{errors.email}</Text>
                     )}
-
+                    
                     <TextInput
                         style={[styles.input, errors.password ? styles.errorInput : null]}
                         secureTextEntry
@@ -71,6 +174,7 @@ const Signup = () => {
                         autoCapitalize="none"
                         onChangeText={(text) => setPassword(text)}
                     />
+
                     {errors.password && (
                         <Text style={styles.errorText}>{errors.password}</Text>
                     )}
@@ -83,6 +187,7 @@ const Signup = () => {
                         autoCapitalize="none"
                         onChangeText={(text) => setCPassword(text)}
                     />
+
                     {errors.cpassword && (
                         <Text style={styles.errorText}>{errors.cpassword}</Text>
                     )}
@@ -91,31 +196,22 @@ const Signup = () => {
                         {loading ? (
                             <ActivityIndicator size="large" color="#0000ff" />
                         ) : (
-                            <CustomButton title="Sign Up" onPress={undefined} buttonStyle={styles.button} textStyle={styles.buttonText}/>
+                            <CustomButton title="Sign Up" onPress={signup} buttonStyle={styles.button} textStyle={styles.buttonText}/>
                         )}
                     </View>
 
                     <View style={styles.linkContainer}>
-                        <Pressable onPress={undefined}>
+                        <Pressable onPress={() => router.push('/Login')}>
                             <Text style={styles.linkText}>Already have an account? Sign In</Text>
                         </Pressable>
                     </View>
                 </View>
 
-                <Modal
-                    animationType="slide"
-                    transparent={true}
+                <CustomModal
                     visible={modalVisible}
-                    onRequestClose={() => setModalVisible(false)}
-                >
-                    <View style={styles.modalView}>
-                        <Text>{modalMessage}</Text>
-                        <Button
-                            title="Close"
-                            onPress={() => setModalVisible(false)}
-                        />
-                    </View>
-                </Modal>
+                    message={modalMessage}
+                    onClose={() => setModalVisible(false)}
+                />
             </ScrollView>
         </View>
     )
