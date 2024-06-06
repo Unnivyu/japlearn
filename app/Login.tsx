@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { StyleSheet, Text, TextInput, View, Pressable, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+import { Text, TextInput, View, Pressable, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { Link, router } from 'expo-router';
 import CustomButton from '../components/CustomButton';
 import CustomModal from '../components/CustomModal';

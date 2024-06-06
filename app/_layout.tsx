@@ -76,20 +76,13 @@ const RootLayout = () => {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" />
       <Stack.Screen name="Signup" />
-      {user?.role === 'student' && (
-        <>
-          <Stack.Screen name="Menu" />
-          <Stack.Screen name="StartMenu" />
-          <Stack.Screen name="ScenePrompter" />
-          <Stack.Screen name="Profile" />
-        </>
-      )}
-      {user?.role === 'teacher' && (
-        <>
-          <Stack.Screen name="TeacherDashboard" />
-          <Stack.Screen name="ProfileTeacher" />
-        </>
-      )}
+      <Stack.Screen name="Menu" />
+      <Stack.Screen name="StartMenu" />
+      <Stack.Screen name="ScenePrompter" />
+      <Stack.Screen name="Profile" />
+      <Stack.Screen name="TeacherDashboard" />
+      <Stack.Screen name="ProfileTeacher" />
+       
     </Stack>
   );
 };

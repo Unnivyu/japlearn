@@ -2,10 +2,10 @@ const storyData = {
   scenes: [
     {
       id: "scene1",
-      background: require("../../assets/level_ui/sample.jpg"),
+      background: require("../../assets/level_ui/background1.png"),
       dialogues: [
-        { character: "Alice", text: "Welcome to the forest!", image: require("../../assets/sprites/sprite.png") },
-        { character: "Player", text: "I am in shambles...", image: "" }
+        { character: "Alice", text: "Welcome to the forest!", characterImage: require("../../assets/sprites/sprite.png"), position: "right" },
+        { character: "Player", text: "Save me white woman, save me white woman, save me please, oh please", characterImage: require("../../assets/sprites/sprite.png"), position: "right", }
       ],
       options: [
         { text: "It's joever", goTo: "scene2" },
@@ -17,10 +17,9 @@ const storyData = {
     {
       id: "scene2",
       dialogues: [
-        {text: "Welcome to the forest!"},
+        { text: "Welcome to the forest!" },
       ],
-      
-    }
+    },
     // Additional scenes...
   ]
 };
