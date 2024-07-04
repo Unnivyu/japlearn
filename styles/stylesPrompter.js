@@ -70,7 +70,7 @@ const getStyles = (orientation) => {
         },
         modalView: {
             position: 'absolute',
-            bottom: '30%',
+            bottom: '40%',
             left: 0,
             right: 0,
             padding: 20,
@@ -88,10 +88,10 @@ const getStyles = (orientation) => {
             backgroundColor: 'rgba(106, 90, 205, 0.8)',
             borderWidth: 5,
             borderColor: 'rgba(52, 52, 52, 0.8)',
-            padding: 10,
+            padding: 15,
             margin: 10,
             borderRadius: 5,
-            width: '100%',
+            width: width > 600 ? "90%" : 300
         },
         optionText: {
             color: 'white',

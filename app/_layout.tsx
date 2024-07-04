@@ -82,6 +82,7 @@ const RootLayout = () => {
       <Stack.Screen name="Profile" />
       <Stack.Screen name="TeacherDashboard" />
       <Stack.Screen name="ProfileTeacher" />
+
        
     </Stack>
   );
