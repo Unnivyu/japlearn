@@ -51,14 +51,14 @@ const styles = StyleSheet.create({
     },
     levelContainer: {
         flex: 1,
-        margin: 10,
+        margin: 5,
         alignItems: 'center',
         maxWidth: '50%', 
         marginBottom: 40, 
     },
     menuText: {
         fontFamily: 'Jua',
-        fontSize: 15,
+        fontSize: 30,
         textAlign: 'center',
     },
     completedButton: {
@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
         height: 100,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 50,
         margin: 10,
     },
     incompleteButton: {
@@ -76,11 +75,64 @@ const styles = StyleSheet.create({
         height: 100,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 50,
         margin: 10,
     },
     buttonText: {
         fontSize: 20,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalView: {
+        width: 300,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 20,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    modalText: {
+        fontSize: 16,
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    modalButton: {
+        backgroundColor: '#8ED94D',
+        borderRadius: 5,
+        padding: 5
+
+    },
+    modalButtonText: {
+        fontSize: 20,
+        color: "#fff",
+    },
+    imageIcon: {
+        width: 600,
+        height: 300,
+        resizeMode: 'contain',
+    },
+    backgroundImage: {
+        flex: 1,
+        resizeMode: 'cover', // Ensure the image covers the entire background
+    },
+    container: {
+        flex: 1,
+        backgroundColor: 'transparent', // Make sure the background is transparent to show the image
     },
 });
 
