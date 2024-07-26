@@ -94,6 +94,7 @@ const Profile = () => {
                 <CustomButton title="QUACKMAN" onPress={() => handleGamePress('Quackman')} buttonStyle={styles.categoryButton} textStyle={styles.categoryButtonText} />
                 <CustomButton title="QUACKAMOLE" onPress={() => handleGamePress('Quackamole')} buttonStyle={styles.categoryButton} textStyle={styles.categoryButtonText} />
                 <CustomButton title="QUACKSLATE" onPress={() => handleGamePress('Quackslate')} buttonStyle={styles.categoryButton} textStyle={styles.categoryButtonText} />
+                <CustomButton title="LESSON" onPress={() => handleGamePress()} buttonStyle={styles.categoryButton} textStyle={styles.categoryButtonText} />    
             </View>
             <ScrollView contentContainerStyle={styles.contentScrollContainer}>
                 <View style={styles.contentContainer}>
