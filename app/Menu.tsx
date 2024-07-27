@@ -21,7 +21,7 @@ const levels = [
 
 const LevelButton = ({ title, completed, onPress }) => {
     return (
-        <Pressable onPress={onPress} style={styles.levelButton}>
+        <Pressable onPress={onPress}>
             <Image
                 source={completed ? Complete : Locked}
                 style={styles.imageIcon}

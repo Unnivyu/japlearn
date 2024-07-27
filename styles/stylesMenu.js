@@ -58,24 +58,8 @@ const styles = StyleSheet.create({
     },
     menuText: {
         fontFamily: 'Jua',
-        fontSize: 30,
+        fontSize: 20,
         textAlign: 'center',
-    },
-    completedButton: {
-        backgroundColor: '#8ED94D',
-        width: 100,
-        height: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 10,
-    },
-    incompleteButton: {
-        backgroundColor: '#C0C0C0',
-        width: 100,
-        height: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 10,
     },
     buttonText: {
         fontSize: 20,
@@ -122,8 +106,8 @@ const styles = StyleSheet.create({
         color: "#fff",
     },
     imageIcon: {
-        width: 600,
-        height: 300,
+        width: 148,
+        height: 100,
         resizeMode: 'contain',
     },
     backgroundImage: {
