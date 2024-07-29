@@ -5,11 +5,12 @@ import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { AuthContext, AuthProvider } from '../context/AuthContext';
 import { ClassCodeProvider } from '../context/ClassCodeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CharacterLessons from './CharacterLessons';
 
 const getFonts = () => Font.loadAsync({ 'Jua': require('../assets/fonts/Jua.ttf') });
 
 const routeAccessConfig = {
-  student: ['Menu', 'StartMenu', 'Profile'],
+  student: ['Menu', 'StartMenu', 'Profile', 'CharacterLessons'],
   teacher: ['TeacherDashboard', 'ProfileTeacher', 'ClassDashboard', 'QuackmanLevels', 'QuackmanEdit', 'QuackslateLevels', 'QuackslateEdit', 'QuackamoleLevels', 'QuackamoleEdit' ],
 };
 
@@ -89,7 +90,7 @@ const RootLayout = () => {
       <Stack.Screen name="QuackslateEdit" />
       <Stack.Screen name="QuackslateLevels" />
       <Stack.Screen name="ClassDashboard" />
-
+      <Stack.Screen name="CharacterLessons" />
        
     </Stack>
   );
