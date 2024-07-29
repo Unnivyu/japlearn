@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Modal, View, KeyboardAvoidingView, Text, Pressable, SafeAreaView, ScrollView, Image, TextInput, StyleSheet } from 'react-native';
+import { Modal, View, KeyboardAvoidingView, Text, Pressable, SafeAreaView, ScrollView, Image, TextInput, StyleSheet, } from 'react-native';
 import CustomButton from '../components/CustomButton';
 import { stylesDashboard } from '../styles/stylesDashboard';
 import { styles } from '../styles/stylesModal';
@@ -109,7 +109,8 @@ const TeacherDashboard = () => {
     };
 
     const handleClassPress = (classCode) => {
-        router.push('/ClassDashboard', { classCode });
+        console.log("Navigating to class:", classCode);
+        router.push(`/ClassDashboard?classCode=${classCode}`);
     };
 
     return (

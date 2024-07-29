@@ -81,14 +81,14 @@ export const styles = StyleSheet.create({
     categoryButton: {
         backgroundColor: '#8ED94D',
         paddingVertical: 20,
-        paddingHorizontal: 30,
+        paddingHorizontal: 10,
         borderRadius: 35,
-        marginHorizontal: 10,
+        marginHorizontal: 5,
     },
     categoryButtonText: {
         color: 'white',
         fontFamily: 'jua',
-        fontSize: 16,
+        fontSize: 14,
     },
     contentScrollContainer: {
         paddingHorizontal: 20,

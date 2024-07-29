@@ -10,7 +10,7 @@ const getFonts = () => Font.loadAsync({ 'Jua': require('../assets/fonts/Jua.ttf'
 
 const routeAccessConfig = {
   student: ['Menu', 'StartMenu', 'Profile'],
-  teacher: ['TeacherDashboard', 'ProfileTeacher'],
+  teacher: ['TeacherDashboard', 'ProfileTeacher', 'ClassDashboard', 'QuackmanLevels', 'QuackmanEdit', 'QuackslateLevels', 'QuackslateEdit', 'QuackamoleLevels', 'QuackamoleEdit' ],
 };
 
 const defaultRouteByRole = {
@@ -82,6 +82,13 @@ const RootLayout = () => {
       <Stack.Screen name="Profile" />
       <Stack.Screen name="TeacherDashboard" />
       <Stack.Screen name="ProfileTeacher" />
+      <Stack.Screen name ="QuackamoleEdit" />
+      <Stack.Screen name="QuackamoleLevels" />
+      <Stack.Screen name="QuackmanLevels" />
+      <Stack.Screen name="QuackmanEdit" />
+      <Stack.Screen name="QuackslateEdit" />
+      <Stack.Screen name="QuackslateLevels" />
+      <Stack.Screen name="ClassDashboard" />
 
        
     </Stack>
