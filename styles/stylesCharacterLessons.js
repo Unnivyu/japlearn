@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     },
     button: {
         padding: 15,
-        backgroundColor: '#8423D9',
+        backgroundColor: '#007BFF',
         borderRadius: 5,
         marginVertical: 10,
         minWidth: 100,
@@ -51,19 +51,23 @@ export const styles = StyleSheet.create({
         marginBottom: 20,
         fontWeight: 'bold',
     },
-    optionsContainer: {
+    cardsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
     },
-    optionButton: {
-        padding: 10,
+    card: {
+        width: 80,
+        height: 80,
         backgroundColor: '#8423D9',
-        borderRadius: 5,
-        margin: 5,
-        minWidth: 80,
         justifyContent: 'center',
         alignItems: 'center',
+        margin: 10,
+        borderRadius: 5,
+    },
+    cardText: {
+        fontSize: 32,
+        color: '#FFFFFF',
     },
     message: {
         fontSize: 20,
