@@ -1,6 +1,7 @@
-import { View, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text, Image } from 'react-native';
 import { styles } from "../styles/stylesCharacterLessons";
 import BackIcon from '../assets/svg/back-icon.svg';
+import cardBackImage from '../assets/img/card_back.png';
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 
@@ -183,7 +184,9 @@ const CharacterLessons = () => {
         <View style={{ flex: 1 }}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={handleBackPress}>
-                    <BackIcon width={30} height={30} />
+                    <View style={styles.backButtonContainer}>
+                        <BackIcon width={20} height={20} fill={'white'} />
+                    </View>
                 </TouchableOpacity>
             </View>
             {!showMatchGame ? (
@@ -217,9 +220,12 @@ const CharacterLessons = () => {
                                     onPress={() => handleCardFlip(index, card.type)}
                                     disabled={isCardMatched} // Disable interaction for matched cards
                                 >
-                                    <Text style={styles.cardText}>
-                                        {isCardFlipped || isCardMatched ? card[card.type] : '?'}
-                                    </Text>
+                                    
+                                    {isCardFlipped || isCardMatched ? (
+                                        <Text style={styles.cardText}>{card[card.type]}</Text>
+                                    ) : (
+                                        <Image source={cardBackImage} style={styles.cardImage} />
+                                    )}
                                 </TouchableOpacity>
                             );
                         })}

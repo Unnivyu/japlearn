@@ -2,10 +2,10 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
     header: {
-        height: 90,
+        height: 100,
         justifyContent: 'center',
         paddingLeft: '5%',
-        paddingTop: 30,
+        paddingTop: 20,
         backgroundColor: '#8423D9',
     },
     container: {
@@ -36,6 +36,14 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    backButtonContainer: {
+        height: 50,
+        width: 50,
+        borderRadius: 50,
+        backgroundColor: '#462A5E',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     buttonText: {
         color: '#FFFFFF',
         fontSize: 18,
@@ -58,8 +66,8 @@ export const styles = StyleSheet.create({
     },
     card: {
         width: 80,
-        height: 80,
-        backgroundColor: '#8423D9',
+        height: 100,
+        backgroundColor: '#9C4DE2',
         justifyContent: 'center',
         alignItems: 'center',
         margin: 10,
@@ -74,6 +82,12 @@ export const styles = StyleSheet.create({
         color: 'red',
         marginTop: 20,
     },
+    cardImage: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
+    },
+    
 });
 
 export default styles;
