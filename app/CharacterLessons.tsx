@@ -109,8 +109,8 @@ const CharacterLessons = () => {
             const selectedCardIndex = parseInt(selectedIndex, 10);
             const selectedCardData = cards[selectedCardIndex];
     
-            if (selectedCardData.romaji === card.romaji && selectedType !== type) {
-                // Match found
+            if (selectedCardData.romaji === card.romaji && selectedType !== type && card.romaji === currentRomaji) {
+                // Match found and corresponds to the current displayed romaji
                 setMatchedPairs(prev => [...prev, cardId, selectedCard]);
     
                 // Remove matched cards from visibility after 1 second
@@ -135,7 +135,7 @@ const CharacterLessons = () => {
                     }
                 }, 1000); // Delay before hiding matched cards
             } else {
-                // Incorrect match
+                // Incorrect match or doesn't correspond to current displayed romaji
                 setTimeout(() => {
                     setFlippedCards(prev => prev.filter(id => id !== cardId && id !== selectedCard));
                     setSelectedCard(null); // Reset selected card
