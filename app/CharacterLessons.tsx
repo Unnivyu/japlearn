@@ -57,6 +57,9 @@ const CharacterLessons = () => {
             ...currentSet.map(c => ({ ...c, type: 'katakana' }))
         ]);
         setCards(shuffledSet);
+        setFlippedCards([]);
+        setMatchedPairs([]);
+        setSelectedCard(null);
     };
 
     const currentSet = sets[currentSetIndex];
@@ -65,8 +68,24 @@ const CharacterLessons = () => {
 
     const handleNext = () => {
         if (currentIndexInSet === 4) {
-            setShowMatchGame(true);
-            prepareMatchGame(currentSetIndex);
+            if (showMatchGame) {
+                // Move to the next set if all pairs are matched
+                const newSetIndex = currentSetIndex + 1;
+                if (newSetIndex < sets.length) {
+                    // Move to the next set
+                    setCurrentSetIndex(newSetIndex);
+                    setCurrentIndexInSet(0);
+                    setShowMatchGame(false); // Show character display again
+                    setMessage('');
+                } else {
+                    // Optionally, show a message or handle the end of the game
+                    setMessage('All sets completed!');
+                }
+            } else {
+                // Start the match game for the current set
+                setShowMatchGame(true);
+                prepareMatchGame(currentSetIndex);
+            }
         } else {
             setCurrentIndexInSet(prevIndex => prevIndex + 1);
         }
@@ -75,76 +94,55 @@ const CharacterLessons = () => {
     const handleCardFlip = (index, type) => {
         const cardId = `${index}-${type}`;
         const card = cards[index];
-        const cardCharacter = card[type]; // Get the character (hiragana or katakana)
     
-        // Log the current state
-        console.log('Attempting to flip card:', cardId);
-        console.log('Currently flipped cards:', flippedCards);
-        console.log('Currently matched pairs:', matchedPairs);
-        console.log('Currently selected card:', selectedCard);
-    
-        if (flippedCards.includes(cardId) || matchedPairs.includes(cardId)) {
-            // Card is already flipped or matched
-            console.log('Card is already flipped or matched');
+        // If card is already matched or currently flipped, do nothing
+        if (matchedPairs.includes(cardId) || flippedCards.includes(cardId)) {
             return;
         }
     
+        // Add card to flipped cards
+        setFlippedCards(prev => [...prev, cardId]);
+    
         if (selectedCard) {
+            // There is already a selected card, so check for match
             const [selectedIndex, selectedType] = selectedCard.split('-');
-            const selectedCardIndex = parseInt(selectedIndex, 10); // Convert to number
-            const selectedCardType = selectedType;
-    
-            if (isNaN(selectedCardIndex) || !selectedCardType) {
-                console.error('Invalid selected card data:', selectedCard);
-                return;
-            }
-    
+            const selectedCardIndex = parseInt(selectedIndex, 10);
             const selectedCardData = cards[selectedCardIndex];
-            const selectedCharacter = selectedCardData[selectedCardType]; // Get the character
     
             if (selectedCardData.romaji === card.romaji && selectedType !== type) {
-                // This is a match
-                console.log('Match found!');
-                setMatchedPairs(prev => {
-                    const newPairs = [...prev, cardId, selectedCard];
-                    console.log('Matched pairs before update:', prev);
-                    console.log('Matched pairs after update:', newPairs);
+                // Match found
+                setMatchedPairs(prev => [...prev, cardId, selectedCard]);
+    
+                // Remove matched cards from visibility after 1 second
+                setTimeout(() => {
+                    setFlippedCards(prev => prev.filter(id => id !== cardId && id !== selectedCard));
+                    setSelectedCard(null); // Reset selected card
     
                     // Check if all pairs are matched
-                    if (newPairs.length === cards.length) {
-                        setMessage('All pairs matched! Moving to next set...');
+                    if (matchedPairs.length + 2 === cards.length) {
+                        // All pairs matched, move to next set or complete the game
                         setTimeout(() => {
-                            const newIndex = (currentSetIndex + 1) % sets.length;
-                            setCurrentSetIndex(newIndex);
-                            setCurrentIndexInSet(0);
-                            setShowMatchGame(false);
-                            setFlippedCards([]);
-                            setMatchedPairs([]);
-                            setSelectedCard(null);
-                            setMessage('');
-                            prepareMatchGame(newIndex); // Shuffle and prepare new set
-                        }, 2000);
-                    } else {
-                        // Reset selected card state and flipped cards state
-                        setFlippedCards([]);
-                        setSelectedCard(null);
+                            const newSetIndex = currentSetIndex + 1;
+                            if (newSetIndex < sets.length) {
+                                setCurrentSetIndex(newSetIndex);
+                                setCurrentIndexInSet(0);
+                                setShowMatchGame(false); // Show character display again
+                                setMessage('');
+                            } else {
+                                setMessage('All sets completed!');
+                            }
+                        }, 1000);
                     }
-    
-                    return newPairs;
-                });
+                }, 1000); // Delay before hiding matched cards
             } else {
                 // Incorrect match
-                console.log('Incorrect match');
-                setFlippedCards(prev => [...prev, cardId]);
                 setTimeout(() => {
-                    setFlippedCards([]);
-                    setSelectedCard(null);
-                }, 1000);
+                    setFlippedCards(prev => prev.filter(id => id !== cardId && id !== selectedCard));
+                    setSelectedCard(null); // Reset selected card
+                }, 1000); // Delay before hiding unmatched cards
             }
         } else {
             // First card flip
-            console.log('First card flipped');
-            setFlippedCards(prev => [...prev, cardId]);
             setSelectedCard(cardId);
         }
     };
@@ -166,6 +164,10 @@ const CharacterLessons = () => {
     };
 
     useEffect(() => {
+        prepareMatchGame(currentSetIndex);
+    }, [currentSetIndex]);
+
+    useEffect(() => {
         console.log('Current state:', {
             currentSetIndex,
             currentIndexInSet,
@@ -176,10 +178,6 @@ const CharacterLessons = () => {
             cards
         });
     }, [currentSetIndex, currentIndexInSet, showMatchGame, flippedCards, matchedPairs, selectedCard, cards]);
-
-    useEffect(() => {
-        prepareMatchGame(currentSetIndex);
-    }, [currentSetIndex]);
 
     return (
         <View style={{ flex: 1 }}>
@@ -201,19 +199,30 @@ const CharacterLessons = () => {
                 <View style={styles.matchGame}>
                     <Text style={styles.matchGameText}>Match the cards for romaji: {currentRomaji}</Text>
                     <View style={styles.cardsContainer}>
-                        {cards.map((card, index) => (
-                            <TouchableOpacity
-                                key={`${index}-${card.type}`}
-                                style={styles.card}
-                                onPress={() => handleCardFlip(index, card.type)}
-                            >
-                                <Text style={styles.cardText}>
-                                    {flippedCards.includes(`${index}-${card.type}`) || matchedPairs.includes(`${index}-${card.type}`)
-                                        ? card[card.type]
-                                        : '?'}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
+                        {cards.map((card, index) => {
+                            const cardId = `${index}-${card.type}`;
+                            const isCardFlipped = flippedCards.includes(cardId);
+                            const isCardMatched = matchedPairs.includes(cardId);
+
+                            // Only show cards that are not matched
+                            const cardStyle = {
+                                ...styles.card,
+                                opacity: isCardMatched ? 0 : 1
+                            };
+
+                            return (
+                                <TouchableOpacity
+                                    key={cardId}
+                                    style={cardStyle}
+                                    onPress={() => handleCardFlip(index, card.type)}
+                                    disabled={isCardMatched} // Disable interaction for matched cards
+                                >
+                                    <Text style={styles.cardText}>
+                                        {isCardFlipped || isCardMatched ? card[card.type] : '?'}
+                                    </Text>
+                                </TouchableOpacity>
+                            );
+                        })}
                     </View>
                     {message && <Text style={styles.message}>{message}</Text>}
                 </View>
