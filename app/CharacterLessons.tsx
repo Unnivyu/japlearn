@@ -101,6 +101,11 @@ const CharacterLessons = () => {
             return;
         }
     
+        // If two cards are already flipped, do nothing
+        if (flippedCards.length === 2) {
+            return;
+        }
+    
         // Add card to flipped cards
         setFlippedCards(prev => [...prev, cardId]);
     
@@ -218,9 +223,8 @@ const CharacterLessons = () => {
                                     key={cardId}
                                     style={cardStyle}
                                     onPress={() => handleCardFlip(index, card.type)}
-                                    disabled={isCardMatched} // Disable interaction for matched cards
+                                    disabled={isCardMatched || flippedCards.length === 2} // Disable interaction for matched cards and when two cards are flipped
                                 >
-                                    
                                     {isCardFlipped || isCardMatched ? (
                                         <Text style={styles.cardText}>{card[card.type]}</Text>
                                     ) : (
